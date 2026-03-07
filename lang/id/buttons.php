@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'view_all' => 'Lihat Semua',
+    'view_all_gallery' => 'Lihat Semua Galeri',
+    'read_more' => 'Baca Selengkapnya',
+    'learn_more' => 'Pelajari Lebih Lanjut',
+    'download' => 'Unduh',
+    'submit' => 'Kirim',
+    'send' => 'Kirim',
+    'save' => 'Simpan',
+    'cancel' => 'Batal',
+    'delete' => 'Hapus',
+    'edit' => 'Edit',
+    'add' => 'Tambah',
+    'back' => 'Kembali',
+    'search' => 'Cari',
+    'filter' => 'Filter',
+    'reset' => 'Reset',
+    'login' => 'Masuk',
+    'register' => 'Daftar',
+    'logout' => 'Keluar',
+    'share' => 'Bagikan',
+    'print' => 'Cetak',
+    'close' => 'Tutup',
+    'contact_us' => 'Hubungi Kami',
+];

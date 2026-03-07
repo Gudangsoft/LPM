@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'important' => 'Penting',
+    'new' => 'Baru',
+    'popular' => 'Populer',
+    'featured' => 'Unggulan',
+    'draft' => 'Draf',
+    'published' => 'Dipublikasikan',
+    'active' => 'Aktif',
+    'inactive' => 'Tidak Aktif',
+    'pending' => 'Menunggu',
+    'approved' => 'Disetujui',
+    'rejected' => 'Ditolak',
+    'required' => 'Wajib',
+    'optional' => 'Opsional',
+    'views' => 'Dilihat',
+    'date' => 'Tanggal',
+    'time' => 'Waktu',
+    'location' => 'Lokasi',
+    'category' => 'Kategori',
+    'author' => 'Penulis',
+    'status' => 'Status',
+    'action' => 'Aksi',
+    'file' => 'File',
+    'size' => 'Ukuran',
+    'type' => 'Tipe',
+];

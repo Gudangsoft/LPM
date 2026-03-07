@@ -1,0 +1,1 @@
+@extends('frontend.halaman.profil')

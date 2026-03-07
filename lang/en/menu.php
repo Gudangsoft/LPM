@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'home' => 'Home',
+    'profile' => 'Profile',
+    'about' => 'About LPM',
+    'vision_mission' => 'Vision & Mission',
+    'organizational_structure' => 'Organizational Structure',
+    'structure' => 'Organizational Structure',
+    'quality_assurance' => 'Quality Assurance System',
+    'quality_system' => 'Quality Assurance System',
+    'internal_audit' => 'Internal Quality Audit',
+    'accreditation' => 'Accreditation',
+    'news' => 'News',
+    'gallery' => 'Gallery',
+    'documents' => 'Documents',
+    'announcements' => 'Announcements',
+    'agenda' => 'Agenda',
+    'contact' => 'Contact',
+    'search' => 'Search...',
+    'login' => 'Login',
+    'register' => 'Register',
+    'logout' => 'Logout',
+    'dashboard' => 'Dashboard',
+    'language' => 'Language',
+    'indonesian' => 'Indonesia',
+    'english' => 'English',
+];

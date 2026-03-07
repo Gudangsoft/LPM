@@ -1,0 +1,379 @@
+<?php
+
+return [
+    // Dashboard
+    'dashboard' => 'Dashboard',
+    'welcome_admin' => 'Selamat Datang di Panel Admin',
+    'welcome' => 'Selamat Datang',
+    'welcome_back' => 'Selamat Datang Kembali',
+    'good_morning' => 'Selamat Pagi',
+    'good_afternoon' => 'Selamat Siang',
+    'good_evening' => 'Selamat Malam',
+    'have_nice_day' => 'Semoga harimu menyenangkan di hari :day!',
+    'current_period' => 'Periode saat ini',
+    'no_active_period' => 'Belum ada periode aktif',
+    'total_news' => 'Total Berita',
+    'total_gallery' => 'Total Galeri',
+    'total_documents' => 'Total Dokumen',
+    'total_users' => 'Total Pengguna',
+    'total_visitors' => 'Total Pengunjung',
+    'visitors_today' => 'Pengunjung Hari Ini',
+    'visitors_month' => 'Pengunjung Bulan Ini',
+    'unread_contacts' => 'Pesan Belum Dibaca',
+    'unread_messages' => 'Pesan Belum Dibaca',
+    'latest_news' => 'Berita Terbaru',
+    'latest_contacts' => 'Pesan Terbaru',
+    'latest_messages' => 'Pesan Terbaru',
+    'quick_stats' => 'Statistik Cepat',
+    'recent_activities' => 'Aktivitas Terbaru',
+    'view_all' => 'Lihat Semua',
+    'visitor_statistics' => 'Statistik Pengunjung',
+
+    // Header & Navigation
+    'view_site' => 'Lihat Situs',
+    'profile' => 'Profil',
+    'logout' => 'Keluar',
+    'content' => 'Konten',
+    'media' => 'Media',
+    'structure' => 'Struktur Organisasi',
+    'messages' => 'Pesan',
+    'system' => 'Sistem',
+
+    // Common
+    'add_new' => 'Tambah Baru',
+    'edit' => 'Edit',
+    'delete' => 'Hapus',
+    'save' => 'Simpan',
+    'update' => 'Perbarui',
+    'cancel' => 'Batal',
+    'back' => 'Kembali',
+    'view' => 'Lihat',
+    'search' => 'Cari',
+    'filter' => 'Filter',
+    'actions' => 'Aksi',
+    'status' => 'Status',
+    'date' => 'Tanggal',
+    'no_data' => 'Tidak ada data',
+    'confirm_delete' => 'Apakah Anda yakin ingin menghapus?',
+    'yes' => 'Ya',
+    'no' => 'Tidak',
+
+    // News
+    'news' => 'Berita',
+    'news_list' => 'Daftar Berita',
+    'add_news' => 'Tambah Berita',
+    'edit_news' => 'Edit Berita',
+    'news_content' => 'Konten Berita',
+    'news_count' => 'Jumlah Berita',
+
+    // Categories
+    'categories' => 'Kategori',
+    'category' => 'Kategori',
+    'category_list' => 'Daftar Kategori',
+    'add_category' => 'Tambah Kategori',
+    'edit_category' => 'Edit Kategori',
+    'category_form' => 'Form Kategori',
+    'select_category' => 'Pilih Kategori',
+
+    // Gallery
+    'gallery' => 'Galeri',
+    'gallery_list' => 'Daftar Galeri',
+    'add_gallery' => 'Tambah Galeri',
+    'edit_gallery' => 'Edit Galeri',
+    'gallery_form' => 'Form Galeri',
+
+    // Documents
+    'documents' => 'Dokumen',
+    'document_list' => 'Daftar Dokumen',
+    'add_document' => 'Tambah Dokumen',
+    'edit_document' => 'Edit Dokumen',
+    'document_form' => 'Form Dokumen',
+    'file_type' => 'Tipe File',
+    'file_size' => 'Ukuran File',
+    'downloads' => 'Unduhan',
+    'download' => 'Unduh',
+
+    // Organizational Structure
+    'organizational_structure' => 'Struktur Organisasi',
+    'structure_list' => 'Daftar Struktur',
+    'add_structure' => 'Tambah Anggota',
+    'edit_structure' => 'Edit Anggota',
+    'structure_form' => 'Form Struktur',
+    'position' => 'Jabatan',
+    'order' => 'Urutan',
+
+    // Pages
+    'pages' => 'Halaman',
+    'page_list' => 'Daftar Halaman',
+    'add_page' => 'Tambah Halaman',
+    'edit_page' => 'Edit Halaman',
+    'page_form' => 'Form Halaman',
+
+    // Users
+    'users' => 'Pengguna',
+    'user_list' => 'Daftar Pengguna',
+    'add_user' => 'Tambah Pengguna',
+    'edit_user' => 'Edit Pengguna',
+    'user_form' => 'Form Pengguna',
+    'all_roles' => 'Semua Role',
+    'role' => 'Role',
+    'avatar' => 'Photo Profil',
+    'current_avatar' => 'Photo Saat Ini',
+    'new_avatar' => 'Photo Baru',
+    'registered_at' => 'Terdaftar',
+    'cannot_change_own_role' => 'Tidak dapat mengubah role sendiri',
+
+    // Sliders
+    'sliders' => 'Slider',
+    'slider_list' => 'Daftar Slider',
+    'add_slider' => 'Tambah Slider',
+    'edit_slider' => 'Edit Slider',
+    'slider_form' => 'Form Slider',
+    'recommended_size' => 'Ukuran disarankan',
+
+    // Announcements
+    'announcements' => 'Pengumuman',
+    'announcement_list' => 'Daftar Pengumuman',
+    'add_announcement' => 'Tambah Pengumuman',
+    'edit_announcement' => 'Edit Pengumuman',
+    'announcement_content' => 'Konten Pengumuman',
+    'priority' => 'Prioritas',
+    'important' => 'Penting',
+    'normal' => 'Normal',
+    'mark_important' => 'Tandai sebagai Penting',
+    'attachment' => 'Lampiran',
+    'current_attachment' => 'Lampiran Saat Ini',
+    'new_attachment' => 'Lampiran Baru',
+
+    // Agenda
+    'agenda' => 'Agenda',
+    'agenda_list' => 'Daftar Agenda',
+    'add_agenda' => 'Tambah Agenda',
+    'edit_agenda' => 'Edit Agenda',
+    'agenda_details' => 'Detail Agenda',
+    'schedule' => 'Jadwal',
+    'start_date' => 'Tanggal Mulai',
+    'end_date' => 'Tanggal Selesai',
+    'location' => 'Lokasi',
+    'date_time' => 'Tanggal/Waktu',
+
+    // Contacts
+    'contacts' => 'Pesan Kontak',
+    'contact_list' => 'Daftar Pesan',
+    'view_contact' => 'Lihat Pesan',
+    'contact_details' => 'Detail Pesan',
+    'all_status' => 'Semua Status',
+    'unread' => 'Belum Dibaca',
+    'read' => 'Sudah Dibaca',
+    'subject' => 'Subjek',
+    'message' => 'Pesan',
+    'reply' => 'Balas',
+
+    // Settings
+    'settings' => 'Pengaturan',
+    'general_settings' => 'Pengaturan Umum',
+    'contact_info' => 'Informasi Kontak',
+    'social_media' => 'Media Sosial',
+    'template_settings' => 'Pengaturan Template',
+    'save_settings' => 'Simpan Pengaturan',
+    'site_name' => 'Nama Situs',
+    'tagline' => 'Tagline',
+    'logo' => 'Logo',
+    'favicon' => 'Favicon',
+    'footer_text' => 'Teks Footer',
+    'current_period_help' => 'Periode saat ini akan ditampilkan di halaman dashboard admin',
+    'address' => 'Alamat',
+
+    // Template Settings
+    'color_scheme' => 'Skema Warna',
+    'primary_color' => 'Warna Primer',
+    'secondary_color' => 'Warna Sekunder',
+    'header_bg_color' => 'Warna Background Header',
+    'footer_bg_color' => 'Warna Background Footer',
+    'layout_options' => 'Opsi Layout',
+    'navbar_style' => 'Gaya Navbar',
+    'container_width' => 'Lebar Container',
+    'show_breadcrumb' => 'Tampilkan Breadcrumb',
+    'show_back_to_top' => 'Tampilkan Tombol Kembali ke Atas',
+    'homepage_sections' => 'Bagian Halaman Utama',
+    'show_slider' => 'Tampilkan Slider',
+    'show_welcome' => 'Tampilkan Sambutan',
+    'show_news' => 'Tampilkan Berita',
+    'show_announcement' => 'Tampilkan Pengumuman',
+    'show_agenda' => 'Tampilkan Agenda',
+    'show_gallery' => 'Tampilkan Galeri',
+
+    // Form Labels
+    'title' => 'Judul',
+    'name' => 'Nama',
+    'email' => 'Email',
+    'phone' => 'Telepon',
+    'password' => 'Password',
+    'new_password' => 'Password Baru',
+    'confirm_password' => 'Konfirmasi Password',
+    'leave_empty_password' => 'Kosongkan jika tidak ingin mengubah password',
+    'description' => 'Deskripsi',
+    'content' => 'Konten',
+    'summary' => 'Ringkasan',
+    'slug' => 'Slug',
+    'image' => 'Gambar',
+    'photo' => 'Foto',
+    'current_image' => 'Gambar Saat Ini',
+    'new_image' => 'Gambar Baru',
+    'current_photo' => 'Foto Saat Ini',
+    'new_photo' => 'Foto Baru',
+    'current_file' => 'File Saat Ini',
+    'new_file' => 'File Baru',
+    'file' => 'File',
+    'thumbnail' => 'Thumbnail',
+    'link' => 'Link',
+    'views' => 'Dilihat',
+
+    // Status
+    'published' => 'Dipublikasi',
+    'draft' => 'Draf',
+    'active' => 'Aktif',
+    'inactive' => 'Tidak Aktif',
+    'publish' => 'Publikasi',
+    'publish_now' => 'Publikasikan',
+
+    // Dates
+    'created_at' => 'Dibuat',
+    'updated_at' => 'Diperbarui',
+
+    // File Upload
+    'max_file_size' => 'Ukuran maks',
+    'allowed_types' => 'Tipe file diizinkan',
+    'leave_empty' => 'Kosongkan jika tidak ingin mengubah',
+
+    // Messages
+    'success_create' => 'Data berhasil ditambahkan',
+    'success_update' => 'Data berhasil diperbarui',
+    'success_delete' => 'Data berhasil dihapus',
+    'error_delete' => 'Gagal menghapus data',
+    'settings_updated' => 'Pengaturan berhasil disimpan',
+    'template_updated' => 'Pengaturan template berhasil disimpan',
+
+    // News Operations
+    'news_created' => 'Berita berhasil ditambahkan',
+    'news_updated' => 'Berita berhasil diperbarui',
+    'news_deleted' => 'Berita berhasil dihapus',
+
+    // Category Operations
+    'category_created' => 'Kategori berhasil ditambahkan',
+    'category_updated' => 'Kategori berhasil diperbarui',
+    'category_deleted' => 'Kategori berhasil dihapus',
+    'category_has_news' => 'Kategori tidak dapat dihapus karena masih memiliki berita',
+
+    // Gallery Operations
+    'gallery_created' => 'Galeri berhasil ditambahkan',
+    'gallery_updated' => 'Galeri berhasil diperbarui',
+    'gallery_deleted' => 'Galeri berhasil dihapus',
+
+    // Document Operations
+    'document_created' => 'Dokumen berhasil ditambahkan',
+    'document_updated' => 'Dokumen berhasil diperbarui',
+    'document_deleted' => 'Dokumen berhasil dihapus',
+
+    // Page Operations
+    'page_created' => 'Halaman berhasil ditambahkan',
+    'page_updated' => 'Halaman berhasil diperbarui',
+    'page_deleted' => 'Halaman berhasil dihapus',
+
+    // Structure Operations
+    'structure_created' => 'Struktur berhasil ditambahkan',
+    'structure_updated' => 'Struktur berhasil diperbarui',
+    'structure_deleted' => 'Struktur berhasil dihapus',
+
+    // Slider Operations
+    'slider_created' => 'Slider berhasil ditambahkan',
+    'slider_updated' => 'Slider berhasil diperbarui',
+    'slider_deleted' => 'Slider berhasil dihapus',
+
+    // Announcement Operations
+    'announcement_created' => 'Pengumuman berhasil ditambahkan',
+    'announcement_updated' => 'Pengumuman berhasil diperbarui',
+    'announcement_deleted' => 'Pengumuman berhasil dihapus',
+
+    // Agenda Operations
+    'agenda_created' => 'Agenda berhasil ditambahkan',
+    'agenda_updated' => 'Agenda berhasil diperbarui',
+    'agenda_deleted' => 'Agenda berhasil dihapus',
+
+    // User Operations
+    'user_created' => 'Pengguna berhasil ditambahkan',
+    'user_updated' => 'Pengguna berhasil diperbarui',
+    'user_deleted' => 'Pengguna berhasil dihapus',
+
+    // Contact Operations
+    'contact_deleted' => 'Pesan berhasil dihapus',
+    'contact_replied' => 'Balasan berhasil dikirim',
+
+    // Menu Management
+    'menu_management' => 'Manajemen Menu',
+    'menu_list' => 'Daftar Menu',
+    'add_menu' => 'Tambah Menu',
+    'edit_menu' => 'Edit Menu',
+    'menu_created' => 'Menu berhasil ditambahkan',
+    'menu_updated' => 'Menu berhasil diperbarui',
+    'menu_deleted' => 'Menu berhasil dihapus',
+    'type' => 'Tipe',
+    'icon' => 'Ikon',
+    'route' => 'Route',
+    'route_pattern' => 'Pola Route',
+    'url' => 'URL',
+    'parent' => 'Induk',
+    'no_parent' => 'Tanpa Induk',
+    'badge_settings' => 'Pengaturan Badge',
+    'badge_model' => 'Model Badge',
+    'badge_method' => 'Method Badge',
+    'badge_class' => 'Class Badge',
+    'common_icons' => 'Ikon Umum',
+
+    // Document Types
+    'document_types' => 'Jenis Dokumen',
+    'document_type_list' => 'Daftar Jenis Dokumen',
+    'add_document_type' => 'Tambah Jenis Dokumen',
+    'edit_document_type' => 'Edit Jenis Dokumen',
+    'document_type_form' => 'Form Jenis Dokumen',
+    'document_count' => 'Jumlah Dokumen',
+    'document_type_created' => 'Jenis dokumen berhasil ditambahkan',
+    'document_type_updated' => 'Jenis dokumen berhasil diperbarui',
+    'document_type_deleted' => 'Jenis dokumen berhasil dihapus',
+    'document_type_has_documents' => 'Jenis dokumen tidak dapat dihapus karena masih memiliki dokumen',
+    'select_document_type' => 'Pilih Jenis Dokumen',
+
+    // Database Backup & Restore
+    'database' => 'Database',
+    'backup_restore' => 'Backup & Restore',
+    'create_backup' => 'Buat Backup',
+    'backup_description' => 'Buat backup database untuk menyimpan semua data website Anda.',
+    'confirm_backup' => 'Apakah Anda yakin ingin membuat backup database?',
+    'backup_now' => 'Backup Sekarang',
+    'upload_backup' => 'Upload Backup',
+    'upload_description' => 'Upload file backup (.sql) untuk ditambahkan ke daftar backup.',
+    'allowed_extensions' => 'Ekstensi yang diizinkan',
+    'upload_file' => 'Upload File',
+    'warning' => 'Peringatan',
+    'restore_warning' => 'Proses restore akan menghapus semua data yang ada dan menggantinya dengan data dari file backup. Pastikan Anda telah membuat backup data terbaru sebelum melakukan restore.',
+    'backup_list' => 'Daftar Backup',
+    'files' => 'file',
+    'filename' => 'Nama File',
+    'size' => 'Ukuran',
+    'download' => 'Unduh',
+    'restore' => 'Restore',
+    'confirm_restore' => 'PERINGATAN: Restore akan menghapus semua data saat ini dan menggantinya dengan data dari backup. Apakah Anda yakin ingin melanjutkan?',
+    'no_backups' => 'Belum ada file backup',
+    'backup_created' => 'Backup berhasil dibuat: :filename',
+    'backup_failed' => 'Gagal membuat backup',
+    'backup_deleted' => 'Backup berhasil dihapus',
+    'file_not_found' => 'File tidak ditemukan',
+    'restore_success' => 'Database berhasil di-restore',
+    'restore_failed' => 'Gagal melakukan restore database',
+    'upload_success' => 'File backup berhasil diupload: :filename',
+    'upload_failed' => 'Gagal mengupload file',
+
+    // Additional
+    'visitors' => 'Pengunjung',
+    'replied' => 'Sudah Dibalas',
+];

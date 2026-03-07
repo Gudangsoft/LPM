@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'home' => 'Beranda',
+    'profile' => 'Profil',
+    'about' => 'Tentang LPM',
+    'vision_mission' => 'Visi & Misi',
+    'organizational_structure' => 'Struktur Organisasi',
+    'structure' => 'Struktur Organisasi',
+    'quality_assurance' => 'Sistem Penjaminan Mutu',
+    'quality_system' => 'Sistem Penjaminan Mutu',
+    'internal_audit' => 'Audit Mutu Internal',
+    'accreditation' => 'Akreditasi',
+    'news' => 'Berita',
+    'gallery' => 'Galeri',
+    'documents' => 'Dokumen',
+    'announcements' => 'Pengumuman',
+    'agenda' => 'Agenda',
+    'contact' => 'Kontak',
+    'search' => 'Cari...',
+    'login' => 'Masuk',
+    'register' => 'Daftar',
+    'logout' => 'Keluar',
+    'dashboard' => 'Dashboard',
+    'language' => 'Bahasa',
+    'indonesian' => 'Indonesia',
+    'english' => 'English',
+];

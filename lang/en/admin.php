@@ -1,0 +1,372 @@
+<?php
+
+return [
+    // Dashboard
+    'dashboard' => 'Dashboard',
+    'welcome_admin' => 'Welcome to Admin Panel',
+    'welcome' => 'Welcome',
+    'welcome_back' => 'Welcome Back',
+    'good_morning' => 'Good Morning',
+    'good_afternoon' => 'Good Afternoon',
+    'good_evening' => 'Good Evening',
+    'have_nice_day' => 'Have a nice :day!',
+    'current_period' => 'Current Period',
+    'no_active_period' => 'No active period',
+    'total_news' => 'Total News',
+    'total_gallery' => 'Total Gallery',
+    'total_documents' => 'Total Documents',
+    'total_users' => 'Total Users',
+    'total_visitors' => 'Total Visitors',
+    'visitors_today' => 'Visitors Today',
+    'visitors_month' => 'Visitors This Month',
+    'unread_contacts' => 'Unread Messages',
+    'unread_messages' => 'Unread Messages',
+    'latest_news' => 'Latest News',
+    'latest_contacts' => 'Latest Messages',
+    'quick_stats' => 'Quick Stats',
+    'recent_activities' => 'Recent Activities',
+
+    // Header & Navigation
+    'view_site' => 'View Site',
+    'profile' => 'Profile',
+    'logout' => 'Logout',
+    'content' => 'Content',
+    'media' => 'Media',
+    'structure' => 'Organizational Structure',
+    'messages' => 'Messages',
+    'system' => 'System',
+
+    // Common
+    'add_new' => 'Add New',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'save' => 'Save',
+    'update' => 'Update',
+    'cancel' => 'Cancel',
+    'back' => 'Back',
+    'view' => 'View',
+    'search' => 'Search',
+    'filter' => 'Filter',
+    'actions' => 'Actions',
+    'status' => 'Status',
+    'date' => 'Date',
+    'no_data' => 'No data available',
+    'confirm_delete' => 'Are you sure you want to delete?',
+    'yes' => 'Yes',
+    'no' => 'No',
+
+    // News
+    'news' => 'News',
+    'news_list' => 'News List',
+    'add_news' => 'Add News',
+    'edit_news' => 'Edit News',
+    'news_content' => 'News Content',
+    'news_count' => 'News Count',
+
+    // Categories
+    'categories' => 'Categories',
+    'category' => 'Category',
+    'category_list' => 'Category List',
+    'add_category' => 'Add Category',
+    'edit_category' => 'Edit Category',
+    'category_form' => 'Category Form',
+    'select_category' => 'Select Category',
+
+    // Gallery
+    'gallery' => 'Gallery',
+    'gallery_list' => 'Gallery List',
+    'add_gallery' => 'Add Gallery',
+    'edit_gallery' => 'Edit Gallery',
+    'gallery_form' => 'Gallery Form',
+
+    // Documents
+    'documents' => 'Documents',
+    'document_list' => 'Document List',
+    'add_document' => 'Add Document',
+    'edit_document' => 'Edit Document',
+    'document_form' => 'Document Form',
+    'file_type' => 'File Type',
+    'file_size' => 'File Size',
+    'downloads' => 'Downloads',
+    'download' => 'Download',
+
+    // Organizational Structure
+    'organizational_structure' => 'Organizational Structure',
+    'structure_list' => 'Structure List',
+    'add_structure' => 'Add Member',
+    'edit_structure' => 'Edit Member',
+    'structure_form' => 'Structure Form',
+    'position' => 'Position',
+    'order' => 'Order',
+
+    // Pages
+    'pages' => 'Pages',
+    'page_list' => 'Page List',
+    'add_page' => 'Add Page',
+    'edit_page' => 'Edit Page',
+    'page_form' => 'Page Form',
+
+    // Users
+    'users' => 'Users',
+    'user_list' => 'User List',
+    'add_user' => 'Add User',
+    'edit_user' => 'Edit User',
+    'user_form' => 'User Form',
+    'all_roles' => 'All Roles',
+    'role' => 'Role',
+    'avatar' => 'Avatar',
+    'current_avatar' => 'Current Avatar',
+    'new_avatar' => 'New Avatar',
+    'registered_at' => 'Registered',
+    'cannot_change_own_role' => 'Cannot change your own role',
+
+    // Sliders
+    'sliders' => 'Sliders',
+    'slider_list' => 'Slider List',
+    'add_slider' => 'Add Slider',
+    'edit_slider' => 'Edit Slider',
+    'slider_form' => 'Slider Form',
+    'recommended_size' => 'Recommended size',
+
+    // Announcements
+    'announcements' => 'Announcements',
+    'announcement_list' => 'Announcement List',
+    'add_announcement' => 'Add Announcement',
+    'edit_announcement' => 'Edit Announcement',
+    'announcement_content' => 'Announcement Content',
+    'priority' => 'Priority',
+    'important' => 'Important',
+    'normal' => 'Normal',
+    'mark_important' => 'Mark as Important',
+    'attachment' => 'Attachment',
+    'current_attachment' => 'Current Attachment',
+    'new_attachment' => 'New Attachment',
+
+    // Agenda
+    'agenda' => 'Agenda',
+    'agenda_list' => 'Agenda List',
+    'add_agenda' => 'Add Agenda',
+    'edit_agenda' => 'Edit Agenda',
+    'agenda_details' => 'Agenda Details',
+    'schedule' => 'Schedule',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'location' => 'Location',
+    'date_time' => 'Date/Time',
+
+    // Contacts
+    'contacts' => 'Contact Messages',
+    'contact_list' => 'Message List',
+    'view_contact' => 'View Message',
+    'contact_details' => 'Message Details',
+    'all_status' => 'All Status',
+    'unread' => 'Unread',
+    'read' => 'Read',
+    'subject' => 'Subject',
+    'message' => 'Message',
+    'reply' => 'Reply',
+
+    // Settings
+    'settings' => 'Settings',
+    'general_settings' => 'General Settings',
+    'contact_info' => 'Contact Info',
+    'social_media' => 'Social Media',
+    'template_settings' => 'Template Settings',
+    'save_settings' => 'Save Settings',
+    'site_name' => 'Site Name',
+    'tagline' => 'Tagline',
+    'logo' => 'Logo',
+    'favicon' => 'Favicon',
+    'footer_text' => 'Footer Text',
+    'current_period_help' => 'Current period will be displayed on admin dashboard',
+    'address' => 'Address',
+
+    // Template Settings
+    'color_scheme' => 'Color Scheme',
+    'primary_color' => 'Primary Color',
+    'secondary_color' => 'Secondary Color',
+    'header_bg_color' => 'Header Background Color',
+    'footer_bg_color' => 'Footer Background Color',
+    'layout_options' => 'Layout Options',
+    'navbar_style' => 'Navbar Style',
+    'container_width' => 'Container Width',
+    'show_breadcrumb' => 'Show Breadcrumb',
+    'show_back_to_top' => 'Show Back to Top Button',
+    'homepage_sections' => 'Homepage Sections',
+    'show_slider' => 'Show Slider',
+    'show_welcome' => 'Show Welcome',
+    'show_news' => 'Show News',
+    'show_announcement' => 'Show Announcement',
+    'show_agenda' => 'Show Agenda',
+    'show_gallery' => 'Show Gallery',
+
+    // Form Labels
+    'title' => 'Title',
+    'name' => 'Name',
+    'email' => 'Email',
+    'phone' => 'Phone',
+    'password' => 'Password',
+    'new_password' => 'New Password',
+    'confirm_password' => 'Confirm Password',
+    'leave_empty_password' => 'Leave empty if you don\'t want to change password',
+    'description' => 'Description',
+    'content' => 'Content',
+    'summary' => 'Summary',
+    'slug' => 'Slug',
+    'image' => 'Image',
+    'photo' => 'Photo',
+    'current_image' => 'Current Image',
+    'new_image' => 'New Image',
+    'current_photo' => 'Current Photo',
+    'new_photo' => 'New Photo',
+    'current_file' => 'Current File',
+    'new_file' => 'New File',
+    'file' => 'File',
+    'thumbnail' => 'Thumbnail',
+    'link' => 'Link',
+    'views' => 'Views',
+
+    // Status
+    'published' => 'Published',
+    'draft' => 'Draft',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'publish' => 'Publish',
+    'publish_now' => 'Publish Now',
+
+    // Dates
+    'created_at' => 'Created',
+    'updated_at' => 'Updated',
+
+    // File Upload
+    'max_file_size' => 'Max size',
+    'allowed_types' => 'Allowed file types',
+    'leave_empty' => 'Leave empty if you don\'t want to change',
+
+    // Messages
+    'success_create' => 'Data has been created successfully',
+    'success_update' => 'Data has been updated successfully',
+    'success_delete' => 'Data has been deleted successfully',
+    'error_delete' => 'Failed to delete data',
+    'settings_updated' => 'Settings have been saved successfully',
+    'template_updated' => 'Template settings have been saved successfully',
+
+    // News Operations
+    'news_created' => 'News has been created successfully',
+    'news_updated' => 'News has been updated successfully',
+    'news_deleted' => 'News has been deleted successfully',
+
+    // Category Operations
+    'category_created' => 'Category has been created successfully',
+    'category_updated' => 'Category has been updated successfully',
+    'category_deleted' => 'Category has been deleted successfully',
+    'category_has_news' => 'Category cannot be deleted because it still has news',
+
+    // Gallery Operations
+    'gallery_created' => 'Gallery has been created successfully',
+    'gallery_updated' => 'Gallery has been updated successfully',
+    'gallery_deleted' => 'Gallery has been deleted successfully',
+
+    // Document Operations
+    'document_created' => 'Document has been created successfully',
+    'document_updated' => 'Document has been updated successfully',
+    'document_deleted' => 'Document has been deleted successfully',
+
+    // Page Operations
+    'page_created' => 'Page has been created successfully',
+    'page_updated' => 'Page has been updated successfully',
+    'page_deleted' => 'Page has been deleted successfully',
+
+    // Structure Operations
+    'structure_created' => 'Structure has been created successfully',
+    'structure_updated' => 'Structure has been updated successfully',
+    'structure_deleted' => 'Structure has been deleted successfully',
+
+    // Slider Operations
+    'slider_created' => 'Slider has been created successfully',
+    'slider_updated' => 'Slider has been updated successfully',
+    'slider_deleted' => 'Slider has been deleted successfully',
+
+    // Announcement Operations
+    'announcement_created' => 'Announcement has been created successfully',
+    'announcement_updated' => 'Announcement has been updated successfully',
+    'announcement_deleted' => 'Announcement has been deleted successfully',
+
+    // Agenda Operations
+    'agenda_created' => 'Agenda has been created successfully',
+    'agenda_updated' => 'Agenda has been updated successfully',
+    'agenda_deleted' => 'Agenda has been deleted successfully',
+
+    // User Operations
+    'user_created' => 'User has been created successfully',
+    'user_updated' => 'User has been updated successfully',
+    'user_deleted' => 'User has been deleted successfully',
+
+    // Contact Operations
+    'contact_deleted' => 'Contact has been deleted successfully',
+    'contact_replied' => 'Reply has been sent successfully',
+
+    // Menu Management
+    'menu_management' => 'Menu Management',
+    'menu_list' => 'Menu List',
+    'add_menu' => 'Add Menu',
+    'edit_menu' => 'Edit Menu',
+    'menu_created' => 'Menu has been created successfully',
+    'menu_updated' => 'Menu has been updated successfully',
+    'menu_deleted' => 'Menu has been deleted successfully',
+    'type' => 'Type',
+    'icon' => 'Icon',
+    'route' => 'Route',
+    'route_pattern' => 'Route Pattern',
+    'url' => 'URL',
+    'parent' => 'Parent',
+    'no_parent' => 'No Parent',
+    'badge_settings' => 'Badge Settings',
+    'badge_model' => 'Badge Model',
+    'badge_method' => 'Badge Method',
+    'badge_class' => 'Badge Class',
+    'common_icons' => 'Common Icons',
+
+    // Document Types
+    'document_types' => 'Document Types',
+    'document_type_list' => 'Document Type List',
+    'add_document_type' => 'Add Document Type',
+    'edit_document_type' => 'Edit Document Type',
+    'document_type_form' => 'Document Type Form',
+    'document_count' => 'Document Count',
+    'document_type_created' => 'Document type has been created successfully',
+    'document_type_updated' => 'Document type has been updated successfully',
+    'document_type_deleted' => 'Document type has been deleted successfully',
+    'document_type_has_documents' => 'Document type cannot be deleted because it still has documents',
+    'select_document_type' => 'Select Document Type',
+
+    // Database Backup & Restore
+    'database' => 'Database',
+    'backup_restore' => 'Backup & Restore',
+    'create_backup' => 'Create Backup',
+    'backup_description' => 'Create a database backup to save all your website data.',
+    'confirm_backup' => 'Are you sure you want to create a database backup?',
+    'backup_now' => 'Backup Now',
+    'upload_backup' => 'Upload Backup',
+    'upload_description' => 'Upload a backup file (.sql) to add to the backup list.',
+    'allowed_extensions' => 'Allowed extensions',
+    'upload_file' => 'Upload File',
+    'warning' => 'Warning',
+    'restore_warning' => 'Restore process will delete all existing data and replace it with data from the backup file. Make sure you have created the latest backup before restoring.',
+    'backup_list' => 'Backup List',
+    'files' => 'files',
+    'filename' => 'Filename',
+    'size' => 'Size',
+    'download' => 'Download',
+    'restore' => 'Restore',
+    'confirm_restore' => 'WARNING: Restore will delete all current data and replace it with data from backup. Are you sure you want to continue?',
+    'no_backups' => 'No backup files available',
+    'backup_created' => 'Backup created successfully: :filename',
+    'backup_failed' => 'Failed to create backup',
+    'backup_deleted' => 'Backup deleted successfully',
+    'file_not_found' => 'File not found',
+    'restore_success' => 'Database restored successfully',
+    'restore_failed' => 'Failed to restore database',
+    'upload_success' => 'Backup file uploaded successfully: :filename',
+    'upload_failed' => 'Failed to upload file',
+];

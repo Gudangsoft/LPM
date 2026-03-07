@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Professional Character Illustration -->
+  <defs>
+    <linearGradient id="skinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5d0b5"/>
+      <stop offset="100%" style="stop-color:#e8b896"/>
+    </linearGradient>
+    <linearGradient id="suitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b5998"/>
+      <stop offset="100%" style="stop-color:#2d4373"/>
+    </linearGradient>
+    <linearGradient id="hairGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5d4037"/>
+      <stop offset="100%" style="stop-color:#3e2723"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Body/Suit -->
+  <path d="M60 150 Q50 180 45 250 L155 250 Q150 180 140 150 Q120 140 100 140 Q80 140 60 150" fill="url(#suitGradient)"/>
+  
+  <!-- Shirt/Tie -->
+  <path d="M85 145 L100 200 L115 145" fill="#e8e8e8"/>
+  <path d="M95 150 L100 190 L105 150 L100 155 Z" fill="#1e3a5f"/>
+  
+  <!-- Arms crossed -->
+  <ellipse cx="55" cy="200" rx="20" ry="35" fill="url(#suitGradient)"/>
+  <ellipse cx="145" cy="200" rx="20" ry="35" fill="url(#suitGradient)"/>
+  <ellipse cx="75" cy="195" rx="25" ry="12" fill="url(#suitGradient)"/>
+  <ellipse cx="125" cy="195" rx="25" ry="12" fill="url(#suitGradient)"/>
+  
+  <!-- Hands -->
+  <ellipse cx="140" cy="195" rx="12" ry="10" fill="url(#skinGradient)"/>
+  <ellipse cx="60" cy="195" rx="12" ry="10" fill="url(#skinGradient)"/>
+  
+  <!-- Neck -->
+  <rect x="90" y="125" width="20" height="25" fill="url(#skinGradient)" rx="5"/>
+  
+  <!-- Head -->
+  <ellipse cx="100" cy="90" rx="45" ry="50" fill="url(#skinGradient)"/>
+  
+  <!-- Hair -->
+  <path d="M55 75 Q55 35 100 30 Q145 35 145 75 Q140 55 100 50 Q60 55 55 75" fill="url(#hairGradient)"/>
+  <path d="M130 40 Q150 30 145 55 Q140 45 130 40" fill="url(#hairGradient)"/>
+  
+  <!-- Ears -->
+  <ellipse cx="55" cy="90" rx="8" ry="12" fill="url(#skinGradient)"/>
+  <ellipse cx="145" cy="90" rx="8" ry="12" fill="url(#skinGradient)"/>
+  
+  <!-- Glasses Frame -->
+  <rect x="65" y="75" width="28" height="22" rx="5" fill="none" stroke="#333" stroke-width="3"/>
+  <rect x="107" y="75" width="28" height="22" rx="5" fill="none" stroke="#333" stroke-width="3"/>
+  <line x1="93" y1="86" x2="107" y2="86" stroke="#333" stroke-width="2"/>
+  <line x1="135" y1="86" x2="145" y2="82" stroke="#333" stroke-width="2"/>
+  <line x1="65" y1="86" x2="55" y2="82" stroke="#333" stroke-width="2"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="79" cy="86" rx="6" ry="5" fill="#333"/>
+  <ellipse cx="121" cy="86" rx="6" ry="5" fill="#333"/>
+  <circle cx="81" cy="84" r="2" fill="white"/>
+  <circle cx="123" cy="84" r="2" fill="white"/>
+  
+  <!-- Eyebrows -->
+  <path d="M68 72 Q79 68 90 72" fill="none" stroke="url(#hairGradient)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M110 72 Q121 68 132 72" fill="none" stroke="url(#hairGradient)" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Nose -->
+  <path d="M100 90 Q95 100 100 105 Q105 100 100 90" fill="#d4a574"/>
+  
+  <!-- Smile -->
+  <path d="M80 112 Q100 128 120 112" fill="none" stroke="#c97a5a" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Watch on wrist -->
+  <rect x="130" y="202" width="15" height="10" rx="2" fill="#333"/>
+  <rect x="133" y="204" width="9" height="6" rx="1" fill="#87CEEB"/>
+</svg>

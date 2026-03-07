@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'important' => 'Important',
+    'new' => 'New',
+    'popular' => 'Popular',
+    'featured' => 'Featured',
+    'draft' => 'Draft',
+    'published' => 'Published',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'pending' => 'Pending',
+    'approved' => 'Approved',
+    'rejected' => 'Rejected',
+    'required' => 'Required',
+    'optional' => 'Optional',
+    'views' => 'Views',
+    'date' => 'Date',
+    'time' => 'Time',
+    'location' => 'Location',
+    'category' => 'Category',
+    'author' => 'Author',
+    'status' => 'Status',
+    'action' => 'Action',
+    'file' => 'File',
+    'size' => 'Size',
+    'type' => 'Type',
+];

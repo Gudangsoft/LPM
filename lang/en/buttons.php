@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'view_all' => 'View All',
+    'view_all_gallery' => 'View All Gallery',
+    'read_more' => 'Read More',
+    'learn_more' => 'Learn More',
+    'download' => 'Download',
+    'submit' => 'Submit',
+    'send' => 'Send',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'edit' => 'Edit',
+    'add' => 'Add',
+    'back' => 'Back',
+    'search' => 'Search',
+    'filter' => 'Filter',
+    'reset' => 'Reset',
+    'login' => 'Login',
+    'register' => 'Register',
+    'logout' => 'Logout',
+    'share' => 'Share',
+    'print' => 'Print',
+    'close' => 'Close',
+    'contact_us' => 'Contact Us',
+];
