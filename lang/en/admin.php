@@ -23,8 +23,10 @@ return [
     'unread_messages' => 'Unread Messages',
     'latest_news' => 'Latest News',
     'latest_contacts' => 'Latest Messages',
+    'latest_messages' => 'Latest Messages',
     'quick_stats' => 'Quick Stats',
     'recent_activities' => 'Recent Activities',
+    'view_all' => 'View All',
     'needs_attention' => 'Needs Attention',
     'notifications' => 'Notifications',
     'no_notifications' => 'No notifications',
@@ -47,6 +49,7 @@ return [
 
     // Common
     'add_new' => 'Add New',
+    'add' => 'Add',
     'edit' => 'Edit',
     'delete' => 'Delete',
     'save' => 'Save',
@@ -398,4 +401,10 @@ return [
     'visitors' => 'Visitors',
     'visitor_statistics' => 'Visitor Statistics',
     'replied' => 'Replied',
+
+    // Auth & Access
+    'access_denied' => 'You do not have access to this page.',
+    'account_inactive' => 'Your account is inactive. Please contact the administrator.',
+    'cannot_delete_self' => 'You cannot delete your own account.',
+    'profile_information' => 'Profile Information',
 ];

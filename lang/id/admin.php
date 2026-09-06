@@ -50,6 +50,7 @@ return [
 
     // Common
     'add_new' => 'Tambah Baru',
+    'add' => 'Tambah',
     'edit' => 'Edit',
     'delete' => 'Hapus',
     'save' => 'Simpan',
@@ -400,4 +401,10 @@ return [
     // Additional
     'visitors' => 'Pengunjung',
     'replied' => 'Sudah Dibalas',
+
+    // Auth & Access
+    'access_denied' => 'Anda tidak memiliki akses ke halaman ini.',
+    'account_inactive' => 'Akun Anda tidak aktif. Silakan hubungi administrator.',
+    'cannot_delete_self' => 'Anda tidak dapat menghapus akun sendiri.',
+    'profile_information' => 'Informasi Profil',
 ];
