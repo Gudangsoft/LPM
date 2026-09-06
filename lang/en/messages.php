@@ -14,6 +14,7 @@ return [
     'no_agenda' => 'No agenda available.',
     'no_documents' => 'No documents available.',
     'no_gallery' => 'No gallery available.',
+    'file_not_found' => 'The document file was not found.',
     'search_results' => 'Search Results',
     'search_results_for' => 'Search results for',
     'search_placeholder' => 'Search...',

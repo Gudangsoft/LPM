@@ -15,6 +15,7 @@ use App\Models\StrukturOrganisasi;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class DummyDataSeeder extends Seeder
@@ -401,19 +402,32 @@ class DummyDataSeeder extends Seeder
             ['judul' => 'SK Auditor Internal', 'jenis' => 'sk-surat', 'kategori' => 'SK'],
         ];
 
+        $disk = Storage::disk('public');
+
         foreach ($documents as $index => $doc) {
             $jenis = $jenisDokumen->get($doc['jenis']);
-            
+            $filePath = 'dokumen/doc-' . ($index + 1) . '.pdf';
+
+            // Make sure a real PDF actually exists on disk so downloads work
+            // (also replaces any 0-byte / plain-text placeholder stubs).
+            $isUsable = $disk->exists($filePath)
+                && str_starts_with((string) $disk->get($filePath), '%PDF-')
+                && $disk->size($filePath) > 200;
+
+            if (! $isUsable) {
+                $disk->put($filePath, $this->placeholderPdf($doc['judul']));
+            }
+
             Dokumen::updateOrCreate(
                 ['slug' => Str::slug($doc['judul'])],
                 [
                     'judul' => $doc['judul'],
                     'slug' => Str::slug($doc['judul']),
                     'deskripsi' => 'Dokumen ' . $doc['judul'] . ' untuk sistem penjaminan mutu internal.',
-                    'file_path' => 'dokumen/doc-' . ($index + 1) . '.pdf',
+                    'file_path' => $filePath,
                     'file_name' => Str::slug($doc['judul']) . '.pdf',
-                    'file_size' => rand(100000, 5000000),
-                    'file_type' => 'application/pdf',
+                    'file_size' => $disk->size($filePath),
+                    'file_type' => 'pdf',
                     'kategori' => $doc['kategori'],
                     'jenis_dokumen_id' => $jenis?->id,
                     'download_count' => rand(10, 200),
@@ -421,6 +435,41 @@ class DummyDataSeeder extends Seeder
                 ]
             );
         }
+    }
+
+    /**
+     * Build a minimal but valid single-page PDF used as a placeholder document.
+     */
+    private function placeholderPdf(string $title): string
+    {
+        $text = str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $title);
+        $stream = "BT /F1 18 Tf 56 760 Td ($text) Tj ET";
+
+        $objects = [
+            1 => '<< /Type /Catalog /Pages 2 0 R >>',
+            2 => '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+            3 => '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] '
+                . '/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+            4 => '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+            5 => '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . "\nendstream",
+        ];
+
+        $pdf = "%PDF-1.4\n";
+        $offsets = [];
+        foreach ($objects as $num => $body) {
+            $offsets[$num] = strlen($pdf);
+            $pdf .= $num . " 0 obj\n" . $body . "\nendobj\n";
+        }
+
+        $xref = strlen($pdf);
+        $size = count($objects) + 1;
+        $pdf .= "xref\n0 {$size}\n0000000000 65535 f \n";
+        foreach ($offsets as $offset) {
+            $pdf .= sprintf("%010d 00000 n \n", $offset);
+        }
+        $pdf .= "trailer\n<< /Size {$size} /Root 1 0 R >>\nstartxref\n{$xref}\n%%EOF";
+
+        return $pdf;
     }
 
     private function seedStrukturOrganisasi(): void

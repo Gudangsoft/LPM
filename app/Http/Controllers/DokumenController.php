@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Dokumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DokumenController extends Controller
 {
@@ -36,8 +37,18 @@ class DokumenController extends Controller
     public function download($slug)
     {
         $dokumen = Dokumen::where('slug', $slug)->published()->firstOrFail();
+
+        $disk = Storage::disk('public');
+
+        if (blank($dokumen->file_path) || ! $disk->exists($dokumen->file_path)) {
+            abort(404, __('messages.file_not_found'));
+        }
+
         $dokumen->incrementDownload();
-        
-        return Storage::disk('public')->download($dokumen->file_path, $dokumen->file_name);
+
+        $downloadName = $dokumen->file_name
+            ?: Str::slug($dokumen->judul) . '.' . (pathinfo($dokumen->file_path, PATHINFO_EXTENSION) ?: 'pdf');
+
+        return $disk->download($dokumen->file_path, $downloadName);
     }
 }

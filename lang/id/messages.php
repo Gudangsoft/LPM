@@ -14,6 +14,7 @@ return [
     'no_agenda' => 'Belum ada agenda.',
     'no_documents' => 'Belum ada dokumen.',
     'no_gallery' => 'Belum ada galeri.',
+    'file_not_found' => 'Berkas dokumen tidak ditemukan.',
     'search_results' => 'Hasil Pencarian',
     'search_results_for' => 'Hasil pencarian untuk',
     'search_placeholder' => 'Cari...',
