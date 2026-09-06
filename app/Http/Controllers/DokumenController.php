@@ -34,6 +34,22 @@ class DokumenController extends Controller
         return view('frontend.dokumen.index', compact('dokumen', 'kategoris'));
     }
 
+    public function view($slug)
+    {
+        $dokumen = Dokumen::where('slug', $slug)->published()->firstOrFail();
+
+        $disk = Storage::disk('public');
+
+        if (blank($dokumen->file_path) || ! $disk->exists($dokumen->file_path)) {
+            abort(404, __('messages.file_not_found'));
+        }
+
+        // Serve the file inline so the browser previews it instead of downloading.
+        return $disk->response($dokumen->file_path, $dokumen->file_name, [
+            'Content-Type' => $disk->mimeType($dokumen->file_path) ?: 'application/octet-stream',
+        ]);
+    }
+
     public function download($slug)
     {
         $dokumen = Dokumen::where('slug', $slug)->published()->firstOrFail();

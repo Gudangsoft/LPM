@@ -15,6 +15,8 @@ return [
     'no_documents' => 'No documents available.',
     'no_gallery' => 'No gallery available.',
     'file_not_found' => 'The document file was not found.',
+    'preview_unavailable' => 'Preview is not available for this file type. Please download it to open.',
+    'loading_preview' => 'Loading preview...',
     'search_results' => 'Search Results',
     'search_results_for' => 'Search results for',
     'search_placeholder' => 'Search...',

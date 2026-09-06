@@ -61,6 +61,28 @@
     @media (max-width: 575.98px) {
         .dokumen-table-card { border-radius: 14px; }
     }
+
+    /* Preview modal */
+    .doc-preview-body {
+        height: 78vh;
+        background: #f1f5f9;
+        overflow: hidden;
+    }
+    .doc-preview-frame {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+    }
+    #docPreviewTitle {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 70vw;
+    }
+    @media (max-width: 575.98px) {
+        .doc-preview-body { height: 70vh; }
+    }
 </style>
 @endpush
 
@@ -128,7 +150,7 @@
                                 <th style="width: 120px;">{{ __('labels.type') }}</th>
                                 <th style="width: 100px;">{{ __('labels.size') }}</th>
                                 <th style="width: 110px;">{{ __('labels.downloads') }}</th>
-                                <th style="width: 130px;" class="text-end">{{ __('labels.action') }}</th>
+                                <th style="width: 190px;" class="text-end">{{ __('labels.action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -160,9 +182,20 @@
                                 <td class="text-nowrap">{{ $item->formatted_size }}</td>
                                 <td>{{ $item->download_count }}</td>
                                 <td class="text-end">
-                                    <a href="{{ route('dokumen.download', $item->slug) }}" class="btn btn-sm btn-primary text-nowrap">
-                                        <i class="bi bi-download me-1"></i>{{ __('buttons.download') }}
-                                    </a>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary text-nowrap js-doc-preview"
+                                            data-bs-toggle="modal" data-bs-target="#docPreviewModal"
+                                            data-title="{{ $item->judul }}"
+                                            data-type="{{ strtoupper($item->file_type) }}"
+                                            data-size="{{ $item->formatted_size }}"
+                                            data-preview="{{ $item->is_previewable ? route('dokumen.view', $item->slug) : '' }}"
+                                            data-download="{{ route('dokumen.download', $item->slug) }}">
+                                            <i class="bi bi-eye"></i><span class="d-none d-xl-inline ms-1">{{ __('buttons.view') }}</span>
+                                        </button>
+                                        <a href="{{ route('dokumen.download', $item->slug) }}" class="btn btn-primary text-nowrap">
+                                            <i class="bi bi-download"></i><span class="d-none d-xl-inline ms-1">{{ __('buttons.download') }}</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -186,4 +219,75 @@
             @endif
         </div>
     </section>
+
+    <!-- Document Preview Modal -->
+    <div class="modal fade" id="docPreviewModal" tabindex="-1" aria-labelledby="docPreviewTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="me-auto">
+                        <h5 class="modal-title mb-0" id="docPreviewTitle"></h5>
+                        <small class="text-muted" id="docPreviewMeta"></small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('buttons.close') }}"></button>
+                </div>
+                <div class="modal-body p-0 doc-preview-body" id="docPreviewBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('buttons.close') }}</button>
+                    <a href="#" class="btn btn-primary" id="docPreviewDownload" target="_blank">
+                        <i class="bi bi-download me-1"></i>{{ __('buttons.download') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalEl = document.getElementById('docPreviewModal');
+        if (!modalEl) return;
+
+        var bodyEl = document.getElementById('docPreviewBody');
+        var titleEl = document.getElementById('docPreviewTitle');
+        var metaEl = document.getElementById('docPreviewMeta');
+        var downloadEl = document.getElementById('docPreviewDownload');
+
+        var unavailableMsg = @json(__('messages.preview_unavailable'));
+
+        modalEl.addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            if (!btn) return;
+
+            var title = btn.getAttribute('data-title') || '';
+            var preview = btn.getAttribute('data-preview') || '';
+            var download = btn.getAttribute('data-download') || '#';
+            var type = btn.getAttribute('data-type') || '';
+            var size = btn.getAttribute('data-size') || '';
+
+            titleEl.textContent = title;
+            metaEl.textContent = [type, size].filter(Boolean).join(' · ');
+            downloadEl.setAttribute('href', download);
+
+            if (preview) {
+                var frame = document.createElement('iframe');
+                frame.src = preview;
+                frame.title = title;
+                frame.className = 'doc-preview-frame';
+                bodyEl.replaceChildren(frame);
+            } else {
+                var box = document.createElement('div');
+                box.className = 'text-center text-muted p-5';
+                box.innerHTML = '<i class="bi bi-file-earmark-arrow-down fs-1 d-block mb-3"></i>';
+                box.appendChild(document.createTextNode(unavailableMsg));
+                bodyEl.replaceChildren(box);
+            }
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            bodyEl.replaceChildren(); // stop the stream / release memory
+        });
+    });
+</script>
+@endpush

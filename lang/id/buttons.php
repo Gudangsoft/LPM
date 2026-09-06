@@ -5,6 +5,7 @@ return [
     'view_all_gallery' => 'Lihat Semua Galeri',
     'read_more' => 'Baca Selengkapnya',
     'learn_more' => 'Pelajari Lebih Lanjut',
+    'view' => 'Lihat',
     'download' => 'Unduh',
     'submit' => 'Kirim',
     'send' => 'Kirim',

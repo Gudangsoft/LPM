@@ -88,6 +88,7 @@ Route::get('/galeri/{slug}', [GaleriController::class, 'show'])->name('galeri.sh
 
 // Dokumen
 Route::get('/dokumen', [DokumenController::class, 'index'])->name('dokumen.index');
+Route::get('/dokumen/lihat/{slug}', [DokumenController::class, 'view'])->name('dokumen.view');
 Route::get('/dokumen/download/{slug}', [DokumenController::class, 'download'])->name('dokumen.download');
 
 // Pengumuman

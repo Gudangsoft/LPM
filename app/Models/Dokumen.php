@@ -131,6 +131,16 @@ class Dokumen extends Model
         $this->increment('download_count');
     }
 
+    /**
+     * Whether the browser can render this file inline (used for the preview modal).
+     */
+    public function getIsPreviewableAttribute(): bool
+    {
+        return in_array(strtolower((string) $this->file_type), [
+            'pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'txt',
+        ], true);
+    }
+
     public function getFormattedSizeAttribute()
     {
         $bytes = $this->file_size;

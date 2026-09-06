@@ -5,6 +5,7 @@ return [
     'view_all_gallery' => 'View All Gallery',
     'read_more' => 'Read More',
     'learn_more' => 'Learn More',
+    'view' => 'View',
     'download' => 'Download',
     'submit' => 'Submit',
     'send' => 'Send',

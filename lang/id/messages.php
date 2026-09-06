@@ -15,6 +15,8 @@ return [
     'no_documents' => 'Belum ada dokumen.',
     'no_gallery' => 'Belum ada galeri.',
     'file_not_found' => 'Berkas dokumen tidak ditemukan.',
+    'preview_unavailable' => 'Pratinjau tidak tersedia untuk jenis berkas ini. Silakan unduh untuk membukanya.',
+    'loading_preview' => 'Memuat pratinjau...',
     'search_results' => 'Hasil Pencarian',
     'search_results_for' => 'Hasil pencarian untuk',
     'search_placeholder' => 'Cari...',
