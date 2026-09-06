@@ -34,5 +34,16 @@ class AppServiceProvider extends ServiceProvider
             
             $view->with('siteSettings', $siteSettings);
         });
+
+        // Share notification bell data with the admin layout only
+        View::composer('layouts.admin', function ($view) {
+            if (auth()->check()) {
+                $view->with('unreadNotificationsCount', auth()->user()->unreadNotifications()->count());
+                $view->with('recentNotifications', auth()->user()->notifications()->latest()->take(8)->get());
+            } else {
+                $view->with('unreadNotificationsCount', 0);
+                $view->with('recentNotifications', collect());
+            }
+        });
     }
 }

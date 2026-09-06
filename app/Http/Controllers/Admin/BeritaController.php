@@ -14,12 +14,12 @@ class BeritaController extends Controller
     public function index(Request $request)
     {
         $query = Berita::with(['kategori', 'user'])->latest();
-        
-        if ($request->has('search') && $request->search) {
+
+        if ($request->filled('search')) {
             $query->where('judul', 'like', "%{$request->search}%");
         }
-        
-        $berita = $query->paginate(15);
+
+        $berita = $query->paginate(15)->withQueryString();
         
         return view('admin.berita.index', compact('berita'));
     }

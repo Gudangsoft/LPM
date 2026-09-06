@@ -9,14 +9,29 @@ use App\Models\Prodi;
 use App\Models\Auditor;
 use App\Models\PenugasanAmi;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class JadwalAmiController extends Controller
+class JadwalAmiController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:jadwal-ami.view', only: ['index', 'show']),
+            new Middleware('permission:jadwal-ami.create', only: ['create', 'store']),
+            new Middleware('permission:jadwal-ami.edit', only: ['edit', 'update', 'updateStatus']),
+            new Middleware('permission:jadwal-ami.delete', only: ['destroy']),
+            new Middleware('permission:penugasan.manage', only: ['addAuditor', 'removeAuditor']),
+        ];
+    }
+
     public function index(Request $request)
     {
+        $user = auth()->user();
         $query = JadwalAmi::with(['periodeAmi', 'prodi', 'penugasan.auditor.user'])
-            ->latest('tanggal_audit');
-        
+            ->latest('tanggal_audit')
+            ->when(!$user->isAdmin() && $user->isKaprodi(), fn ($q) => $q->ownedByKaprodi($user));
+
         if ($request->has('periode_id') && $request->periode_id) {
             $query->where('periode_ami_id', $request->periode_id);
         }
@@ -66,6 +81,15 @@ class JadwalAmiController extends Controller
 
     public function show(JadwalAmi $jadwal)
     {
+        $user = auth()->user();
+        if (!$user->isAdmin() && $user->isKaprodi()) {
+            abort_unless(
+                $jadwal->prodi?->kaprodi_id === $user->id,
+                403,
+                'Anda hanya dapat melihat jadwal audit program studi Anda sendiri.'
+            );
+        }
+
         $jadwal->load([
             'periodeAmi',
             'prodi.kaprodi',

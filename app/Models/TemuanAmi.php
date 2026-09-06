@@ -17,9 +17,11 @@ class TemuanAmi extends Model
         'jadwal_ami_id',
         'auditor_id',
         'standar',
+        'standar_mutu_id',
         'kategori',
         'deskripsi',
         'bukti',
+        'bukti_file',
         'akar_masalah',
         'rekomendasi',
         'batas_tindak_lanjut',
@@ -44,6 +46,11 @@ class TemuanAmi extends Model
     public function auditor(): BelongsTo
     {
         return $this->belongsTo(Auditor::class);
+    }
+
+    public function standarMutu(): BelongsTo
+    {
+        return $this->belongsTo(StandarMutu::class);
     }
 
     /**
@@ -139,6 +146,14 @@ class TemuanAmi extends Model
     public function scopeByKategori($query, $kategori)
     {
         return $query->where('kategori', $kategori);
+    }
+
+    /**
+     * Scope to only records belonging to a prodi the given user heads (kaprodi_id).
+     */
+    public function scopeOwnedByKaprodi($query, User $user)
+    {
+        return $query->whereHas('jadwalAmi.prodi', fn ($q) => $q->where('kaprodi_id', $user->id));
     }
 
     /**

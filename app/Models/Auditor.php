@@ -99,6 +99,25 @@ class Auditor extends Model
     }
 
     /**
+     * Check if certification is expiring within 6 months
+     */
+    public function isCertExpiringSoon(): bool
+    {
+        return $this->masa_berlaku
+            && $this->masa_berlaku->isFuture()
+            && $this->masa_berlaku->lte(now()->addMonths(6));
+    }
+
+    /**
+     * Scope for auditors whose certification expires within 6 months
+     */
+    public function scopeCertExpiringSoon($query)
+    {
+        return $query->where('masa_berlaku', '<=', now()->addMonths(6))
+                     ->where('masa_berlaku', '>', now());
+    }
+
+    /**
      * Get name via user relation
      */
     public function getNameAttribute(): string

@@ -51,6 +51,14 @@ class Prodi extends Model
     }
 
     /**
+     * Get DKPS submissions for this prodi
+     */
+    public function dkpsSubmissions(): HasMany
+    {
+        return $this->hasMany(DkpsSubmission::class);
+    }
+
+    /**
      * Get the latest accreditation
      */
     public function latestAkreditasi()

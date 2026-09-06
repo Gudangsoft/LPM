@@ -49,20 +49,21 @@
                             <td>{{ $temuan->standar }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Klausul</td>
-                            <td>{{ $temuan->klausul ?? '-' }}</td>
-                        </tr>
-                        <tr>
                             <td class="text-muted">Kategori</td>
                             <td><span class="badge bg-{{ $temuan->kategori_color }}">{{ ucfirst($temuan->kategori) }}</span></td>
                         </tr>
                         <tr>
                             <td class="text-muted">Status</td>
-                            <td><span class="badge bg-{{ $temuan->status_color }}">{{ ucfirst(str_replace('_', ' ', $temuan->status)) }}</span></td>
+                            <td>
+                                <span class="badge bg-{{ $temuan->status_color }}">{{ ucfirst(str_replace('_', ' ', $temuan->status)) }}</span>
+                                @if($temuan->isOverdue())
+                                <span class="badge bg-danger ms-1">Overdue</span>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Target</td>
-                            <td>{{ $temuan->target_selesai?->format('d M Y') ?? '-' }}</td>
+                            <td class="text-muted">Batas Tindak Lanjut</td>
+                            <td>{{ $temuan->batas_tindak_lanjut?->format('d M Y') ?? '-' }}</td>
                         </tr>
                     </table>
                 </div>
@@ -109,8 +110,22 @@
                     </div>
                     @if($temuan->bukti)
                     <div class="mb-4">
-                        <h6 class="text-muted">Bukti/Evidence</h6>
+                        <h6 class="text-muted">Catatan Bukti</h6>
                         <p>{{ $temuan->bukti }}</p>
+                    </div>
+                    @endif
+                    @if($temuan->bukti_file)
+                    <div class="mb-4">
+                        <h6 class="text-muted">File Bukti/Evidence</h6>
+                        <a href="{{ Storage::url($temuan->bukti_file) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-paperclip me-1"></i>Lihat File
+                        </a>
+                    </div>
+                    @endif
+                    @if($temuan->akar_masalah)
+                    <div class="mb-4">
+                        <h6 class="text-muted">Akar Masalah</h6>
+                        <p>{{ $temuan->akar_masalah }}</p>
                     </div>
                     @endif
                     @if($temuan->rekomendasi)
@@ -136,15 +151,14 @@
                         @foreach($temuan->tindakLanjut as $tl)
                         <div class="list-group-item">
                             <div class="d-flex w-100 justify-content-between mb-2">
-                                <h6 class="mb-0">{{ Str::limit($tl->tindakan, 60) }}</h6>
+                                <h6 class="mb-0">{{ Str::limit($tl->deskripsi, 60) }}</h6>
                                 <span class="badge bg-{{ $tl->status_color }}">{{ ucfirst($tl->status) }}</span>
                             </div>
-                            <p class="mb-2 text-muted small">{{ Str::limit($tl->deskripsi, 100) }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
-                                    <i class="bi bi-person"></i> {{ $tl->penanggungJawab->name ?? '-' }}
-                                    @if($tl->tanggal_selesai)
-                                    | <i class="bi bi-calendar"></i> {{ $tl->tanggal_selesai->format('d M Y') }}
+                                    <i class="bi bi-person"></i> {{ $tl->user->name ?? '-' }}
+                                    @if($tl->tanggal_submit)
+                                    | <i class="bi bi-calendar"></i> {{ $tl->tanggal_submit->format('d M Y') }}
                                     @endif
                                 </small>
                                 <a href="{{ route('admin.ami.tindak-lanjut.show', $tl) }}" class="btn btn-sm btn-outline-primary">Detail</a>

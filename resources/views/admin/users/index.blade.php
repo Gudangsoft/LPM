@@ -28,8 +28,9 @@
                 <div class="col-md-2">
                     <select class="form-select" name="role">
                         <option value="">{{ __('admin.all_roles') }}</option>
-                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                        @foreach($roles as $roleOption)
+                        <option value="{{ $roleOption->slug }}" {{ request('role') == $roleOption->slug ? 'selected' : '' }}>{{ $roleOption->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -69,11 +70,11 @@
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>
-                                @if($user->role == 'admin')
-                                <span class="badge bg-danger">Admin</span>
-                                @else
-                                <span class="badge bg-info">User</span>
-                                @endif
+                                @forelse($user->roles as $userRole)
+                                <span class="badge bg-{{ $userRole->slug === 'admin' ? 'danger' : 'info' }}">{{ $userRole->name }}</span>
+                                @empty
+                                <span class="badge bg-secondary">-</span>
+                                @endforelse
                             </td>
                             <td>
                                 @if($user->is_active)

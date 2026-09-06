@@ -25,19 +25,17 @@
             {{ $greeting }}! {{ __('admin.have_nice_day', ['day' => $dayName]) }}
         </p>
         <p class="welcome-period">
-            <strong>{{ __('admin.current_period') }}:</strong> 
+            <strong>{{ __('admin.current_period') }}:</strong>
             {{ $siteSettings['current_period'] ?? __('admin.no_active_period') }}
         </p>
-        
-        <div class="sparkles">
-            <span class="sparkle">✦</span>
-            <span class="sparkle">✦</span>
-            <span class="sparkle">✦</span>
-        </div>
-        
-        <img src="{{ asset('images/welcome-character.svg') }}" alt="Welcome" class="welcome-illustration" onerror="this.style.display='none'">
+        @if($myProdi)
+        <p class="welcome-period">
+            <strong>Program Studi:</strong> {{ $myProdi->full_name }}
+        </p>
+        @endif
     </div>
 
+    @if(auth()->user()->isAdmin())
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-4">
@@ -54,7 +52,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="stat-card bg-green">
+            <div class="stat-card bg-slate">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div class="stat-value">{{ $stats['dokumen'] }}</div>
@@ -67,7 +65,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="stat-card bg-purple">
+            <div class="stat-card bg-indigo">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div class="stat-value">{{ $stats['galeri'] }}</div>
@@ -110,7 +108,7 @@
             </div>
         </div>
         <div class="col-md-4 mb-4">
-            <div class="stat-card bg-red">
+            <div class="stat-card bg-purple">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div class="stat-value">{{ $stats['visitors_month'] }}</div>
@@ -123,7 +121,7 @@
             </div>
         </div>
         <div class="col-md-4 mb-4">
-            <div class="stat-card bg-green">
+            <div class="stat-card bg-red">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div class="stat-value">{{ $stats['kontak_unread'] }}</div>
@@ -136,7 +134,151 @@
             </div>
         </div>
     </div>
+    @endif
 
+    <!-- AMI / Akreditasi Stats -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{ route('admin.akreditasi.dashboard') }}" class="text-decoration-none">
+                <div class="stat-card bg-amber">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-value">{{ $amiStats['akreditasi_expiring'] }}</div>
+                            <div class="stat-label">{{ __('admin.accreditation_expiring') }}</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-award"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{ route('admin.ami.temuan.index', ['status' => 'open']) }}" class="text-decoration-none">
+                <div class="stat-card bg-red">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-value">{{ $amiStats['temuan_overdue'] }}</div>
+                            <div class="stat-label">{{ __('admin.finding_overdue') }}</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{ route('admin.ami.tindak-lanjut.pending') }}" class="text-decoration-none">
+                <div class="stat-card bg-teal">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-value">{{ $amiStats['tindak_lanjut_pending'] }}</div>
+                            <div class="stat-label">{{ __('admin.pending_review') }}</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <a href="{{ route('admin.ami.auditor.index') }}" class="text-decoration-none">
+                <div class="stat-card bg-slate">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-value">{{ $amiStats['auditor_cert_expiring'] }}</div>
+                            <div class="stat-label">{{ __('admin.auditor_cert_expiring') }}</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Perlu Perhatian -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-bell me-2"></i>{{ __('admin.needs_attention') }}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h6 class="text-muted mb-3">{{ __('admin.accreditation_expiring') }}</h6>
+                    <ul class="list-group list-group-flush">
+                        @forelse($akreditasiExpiringList as $akr)
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <div class="fw-semibold">{{ $akr->prodi->nama ?? '-' }}</div>
+                                <small class="text-muted">{{ $akr->tanggal_kadaluarsa->format('d M Y') }}</small>
+                            </div>
+                            <a href="{{ route('admin.akreditasi.show', $akr) }}" class="btn btn-sm btn-outline-primary">{{ __('admin.view') }}</a>
+                        </li>
+                        @empty
+                        <li class="list-group-item px-0 text-center text-muted py-3">{{ __('admin.no_data') }}</li>
+                        @endforelse
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-3">{{ __('admin.finding_overdue') }}</h6>
+                    <ul class="list-group list-group-flush">
+                        @forelse($temuanOverdueList as $temuan)
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <div class="fw-semibold">{{ Str::limit($temuan->standar, 30) }}</div>
+                                <small class="text-muted">{{ $temuan->jadwalAmi->prodi->nama ?? '-' }}</small>
+                            </div>
+                            <a href="{{ route('admin.ami.temuan.show', $temuan) }}" class="btn btn-sm btn-outline-primary">{{ __('admin.view') }}</a>
+                        </li>
+                        @empty
+                        <li class="list-group-item px-0 text-center text-muted py-3">{{ __('admin.no_data') }}</li>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h6 class="text-muted mb-3">{{ __('admin.pending_review') }}</h6>
+                    <ul class="list-group list-group-flush">
+                        @forelse($tindakLanjutPendingList as $tl)
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <div class="fw-semibold">{{ Str::limit($tl->deskripsi, 30) }}</div>
+                                <small class="text-muted">{{ $tl->user->name ?? '-' }} &middot; {{ $tl->temuanAmi->jadwalAmi->prodi->nama ?? '-' }}</small>
+                            </div>
+                            <a href="{{ route('admin.ami.tindak-lanjut.show', $tl) }}" class="btn btn-sm btn-outline-primary">{{ __('admin.view') }}</a>
+                        </li>
+                        @empty
+                        <li class="list-group-item px-0 text-center text-muted py-3">{{ __('admin.no_data') }}</li>
+                        @endforelse
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-muted mb-3">{{ __('admin.auditor_cert_expiring') }}</h6>
+                    <ul class="list-group list-group-flush">
+                        @forelse($auditorCertExpiringList as $auditor)
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <div class="fw-semibold">{{ $auditor->user->name ?? '-' }}</div>
+                                <small class="text-muted">{{ $auditor->masa_berlaku->format('d M Y') }}</small>
+                            </div>
+                            <a href="{{ route('admin.ami.auditor.show', $auditor) }}" class="btn btn-sm btn-outline-primary">{{ __('admin.view') }}</a>
+                        </li>
+                        @empty
+                        <li class="list-group-item px-0 text-center text-muted py-3">{{ __('admin.no_data') }}</li>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if(auth()->user()->isAdmin())
     <div class="row">
         <!-- Latest News -->
         <div class="col-lg-6 mb-4">
@@ -224,14 +366,16 @@
             <canvas id="visitorChart" height="100"></canvas>
         </div>
     </div>
+    @endif
 @endsection
 
+@if(auth()->user()->isAdmin())
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('visitorChart').getContext('2d');
     const visitorData = @json($visitorStats);
-    
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -261,3 +405,4 @@
     });
 </script>
 @endpush
+@endif

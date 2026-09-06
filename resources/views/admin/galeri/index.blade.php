@@ -36,9 +36,17 @@
                 @forelse($galeris as $galeri)
                 <div class="col-md-4 col-lg-3 mb-4">
                     <div class="card h-100">
-                        <img src="{{ Storage::url($galeri->gambar) }}" class="card-img-top" alt="{{ $galeri->judul }}" style="height: 180px; object-fit: cover;">
+                        <div class="position-relative">
+                            <img src="{{ Storage::url($galeri->gambar) }}" class="card-img-top" alt="{{ $galeri->judul }}" style="height: 180px; object-fit: cover;">
+                            <span class="badge {{ $galeri->is_active ? 'bg-success' : 'bg-secondary' }} position-absolute top-0 end-0 m-2">
+                                {{ $galeri->is_active ? __('admin.active') : __('admin.inactive') }}
+                            </span>
+                        </div>
                         <div class="card-body">
                             <h6 class="card-title text-truncate">{{ $galeri->judul }}</h6>
+                            @if($galeri->kategori)
+                            <span class="badge bg-light text-dark border mb-1">{{ $galeri->kategori }}</span>
+                            @endif
                             <p class="card-text small text-muted">{{ $galeri->created_at->format('d M Y') }}</p>
                             <div class="d-flex gap-1">
                                 <a href="{{ route('admin.galeri.edit', $galeri) }}" class="btn btn-sm btn-warning">

@@ -25,6 +25,15 @@ return [
     'latest_contacts' => 'Latest Messages',
     'quick_stats' => 'Quick Stats',
     'recent_activities' => 'Recent Activities',
+    'needs_attention' => 'Needs Attention',
+    'notifications' => 'Notifications',
+    'no_notifications' => 'No notifications',
+    'view_all_notifications' => 'View All Notifications',
+    'mark_all_read' => 'Mark All Read',
+    'accreditation_expiring' => 'Accreditation Expiring Soon',
+    'finding_overdue' => 'Overdue Findings',
+    'pending_review' => 'Pending Review',
+    'auditor_cert_expiring' => 'Auditor Certificate Expiring Soon',
 
     // Header & Navigation
     'view_site' => 'View Site',
@@ -48,6 +57,7 @@ return [
     'search' => 'Search',
     'filter' => 'Filter',
     'actions' => 'Actions',
+    'action' => 'Action',
     'status' => 'Status',
     'date' => 'Date',
     'no_data' => 'No data available',
@@ -78,6 +88,7 @@ return [
     'add_gallery' => 'Add Gallery',
     'edit_gallery' => 'Edit Gallery',
     'gallery_form' => 'Gallery Form',
+    'gallery_active_help' => 'When checked, this photo will appear on the public Gallery page',
 
     // Documents
     'documents' => 'Documents',
@@ -96,6 +107,7 @@ return [
     'add_structure' => 'Add Member',
     'edit_structure' => 'Edit Member',
     'structure_form' => 'Structure Form',
+    'structure_active_help' => 'When checked, this member will appear on the public Organizational Structure page',
     'position' => 'Position',
     'order' => 'Order',
 
@@ -181,6 +193,17 @@ return [
     'current_period_help' => 'Current period will be displayed on admin dashboard',
     'address' => 'Address',
 
+    // Demo Login Settings
+    'demo_login' => 'Demo Login',
+    'demo_login_settings' => 'Demo Login Settings',
+    'enable_demo_login' => 'Enable Demo Login',
+    'enable_demo_login_help' => 'When enabled, a "Login as Demo" button will appear on the login page using the account below.',
+    'demo_email' => 'Demo Account Email',
+    'demo_password' => 'Demo Account Password',
+    'demo_note' => 'Demo Note',
+    'demo_note_help' => 'Short text shown above the demo login button (optional)',
+    'demo_login_account_warning' => 'Make sure this account already exists under Users and only has limited permissions.',
+
     // Template Settings
     'color_scheme' => 'Color Scheme',
     'primary_color' => 'Primary Color',
@@ -203,6 +226,7 @@ return [
     // Form Labels
     'title' => 'Title',
     'name' => 'Name',
+    'author' => 'Author',
     'email' => 'Email',
     'phone' => 'Phone',
     'password' => 'Password',
@@ -369,4 +393,9 @@ return [
     'restore_failed' => 'Failed to restore database',
     'upload_success' => 'Backup file uploaded successfully: :filename',
     'upload_failed' => 'Failed to upload file',
+
+    // Additional
+    'visitors' => 'Visitors',
+    'visitor_statistics' => 'Visitor Statistics',
+    'replied' => 'Replied',
 ];

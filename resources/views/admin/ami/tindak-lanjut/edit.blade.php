@@ -15,100 +15,52 @@
     </div>
 
     <div class="card">
-        <form action="{{ route('admin.ami.tindak-lanjut.update', $tindakLanjut) }}" method="POST">
+        <form action="{{ route('admin.ami.tindak-lanjut.update', $tindakLanjut) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="temuan_ami_id" class="form-label">Temuan AMI <span class="text-danger">*</span></label>
-                        <select class="form-select @error('temuan_ami_id') is-invalid @enderror" id="temuan_ami_id" name="temuan_ami_id" required>
-                            <option value="">Pilih Temuan</option>
-                            @foreach($temuans as $t)
-                            <option value="{{ $t->id }}" {{ old('temuan_ami_id', $tindakLanjut->temuan_ami_id) == $t->id ? 'selected' : '' }}>
-                                [{{ ucfirst($t->kategori) }}] {{ Str::limit($t->standar, 30) }} - {{ $t->jadwalAmi->prodi->nama ?? '-' }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('temuan_ami_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="penanggung_jawab_id" class="form-label">Penanggung Jawab <span class="text-danger">*</span></label>
-                        <select class="form-select @error('penanggung_jawab_id') is-invalid @enderror" id="penanggung_jawab_id" name="penanggung_jawab_id" required>
-                            <option value="">Pilih Penanggung Jawab</option>
-                            @foreach($users as $u)
-                            <option value="{{ $u->id }}" {{ old('penanggung_jawab_id', $tindakLanjut->penanggung_jawab_id) == $u->id ? 'selected' : '' }}>
-                                {{ $u->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                        @error('penanggung_jawab_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                <div class="mb-3">
+                    <label class="form-label">Temuan AMI</label>
+                    <div class="form-control-plaintext">
+                        <span class="badge bg-{{ $tindakLanjut->temuanAmi->kategori_color ?? 'secondary' }} me-1">{{ ucfirst($tindakLanjut->temuanAmi->kategori ?? '-') }}</span>
+                        {{ $tindakLanjut->temuanAmi->standar ?? '-' }} - {{ $tindakLanjut->temuanAmi->jadwalAmi->prodi->nama ?? '-' }}
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="tindakan" class="form-label">Tindakan <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('tindakan') is-invalid @enderror" id="tindakan" name="tindakan" value="{{ old('tindakan', $tindakLanjut->tindakan) }}" required>
-                    @error('tindakan')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="deskripsi" class="form-label">Deskripsi <span class="text-danger">*</span></label>
+                    <label for="deskripsi" class="form-label">Deskripsi Tindak Lanjut <span class="text-danger">*</span></label>
                     <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="4" required>{{ old('deskripsi', $tindakLanjut->deskripsi) }}</textarea>
                     @error('deskripsi')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
-                        <input type="date" class="form-control @error('tanggal_mulai') is-invalid @enderror" id="tanggal_mulai" name="tanggal_mulai" value="{{ old('tanggal_mulai', $tindakLanjut->tanggal_mulai?->format('Y-m-d')) }}">
-                        @error('tanggal_mulai')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
-                        <input type="date" class="form-control @error('tanggal_selesai') is-invalid @enderror" id="tanggal_selesai" name="tanggal_selesai" value="{{ old('tanggal_selesai', $tindakLanjut->tanggal_selesai?->format('Y-m-d')) }}">
-                        @error('tanggal_selesai')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                            <option value="draft" {{ old('status', $tindakLanjut->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="diajukan" {{ old('status', $tindakLanjut->status) == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
-                            <option value="disetujui" {{ old('status', $tindakLanjut->status) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                            <option value="ditolak" {{ old('status', $tindakLanjut->status) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                        </select>
-                        @error('status')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
                 <div class="mb-3">
-                    <label for="bukti_tindak_lanjut" class="form-label">Bukti Tindak Lanjut</label>
-                    <textarea class="form-control @error('bukti_tindak_lanjut') is-invalid @enderror" id="bukti_tindak_lanjut" name="bukti_tindak_lanjut" rows="3">{{ old('bukti_tindak_lanjut', $tindakLanjut->bukti_tindak_lanjut) }}</textarea>
-                    @error('bukti_tindak_lanjut')
+                    <label for="tanggal_submit" class="form-label">Tanggal Submit <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control @error('tanggal_submit') is-invalid @enderror" id="tanggal_submit" name="tanggal_submit" value="{{ old('tanggal_submit', $tindakLanjut->tanggal_submit?->format('Y-m-d')) }}" required>
+                    @error('tanggal_submit')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
+                @if($tindakLanjut->file_bukti)
                 <div class="mb-3">
-                    <label for="catatan" class="form-label">Catatan</label>
-                    <textarea class="form-control @error('catatan') is-invalid @enderror" id="catatan" name="catatan" rows="2">{{ old('catatan', $tindakLanjut->catatan) }}</textarea>
-                    @error('catatan')
+                    <label class="form-label">Bukti Saat Ini</label>
+                    <div>
+                        <a href="{{ Storage::url($tindakLanjut->file_bukti) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-paperclip me-1"></i>Lihat File
+                        </a>
+                    </div>
+                </div>
+                @endif
+
+                <div class="mb-3">
+                    <label for="file_bukti" class="form-label">{{ $tindakLanjut->file_bukti ? 'Ganti Bukti Tindak Lanjut' : 'Bukti Tindak Lanjut' }}</label>
+                    <input type="file" class="form-control @error('file_bukti') is-invalid @enderror" id="file_bukti" name="file_bukti" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                    @error('file_bukti')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                    <div class="form-text">Kosongkan jika tidak ingin mengubah. Format: PDF, DOC, DOCX, JPG, PNG. Maks 10MB.</div>
                 </div>
 
                 @if($tindakLanjut->catatan_reviewer)

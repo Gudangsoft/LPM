@@ -29,6 +29,7 @@
                             <th>{{ __('admin.name') }}</th>
                             <th>{{ __('admin.position') }}</th>
                             <th>{{ __('admin.order') }}</th>
+                            <th>{{ __('admin.status') }}</th>
                             <th width="150">{{ __('admin.actions') }}</th>
                         </tr>
                     </thead>
@@ -55,6 +56,13 @@
                                 <span class="badge bg-secondary">{{ $struktur->urutan }}</span>
                             </td>
                             <td>
+                                @if($struktur->is_active)
+                                <span class="badge bg-success">{{ __('admin.active') }}</span>
+                                @else
+                                <span class="badge bg-secondary">{{ __('admin.inactive') }}</span>
+                                @endif
+                            </td>
+                            <td>
                                 <a href="{{ route('admin.struktur-organisasi.edit', $struktur) }}" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil"></i>
                                 </a>
@@ -69,7 +77,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">{{ __('admin.no_data') }}</td>
+                            <td colspan="6" class="text-center text-muted py-4">{{ __('admin.no_data') }}</td>
                         </tr>
                         @endforelse
                     </tbody>

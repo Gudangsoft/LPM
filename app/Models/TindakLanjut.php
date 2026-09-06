@@ -84,6 +84,14 @@ class TindakLanjut extends Model
     }
 
     /**
+     * Scope to only records belonging to a prodi the given user heads (kaprodi_id).
+     */
+    public function scopeOwnedByKaprodi($query, User $user)
+    {
+        return $query->whereHas('temuanAmi.jadwalAmi.prodi', fn ($q) => $q->where('kaprodi_id', $user->id));
+    }
+
+    /**
      * Approve the follow-up
      */
     public function approve(User $reviewer, string $catatan = null): void

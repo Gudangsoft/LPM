@@ -25,6 +25,9 @@
                 <a href="{{ route('admin.pengaturan.index', ['tab' => 'social']) }}" class="list-group-item list-group-item-action {{ request('tab') == 'social' ? 'active' : '' }}">
                     <i class="bi bi-share me-2"></i>{{ __('admin.social_media') }}
                 </a>
+                <a href="{{ route('admin.pengaturan.index', ['tab' => 'demo']) }}" class="list-group-item list-group-item-action {{ request('tab') == 'demo' ? 'active' : '' }}">
+                    <i class="bi bi-lightning-charge me-2"></i>{{ __('admin.demo_login') }}
+                </a>
                 <a href="{{ route('admin.pengaturan.template') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.pengaturan.template') ? 'active' : '' }}">
                     <i class="bi bi-palette me-2"></i>{{ __('admin.template_settings') }}
                 </a>
@@ -189,6 +192,45 @@
                                     <input type="url" class="form-control" id="social_tiktok" name="settings[social_tiktok]" value="{{ $settings['social_tiktok'] ?? '' }}" placeholder="https://tiktok.com/...">
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                @if(request('tab') == 'demo')
+                <div class="card mb-4">
+                    <div class="card-header">{{ __('admin.demo_login_settings') }}</div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input type="hidden" name="settings[demo_login_enabled]" value="0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="demo_login_enabled" name="settings[demo_login_enabled]" value="1" {{ !empty($settings['demo_login_enabled']) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="demo_login_enabled">{{ __('admin.enable_demo_login') }}</label>
+                            <div class="form-text">{{ __('admin.enable_demo_login_help') }}</div>
+                        </div>
+
+                        <div class="alert alert-warning small">
+                            <i class="bi bi-exclamation-triangle me-1"></i>{{ __('admin.demo_login_account_warning') }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="demo_login_email" class="form-label">{{ __('admin.demo_email') }}</label>
+                                    <input type="email" class="form-control" id="demo_login_email" name="settings[demo_login_email]" value="{{ $settings['demo_login_email'] ?? '' }}" placeholder="demo@lpm.ac.id">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="demo_login_password" class="form-label">{{ __('admin.demo_password') }}</label>
+                                    <input type="text" class="form-control" id="demo_login_password" name="settings[demo_login_password]" value="{{ $settings['demo_login_password'] ?? '' }}" placeholder="demo123">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="demo_login_note" class="form-label">{{ __('admin.demo_note') }}</label>
+                            <input type="text" class="form-control" id="demo_login_note" name="settings[demo_login_note]" value="{{ $settings['demo_login_note'] ?? '' }}" placeholder="Ingin mencoba tanpa akun?">
+                            <div class="form-text">{{ __('admin.demo_note_help') }}</div>
                         </div>
                     </div>
                 </div>

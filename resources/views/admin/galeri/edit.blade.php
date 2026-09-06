@@ -38,6 +38,42 @@
                             @enderror
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="kategori" class="form-label">{{ __('admin.category') }}</label>
+                                    <input type="text" class="form-control @error('kategori') is-invalid @enderror" id="kategori" name="kategori" value="{{ old('kategori', $galeri->kategori) }}" list="kategoriList">
+                                    @if(isset($kategoris) && $kategoris->count())
+                                    <datalist id="kategoriList">
+                                        @foreach($kategoris as $k)
+                                        <option value="{{ $k }}">
+                                        @endforeach
+                                    </datalist>
+                                    @endif
+                                    @error('kategori')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="urutan" class="form-label">{{ __('admin.order') }}</label>
+                                    <input type="number" class="form-control @error('urutan') is-invalid @enderror" id="urutan" name="urutan" value="{{ old('urutan', $galeri->urutan) }}" min="0">
+                                    @error('urutan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" value="1" {{ old('is_active', $galeri->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">{{ __('admin.active') }}</label>
+                                <div class="form-text">{{ __('admin.gallery_active_help') }}</div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">{{ __('admin.current_image') }}</label>
                             <div>

@@ -4,11 +4,48 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Prodi;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ProdiController extends Controller
+class ProdiController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:prodi.view', only: ['index', 'show']),
+            new Middleware('permission:prodi.create', only: ['create', 'store']),
+            new Middleware('permission:prodi.edit', only: ['edit', 'update']),
+            new Middleware('permission:prodi.delete', only: ['destroy']),
+        ];
+    }
+
+    /**
+     * Assign the kaprodi Role to $userId, or remove it from $userId if they no
+     * longer head any prodi. Keeps the Role pivot in sync with kaprodi_id.
+     */
+    private function syncKaprodiRole(?int $newUserId, ?int $oldUserId = null): void
+    {
+        $kaprodiRole = Role::where('slug', 'kaprodi')->first();
+        if (!$kaprodiRole) {
+            return;
+        }
+
+        if ($newUserId && (!$oldUserId || $newUserId !== $oldUserId)) {
+            if ($user = User::find($newUserId)) {
+                $user->assignRole($kaprodiRole);
+            }
+        }
+
+        if ($oldUserId && $oldUserId !== $newUserId && Prodi::where('kaprodi_id', $oldUserId)->count() === 0) {
+            if ($user = User::find($oldUserId)) {
+                $user->removeRole($kaprodiRole);
+            }
+        }
+    }
+
     public function index(Request $request)
     {
         $query = Prodi::with(['kaprodi', 'latestAkreditasi'])->latest();
@@ -50,6 +87,10 @@ class ProdiController extends Controller
 
         Prodi::create($validated);
 
+        if (!empty($validated['kaprodi_id'])) {
+            $this->syncKaprodiRole($validated['kaprodi_id']);
+        }
+
         return redirect()->route('admin.prodi.index')
             ->with('success', 'Program Studi berhasil ditambahkan.');
     }
@@ -82,7 +123,9 @@ class ProdiController extends Controller
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
+        $oldKaprodiId = $prodi->kaprodi_id;
         $prodi->update($validated);
+        $this->syncKaprodiRole($validated['kaprodi_id'] ?? null, $oldKaprodiId);
 
         return redirect()->route('admin.prodi.index')
             ->with('success', 'Program Studi berhasil diperbarui.');
@@ -90,7 +133,9 @@ class ProdiController extends Controller
 
     public function destroy(Prodi $prodi)
     {
+        $oldKaprodiId = $prodi->kaprodi_id;
         $prodi->delete();
+        $this->syncKaprodiRole(null, $oldKaprodiId);
 
         return redirect()->route('admin.prodi.index')
             ->with('success', 'Program Studi berhasil dihapus.');

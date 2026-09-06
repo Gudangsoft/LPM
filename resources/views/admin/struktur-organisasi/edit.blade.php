@@ -64,12 +64,41 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">{{ __('admin.email') }}</label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $struktur->email) }}">
+                                    @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="telepon" class="form-label">{{ __('admin.phone') }}</label>
+                                    <input type="text" class="form-control @error('telepon') is-invalid @enderror" id="telepon" name="telepon" value="{{ old('telepon', $struktur->telepon) }}">
+                                    @error('telepon')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
-                            <label for="deskripsi" class="form-label">{{ __('admin.description') }}</label>
-                            <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi', $struktur->deskripsi) }}</textarea>
-                            @error('deskripsi')
+                            <label for="bio" class="form-label">{{ __('admin.description') }}</label>
+                            <textarea class="form-control @error('bio') is-invalid @enderror" id="bio" name="bio" rows="3">{{ old('bio', $struktur->bio) }}</textarea>
+                            @error('bio')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="is_active" name="is_active" value="1" {{ old('is_active', $struktur->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">{{ __('admin.active') }}</label>
+                                <div class="form-text">{{ __('admin.structure_active_help') }}</div>
+                            </div>
                         </div>
 
                         @if($struktur->foto)

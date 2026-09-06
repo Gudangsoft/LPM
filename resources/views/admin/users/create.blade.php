@@ -63,12 +63,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="role" class="form-label">{{ __('admin.role') }} <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
-                                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-                                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <label for="role_id" class="form-label">{{ __('admin.role') }} <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
+                                        <option value="">-- Pilih Peran --</option>
+                                        @foreach($roles as $roleOption)
+                                        <option value="{{ $roleOption->id }}" {{ old('role_id') == $roleOption->id ? 'selected' : '' }}>{{ $roleOption->name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('role')
+                                    @error('role_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

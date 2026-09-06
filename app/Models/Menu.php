@@ -118,6 +118,26 @@ class Menu extends Model
     }
 
     /**
+     * Whether $user should see this menu item. Admin always sees everything.
+     * An item with no `permission` set is treated as admin-only (preserves
+     * current behavior for menu rows nobody has explicitly opened up).
+     */
+    public function isVisibleTo(User $user): bool
+    {
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if (empty($this->permission)) {
+            return false;
+        }
+
+        $required = array_filter(array_map('trim', explode(',', $this->permission)));
+
+        return $user->hasAnyPermission($required);
+    }
+
+    /**
      * Check if this menu is currently active
      */
     public function isActive()

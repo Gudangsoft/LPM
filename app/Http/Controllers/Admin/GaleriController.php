@@ -25,7 +25,9 @@ class GaleriController extends Controller
 
     public function create()
     {
-        return view('admin.galeri.create');
+        $kategoris = Galeri::whereNotNull('kategori')->distinct()->pluck('kategori');
+
+        return view('admin.galeri.create', compact('kategoris'));
     }
 
     public function store(Request $request)
@@ -58,7 +60,9 @@ class GaleriController extends Controller
 
     public function edit(Galeri $galeri)
     {
-        return view('admin.galeri.edit', compact('galeri'));
+        $kategoris = Galeri::whereNotNull('kategori')->distinct()->pluck('kategori');
+
+        return view('admin.galeri.edit', compact('galeri', 'kategoris'));
     }
 
     public function update(Request $request, Galeri $galeri)

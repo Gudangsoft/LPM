@@ -34,6 +34,19 @@ use App\Http\Controllers\Admin\JadwalAmiController;
 use App\Http\Controllers\Admin\TemuanAmiController;
 use App\Http\Controllers\Admin\TindakLanjutController;
 use App\Http\Controllers\Admin\StatistikController;
+use App\Http\Controllers\Admin\PenugasanSayaController;
+use App\Http\Controllers\Admin\StandarMutuController;
+use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\PanduanController;
+use App\Http\Controllers\Admin\DkpsController;
+use App\Http\Controllers\Admin\DkpsMahasiswaController;
+use App\Http\Controllers\Admin\DkpsDosenController;
+use App\Http\Controllers\Admin\DkpsSaranaController;
+use App\Http\Controllers\Admin\DkpsKurikulumController;
+use App\Http\Controllers\Admin\DkpsLulusanController;
+use App\Http\Controllers\Admin\DkpsPenelitianController;
+use App\Http\Controllers\Admin\DkpsExportController;
+use App\Http\Controllers\Admin\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,75 +110,80 @@ Route::get('/halaman/{slug}', [HalamanController::class, 'show'])->name('halaman
 | Admin Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // Dashboard - reachable by every admin-area role (admin/auditor/kaprodi/viewer)
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:dashboard.view');
 
-    // Berita
-    Route::resource('berita', AdminBeritaController::class)->except(['show'])->parameters(['berita' => 'berita']);
-    
-    // Kategori Berita
-    Route::resource('kategori-berita', KategoriBeritaController::class)->except(['show'])->parameters(['kategori-berita' => 'kategori']);
-    
-    // Galeri
-    Route::resource('galeri', AdminGaleriController::class)->except(['show'])->parameters(['galeri' => 'galeri']);
-    
-    // Dokumen
-    Route::resource('dokumen', AdminDokumenController::class)->except(['show'])->parameters(['dokumen' => 'dokumen']);
-    
-    // Jenis Dokumen
-    Route::resource('jenis-dokumen', JenisDokumenController::class)->except(['show'])->parameters(['jenis-dokumen' => 'jenisDokuman']);
-    
-    // Struktur Organisasi
-    Route::resource('struktur-organisasi', StrukturOrganisasiController::class)->except(['show'])->parameters(['struktur-organisasi' => 'struktur']);
-    
-    // Halaman
-    Route::resource('halaman', AdminHalamanController::class)->except(['show'])->parameters(['halaman' => 'halaman']);
-    
-    // Users
-    Route::resource('users', UserController::class)->except(['show']);
-    
-    // Slider
-    Route::resource('sliders', SliderController::class)->except(['show']);
-    
-    // Pengumuman
-    Route::resource('pengumuman', AdminPengumumanController::class)->except(['show'])->parameters(['pengumuman' => 'pengumuman']);
-    
-    // Agenda
-    Route::resource('agenda', AdminAgendaController::class)->except(['show'])->parameters(['agenda' => 'agenda']);
-    
-    // Kontak
-    Route::get('kontak', [AdminKontakController::class, 'index'])->name('kontak.index');
-    Route::get('kontak/{kontak}', [AdminKontakController::class, 'show'])->name('kontak.show');
-    Route::post('kontak/{kontak}/reply', [AdminKontakController::class, 'reply'])->name('kontak.reply');
-    Route::delete('kontak/{kontak}', [AdminKontakController::class, 'destroy'])->name('kontak.destroy');
-    
-    // Pengaturan
-    Route::get('pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
-    Route::post('pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
-    Route::get('pengaturan/template', [PengaturanController::class, 'template'])->name('pengaturan.template');
-    Route::post('pengaturan/template', [PengaturanController::class, 'updateTemplate'])->name('pengaturan.template.update');
+    // Pure admin-only content management - unchanged behavior, only admin role may enter
+    Route::middleware('admin')->group(function () {
+        // Berita
+        Route::resource('berita', AdminBeritaController::class)->except(['show'])->parameters(['berita' => 'berita']);
 
-    // Menu Management
-    Route::resource('menu', MenuController::class)->except(['show']);
-    Route::post('menu/reorder', [MenuController::class, 'reorder'])->name('menu.reorder');
+        // Kategori Berita
+        Route::resource('kategori-berita', KategoriBeritaController::class)->except(['show'])->parameters(['kategori-berita' => 'kategori']);
 
-    // Database Backup & Restore
-    Route::get('database', [DatabaseController::class, 'index'])->name('database.index');
-    Route::post('database/backup', [DatabaseController::class, 'backup'])->name('database.backup');
-    Route::get('database/download/{filename}', [DatabaseController::class, 'download'])->name('database.download');
-    Route::delete('database/{filename}', [DatabaseController::class, 'destroy'])->name('database.destroy');
-    Route::post('database/restore/{filename}', [DatabaseController::class, 'restore'])->name('database.restore');
-    Route::post('database/upload', [DatabaseController::class, 'upload'])->name('database.upload');
+        // Galeri
+        Route::resource('galeri', AdminGaleriController::class)->except(['show'])->parameters(['galeri' => 'galeri']);
 
-    // Program Studi
+        // Jenis Dokumen
+        Route::resource('jenis-dokumen', JenisDokumenController::class)->except(['show'])->parameters(['jenis-dokumen' => 'jenisDokuman']);
+
+        // Struktur Organisasi
+        Route::resource('struktur-organisasi', StrukturOrganisasiController::class)->except(['show'])->parameters(['struktur-organisasi' => 'struktur']);
+
+        // Halaman
+        Route::resource('halaman', AdminHalamanController::class)->except(['show'])->parameters(['halaman' => 'halaman']);
+
+        // Users
+        Route::resource('users', UserController::class)->except(['show']);
+
+        // Slider
+        Route::resource('sliders', SliderController::class)->except(['show']);
+
+        // Pengumuman
+        Route::resource('pengumuman', AdminPengumumanController::class)->except(['show'])->parameters(['pengumuman' => 'pengumuman']);
+
+        // Agenda
+        Route::resource('agenda', AdminAgendaController::class)->except(['show'])->parameters(['agenda' => 'agenda']);
+
+        // Kontak
+        Route::get('kontak', [AdminKontakController::class, 'index'])->name('kontak.index');
+        Route::get('kontak/{kontak}', [AdminKontakController::class, 'show'])->name('kontak.show');
+        Route::post('kontak/{kontak}/reply', [AdminKontakController::class, 'reply'])->name('kontak.reply');
+        Route::delete('kontak/{kontak}', [AdminKontakController::class, 'destroy'])->name('kontak.destroy');
+
+        // Pengaturan
+        Route::get('pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+        Route::post('pengaturan', [PengaturanController::class, 'update'])->name('pengaturan.update');
+        Route::get('pengaturan/template', [PengaturanController::class, 'template'])->name('pengaturan.template');
+        Route::post('pengaturan/template', [PengaturanController::class, 'updateTemplate'])->name('pengaturan.template.update');
+
+        // Menu Management
+        Route::resource('menu', MenuController::class)->except(['show']);
+        Route::post('menu/reorder', [MenuController::class, 'reorder'])->name('menu.reorder');
+
+        // Database Backup & Restore
+        Route::get('database', [DatabaseController::class, 'index'])->name('database.index');
+        Route::post('database/backup', [DatabaseController::class, 'backup'])->name('database.backup');
+        Route::get('database/download/{filename}', [DatabaseController::class, 'download'])->name('database.download');
+        Route::delete('database/{filename}', [DatabaseController::class, 'destroy'])->name('database.destroy');
+        Route::post('database/restore/{filename}', [DatabaseController::class, 'restore'])->name('database.restore');
+        Route::post('database/upload', [DatabaseController::class, 'upload'])->name('database.upload');
+
+        // Statistik
+        Route::get('statistik/chart', [StatistikController::class, 'chart'])->name('statistik.chart');
+        Route::post('statistik/import', [StatistikController::class, 'import'])->name('statistik.import');
+        Route::resource('statistik', StatistikController::class)->except(['show']);
+    });
+
+    // Program Studi / Akreditasi / AMI - permission-gated per-action via each controller's
+    // own HasMiddleware::middleware(), NOT wrapped in the 'admin' middleware above, so
+    // auditor/kaprodi/viewer roles can reach the actions their permissions allow.
     Route::resource('prodi', ProdiController::class);
 
-    // Akreditasi
     Route::get('akreditasi/dashboard', [AkreditasiController::class, 'dashboard'])->name('akreditasi.dashboard');
     Route::resource('akreditasi', AkreditasiController::class);
 
-    // AMI - Audit Mutu Internal
     Route::prefix('ami')->name('ami.')->group(function () {
         // Periode AMI
         Route::post('periode/{periode}/activate', [PeriodeAmiController::class, 'activate'])->name('periode.activate');
@@ -174,6 +192,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
         // Auditor
         Route::resource('auditor', AuditorController::class);
+
+        // Penugasan Saya - an auditor's own assignment inbox (accept/reject)
+        Route::get('penugasan/saya', [PenugasanSayaController::class, 'index'])->name('penugasan.saya');
+        Route::post('penugasan/{penugasan}/accept', [PenugasanSayaController::class, 'accept'])->name('penugasan.accept');
+        Route::post('penugasan/{penugasan}/reject', [PenugasanSayaController::class, 'reject'])->name('penugasan.reject');
 
         // Jadwal AMI
         Route::post('jadwal/{jadwal}/update-status', [JadwalAmiController::class, 'updateStatus'])->name('jadwal.update-status');
@@ -191,12 +214,178 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('tindak-lanjut/pending', [TindakLanjutController::class, 'pendingReview'])->name('tindak-lanjut.pending');
         Route::post('tindak-lanjut/{tindakLanjut}/review', [TindakLanjutController::class, 'review'])->name('tindak-lanjut.review');
         Route::resource('tindak-lanjut', TindakLanjutController::class);
+
+        // Standar Mutu
+        Route::resource('standar-mutu', StandarMutuController::class)->except(['show']);
     });
 
-    // Statistik
-    Route::get('statistik/chart', [StatistikController::class, 'chart'])->name('statistik.chart');
-    Route::post('statistik/import', [StatistikController::class, 'import'])->name('statistik.import');
-    Route::resource('statistik', StatistikController::class)->except(['show']);
+    // Laporan - permission-gated per-action (view the menu vs. actually export),
+    // not wrapped in the 'admin' middleware, same reasoning as the AMI group above.
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('temuan/export', [LaporanController::class, 'exportTemuan'])->name('temuan.export');
+        Route::get('tindak-lanjut/export', [LaporanController::class, 'exportTindakLanjut'])->name('tindak-lanjut.export');
+        Route::get('akreditasi/export', [LaporanController::class, 'exportAkreditasi'])->name('akreditasi.export');
+    });
+
+    // Buku Panduan - permission-gated per-action, not wrapped in the 'admin'
+    // middleware, so every logged-in role can read it; only panduan.manage
+    // can add/edit/delete chapters.
+    Route::get('panduan/export-pdf', [PanduanController::class, 'exportPdf'])->name('panduan.export-pdf');
+    Route::resource('panduan', PanduanController::class)->except(['show']);
+
+    // Dokumen - permission-gated per-action, not wrapped in the 'admin' middleware,
+    // so Asesor (dokumen.view only) and Dosen (dokumen.view + dokumen.upload) can
+    // reach the actions their permissions allow; edit/delete/workflow stay admin-only.
+    Route::post('dokumen/{dokumen}/submit', [AdminDokumenController::class, 'submit'])->name('dokumen.submit');
+    Route::post('dokumen/{dokumen}/approve', [AdminDokumenController::class, 'approve'])->name('dokumen.approve');
+    Route::post('dokumen/{dokumen}/reject', [AdminDokumenController::class, 'reject'])->name('dokumen.reject');
+    Route::resource('dokumen', AdminDokumenController::class)->parameters(['dokumen' => 'dokumen']);
+
+    // DKPS - permission-gated per-action, not wrapped in the 'admin' middleware,
+    // so kaprodi (dkps.manage) and other roles (dkps.view) can reach it. The
+    // 'dkps.own' middleware additionally blocks a kaprodi from reaching any
+    // other prodi's submission or its nested section routes.
+    Route::resource('dkps', DkpsController::class)->middleware('dkps.own');
+    Route::get('dkps/{dkp}/export', [DkpsExportController::class, 'export'])->name('dkps.export')->middleware('dkps.own');
+
+    Route::prefix('dkps/{dkp}')->name('dkps.')->middleware('dkps.own')->group(function () {
+        // Kerjasama (Tabel 1.1-1.3)
+        Route::post('kerjasama', [DkpsMahasiswaController::class, 'storeKerjasama'])->name('kerjasama.store');
+        Route::put('kerjasama/{kerjasama}', [DkpsMahasiswaController::class, 'updateKerjasama'])->name('kerjasama.update');
+        Route::delete('kerjasama/{kerjasama}', [DkpsMahasiswaController::class, 'destroyKerjasama'])->name('kerjasama.destroy');
+
+        // Kualitas Input Mahasiswa (Tabel 2, fixed rows)
+        Route::put('kualitas-input', [DkpsMahasiswaController::class, 'updateKualitasInput'])->name('kualitas-input.update');
+
+        // Prestasi Mahasiswa (Tabel 3)
+        Route::post('prestasi', [DkpsMahasiswaController::class, 'storePrestasi'])->name('prestasi.store');
+        Route::put('prestasi/{prestasi}', [DkpsMahasiswaController::class, 'updatePrestasi'])->name('prestasi.update');
+        Route::delete('prestasi/{prestasi}', [DkpsMahasiswaController::class, 'destroyPrestasi'])->name('prestasi.destroy');
+
+        // Karya Inovatif Mahasiswa (Tabel 4.1-4.4)
+        Route::post('karya-inovatif', [DkpsMahasiswaController::class, 'storeKaryaInovatif'])->name('karya-inovatif.store');
+        Route::put('karya-inovatif/{karya}', [DkpsMahasiswaController::class, 'updateKaryaInovatif'])->name('karya-inovatif.update');
+        Route::delete('karya-inovatif/{karya}', [DkpsMahasiswaController::class, 'destroyKaryaInovatif'])->name('karya-inovatif.destroy');
+
+        // Kepuasan Mahasiswa (Tabel 5, fixed rows)
+        Route::put('kepuasan-mahasiswa', [DkpsMahasiswaController::class, 'updateKepuasan'])->name('kepuasan-mahasiswa.update');
+
+        // Dosen Tetap (Tabel 6)
+        Route::post('dosen', [DkpsDosenController::class, 'storeDosen'])->name('dosen.store');
+        Route::put('dosen/{dosen}', [DkpsDosenController::class, 'updateDosen'])->name('dosen.update');
+        Route::delete('dosen/{dosen}', [DkpsDosenController::class, 'destroyDosen'])->name('dosen.destroy');
+
+        // Beban Kerja DTPS (Tabel 7)
+        Route::post('beban-kerja', [DkpsDosenController::class, 'storeBebanKerja'])->name('beban-kerja.store');
+        Route::put('beban-kerja/{beban}', [DkpsDosenController::class, 'updateBebanKerja'])->name('beban-kerja.update');
+        Route::delete('beban-kerja/{beban}', [DkpsDosenController::class, 'destroyBebanKerja'])->name('beban-kerja.destroy');
+
+        // Rekognisi DTPS (Tabel 8)
+        Route::post('rekognisi', [DkpsDosenController::class, 'storeRekognisi'])->name('rekognisi.store');
+        Route::put('rekognisi/{rekognisi}', [DkpsDosenController::class, 'updateRekognisi'])->name('rekognisi.update');
+        Route::delete('rekognisi/{rekognisi}', [DkpsDosenController::class, 'destroyRekognisi'])->name('rekognisi.destroy');
+
+        // Pengembangan Kompetensi (Tabel 9 dosen / Tabel 11 tendik)
+        Route::post('pengembangan', [DkpsDosenController::class, 'storePengembangan'])->name('pengembangan.store');
+        Route::put('pengembangan/{pengembangan}', [DkpsDosenController::class, 'updatePengembangan'])->name('pengembangan.update');
+        Route::delete('pengembangan/{pengembangan}', [DkpsDosenController::class, 'destroyPengembangan'])->name('pengembangan.destroy');
+
+        // Tenaga Kependidikan roster (for Tabel 11)
+        Route::post('tendik', [DkpsDosenController::class, 'storeTendik'])->name('tendik.store');
+        Route::put('tendik/{tendik}', [DkpsDosenController::class, 'updateTendik'])->name('tendik.update');
+        Route::delete('tendik/{tendik}', [DkpsDosenController::class, 'destroyTendik'])->name('tendik.destroy');
+
+        // Tenaga Kependidikan Summary (Tabel 10, fixed rows)
+        Route::put('tendik-summary', [DkpsDosenController::class, 'updateTendikSummary'])->name('tendik-summary.update');
+
+        // Penggunaan Dana (Tabel 12, fixed rows)
+        Route::put('penggunaan-dana', [DkpsSaranaController::class, 'updatePenggunaanDana'])->name('penggunaan-dana.update');
+
+        // Sarana Lab (Tabel 13)
+        Route::post('sarana-lab', [DkpsSaranaController::class, 'storeSaranaLab'])->name('sarana-lab.store');
+        Route::put('sarana-lab/{sarana}', [DkpsSaranaController::class, 'updateSaranaLab'])->name('sarana-lab.update');
+        Route::delete('sarana-lab/{sarana}', [DkpsSaranaController::class, 'destroySaranaLab'])->name('sarana-lab.destroy');
+
+        // Prasarana (Tabel 14)
+        Route::post('prasarana', [DkpsSaranaController::class, 'storePrasarana'])->name('prasarana.store');
+        Route::put('prasarana/{prasarana}', [DkpsSaranaController::class, 'updatePrasarana'])->name('prasarana.update');
+        Route::delete('prasarana/{prasarana}', [DkpsSaranaController::class, 'destroyPrasarana'])->name('prasarana.destroy');
+
+        // TIK (Tabel 15)
+        Route::post('tik', [DkpsSaranaController::class, 'storeTik'])->name('tik.store');
+        Route::put('tik/{tik}', [DkpsSaranaController::class, 'updateTik'])->name('tik.update');
+        Route::delete('tik/{tik}', [DkpsSaranaController::class, 'destroyTik'])->name('tik.destroy');
+
+        // Kurikulum (Tabel 16)
+        Route::post('kurikulum', [DkpsKurikulumController::class, 'storeKurikulum'])->name('kurikulum.store');
+        Route::put('kurikulum/{kurikulum}', [DkpsKurikulumController::class, 'updateKurikulum'])->name('kurikulum.update');
+        Route::delete('kurikulum/{kurikulum}', [DkpsKurikulumController::class, 'destroyKurikulum'])->name('kurikulum.destroy');
+
+        // Integrasi Penelitian/PkM (Tabel 17)
+        Route::post('integrasi', [DkpsKurikulumController::class, 'storeIntegrasi'])->name('integrasi.store');
+        Route::put('integrasi/{integrasi}', [DkpsKurikulumController::class, 'updateIntegrasi'])->name('integrasi.update');
+        Route::delete('integrasi/{integrasi}', [DkpsKurikulumController::class, 'destroyIntegrasi'])->name('integrasi.destroy');
+
+        // Pembimbingan Magang Kependidikan (Tabel 18)
+        Route::post('pembimbingan-magang', [DkpsKurikulumController::class, 'storePembimbinganMagang'])->name('pembimbingan-magang.store');
+        Route::put('pembimbingan-magang/{magang}', [DkpsKurikulumController::class, 'updatePembimbinganMagang'])->name('pembimbingan-magang.update');
+        Route::delete('pembimbingan-magang/{magang}', [DkpsKurikulumController::class, 'destroyPembimbinganMagang'])->name('pembimbingan-magang.destroy');
+
+        // Kegiatan Akademik di Luar Kelas (Tabel 19)
+        Route::post('kegiatan-luar-kelas', [DkpsKurikulumController::class, 'storeKegiatanLuarKelas'])->name('kegiatan-luar-kelas.store');
+        Route::put('kegiatan-luar-kelas/{kegiatan}', [DkpsKurikulumController::class, 'updateKegiatanLuarKelas'])->name('kegiatan-luar-kelas.update');
+        Route::delete('kegiatan-luar-kelas/{kegiatan}', [DkpsKurikulumController::class, 'destroyKegiatanLuarKelas'])->name('kegiatan-luar-kelas.destroy');
+
+        // Pembimbingan Tugas Akhir/Skripsi (Tabel 20)
+        Route::post('pembimbingan-ta', [DkpsKurikulumController::class, 'storePembimbinganTa'])->name('pembimbingan-ta.store');
+        Route::put('pembimbingan-ta/{ta}', [DkpsKurikulumController::class, 'updatePembimbinganTa'])->name('pembimbingan-ta.update');
+        Route::delete('pembimbingan-ta/{ta}', [DkpsKurikulumController::class, 'destroyPembimbinganTa'])->name('pembimbingan-ta.destroy');
+
+        // IPK Lulusan (Tabel 21, fixed rows)
+        Route::put('ipk-lulusan', [DkpsLulusanController::class, 'updateIpk'])->name('ipk-lulusan.update');
+
+        // Masa Studi Lulusan (Tabel 22, fixed rows)
+        Route::put('masa-studi', [DkpsLulusanController::class, 'updateMasaStudi'])->name('masa-studi.update');
+
+        // Lulusan Bekerja & Studi Lanjut (Tabel 23, fixed rows)
+        Route::put('lulusan-bekerja', [DkpsLulusanController::class, 'updateLulusanBekerja'])->name('lulusan-bekerja.update');
+
+        // Waktu Tunggu (Tabel 24, fixed rows)
+        Route::put('waktu-tunggu', [DkpsLulusanController::class, 'updateWaktuTunggu'])->name('waktu-tunggu.update');
+
+        // Kesesuaian Bidang (Tabel 25, fixed rows)
+        Route::put('kesesuaian-bidang', [DkpsLulusanController::class, 'updateKesesuaianBidang'])->name('kesesuaian-bidang.update');
+
+        // Kepuasan Pengguna (Tabel 26, fixed rows)
+        Route::put('kepuasan-pengguna', [DkpsLulusanController::class, 'updateKepuasanPengguna'])->name('kepuasan-pengguna.update');
+
+        // Penelitian/PkM Ringkasan (Tabel 27/32, fixed rows)
+        Route::put('penelitian-ringkasan', [DkpsPenelitianController::class, 'updateRingkasan'])->name('penelitian-ringkasan.update');
+
+        // Penelitian/PkM Melibatkan Mahasiswa (Tabel 28/33)
+        Route::post('penelitian-mahasiswa', [DkpsPenelitianController::class, 'storeMahasiswa'])->name('penelitian-mahasiswa.store');
+        Route::put('penelitian-mahasiswa/{item}', [DkpsPenelitianController::class, 'updateMahasiswa'])->name('penelitian-mahasiswa.update');
+        Route::delete('penelitian-mahasiswa/{item}', [DkpsPenelitianController::class, 'destroyMahasiswa'])->name('penelitian-mahasiswa.destroy');
+
+        // Publikasi Ilmiah DTPS (Tabel 29, fixed rows)
+        Route::put('publikasi-dtps', [DkpsPenelitianController::class, 'updatePublikasi'])->name('publikasi-dtps.update');
+
+        // Publikasi DTPS Sinta/Scopus (Tabel 30)
+        Route::post('publikasi-detail', [DkpsPenelitianController::class, 'storeDetail'])->name('publikasi-detail.store');
+        Route::put('publikasi-detail/{detail}', [DkpsPenelitianController::class, 'updateDetail'])->name('publikasi-detail.update');
+        Route::delete('publikasi-detail/{detail}', [DkpsPenelitianController::class, 'destroyDetail'])->name('publikasi-detail.destroy');
+
+        // Sitasi DTPS (Tabel 31)
+        Route::post('sitasi-dtps', [DkpsPenelitianController::class, 'storeSitasi'])->name('sitasi-dtps.store');
+        Route::put('sitasi-dtps/{sitasi}', [DkpsPenelitianController::class, 'updateSitasi'])->name('sitasi-dtps.update');
+        Route::delete('sitasi-dtps/{sitasi}', [DkpsPenelitianController::class, 'destroySitasi'])->name('sitasi-dtps.destroy');
+    });
+
+    // Notifications - any logged-in admin-area user, scoped to their own data only
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 });
 
 // Profile Routes

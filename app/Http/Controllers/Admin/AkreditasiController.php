@@ -6,14 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Models\Akreditasi;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
 
-class AkreditasiController extends Controller
+class AkreditasiController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:akreditasi.view', only: ['index', 'show', 'dashboard']),
+            new Middleware('permission:akreditasi.create', only: ['create', 'store']),
+            new Middleware('permission:akreditasi.edit', only: ['edit', 'update']),
+            new Middleware('permission:akreditasi.delete', only: ['destroy']),
+        ];
+    }
+
     public function index(Request $request)
     {
-        $query = Akreditasi::with('prodi')->latest();
-        
+        $user = auth()->user();
+        $query = Akreditasi::with('prodi')->latest()
+            ->when(!$user->isAdmin() && $user->isKaprodi(), fn ($q) => $q->ownedByKaprodi($user));
+
         if ($request->has('search') && $request->search) {
             $query->whereHas('prodi', function ($q) use ($request) {
                 $q->where('nama', 'like', "%{$request->search}%");
@@ -70,8 +84,17 @@ class AkreditasiController extends Controller
 
     public function show(Akreditasi $akreditasi)
     {
+        $user = auth()->user();
+        if (!$user->isAdmin() && $user->isKaprodi()) {
+            abort_unless(
+                $akreditasi->prodi?->kaprodi_id === $user->id,
+                403,
+                'Anda hanya dapat melihat data akreditasi program studi Anda sendiri.'
+            );
+        }
+
         $akreditasi->load('prodi');
-        
+
         return view('admin.akreditasi.show', compact('akreditasi'));
     }
 
@@ -128,24 +151,30 @@ class AkreditasiController extends Controller
      */
     public function dashboard()
     {
+        $user = auth()->user();
+        $scoped = !$user->isAdmin() && $user->isKaprodi();
+
         $stats = [
-            'total_prodi' => Prodi::active()->count(),
-            'akreditasi_aktif' => Akreditasi::aktif()->count(),
-            'akan_kadaluarsa' => Akreditasi::expiringSoon()->count(),
-            'sudah_kadaluarsa' => Akreditasi::expired()->count(),
+            'total_prodi' => Prodi::active()->when($scoped, fn ($q) => $q->where('kaprodi_id', $user->id))->count(),
+            'akreditasi_aktif' => Akreditasi::aktif()->when($scoped, fn ($q) => $q->ownedByKaprodi($user))->count(),
+            'akan_kadaluarsa' => Akreditasi::expiringSoon()->when($scoped, fn ($q) => $q->ownedByKaprodi($user))->count(),
+            'sudah_kadaluarsa' => Akreditasi::expired()->when($scoped, fn ($q) => $q->ownedByKaprodi($user))->count(),
         ];
 
         $akreditasiExpiring = Akreditasi::with('prodi')
             ->expiringSoon()
+            ->when($scoped, fn ($q) => $q->ownedByKaprodi($user))
             ->orderBy('tanggal_kadaluarsa')
             ->get();
 
         $akreditasiByPeringkat = Akreditasi::aktif()
+            ->when($scoped, fn ($q) => $q->ownedByKaprodi($user))
             ->selectRaw('peringkat, count(*) as total')
             ->groupBy('peringkat')
             ->get();
 
         $akreditasiByLembaga = Akreditasi::aktif()
+            ->when($scoped, fn ($q) => $q->ownedByKaprodi($user))
             ->selectRaw('lembaga, count(*) as total')
             ->groupBy('lembaga')
             ->get();

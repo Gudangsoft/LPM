@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Halaman;
+use App\Models\Prodi;
 use App\Models\StrukturOrganisasi;
 use Illuminate\Http\Request;
 
@@ -42,7 +43,8 @@ class HalamanController extends Controller
     public function akreditasi()
     {
         $halaman = Halaman::where('slug', 'akreditasi')->active()->first();
-        return view('frontend.halaman.akreditasi', compact('halaman'));
+        $prodis = Prodi::active()->with('activeAkreditasi')->orderBy('nama')->get();
+        return view('frontend.halaman.akreditasi', compact('halaman', 'prodis'));
     }
 
     public function show($slug)

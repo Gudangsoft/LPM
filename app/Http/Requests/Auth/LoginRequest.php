@@ -29,6 +29,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'captcha' => ['required'],
         ];
     }
 
@@ -40,6 +41,14 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        if (! $this->hasValidCaptcha()) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'captcha' => 'Jawaban captcha salah. Silakan coba lagi.',
+            ]);
+        }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
@@ -90,5 +99,16 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+    }
+
+    /**
+     * Validate the submitted captcha answer against the session value.
+     * The stored answer is consumed on check so it cannot be reused.
+     */
+    protected function hasValidCaptcha(): bool
+    {
+        $expected = $this->session()->pull('captcha_answer');
+
+        return $expected !== null && (int) $this->input('captcha') === (int) $expected;
     }
 }

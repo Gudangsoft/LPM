@@ -57,15 +57,30 @@
                             <label class="form-label">{{ __('admin.current_file') }}</label>
                             <div class="d-flex align-items-center gap-2">
                                 @php
-                                    $ext = pathinfo($dokumen->file, PATHINFO_EXTENSION);
+                                    $ext = pathinfo($dokumen->file_path, PATHINFO_EXTENSION);
                                     $icons = ['pdf' => 'bi-file-pdf text-danger', 'doc' => 'bi-file-word text-primary', 'docx' => 'bi-file-word text-primary', 'xls' => 'bi-file-excel text-success', 'xlsx' => 'bi-file-excel text-success'];
                                 @endphp
                                 <i class="bi {{ $icons[$ext] ?? 'bi-file-earmark' }} fs-3"></i>
-                                <span>{{ basename($dokumen->file) }}</span>
-                                <a href="{{ Storage::url($dokumen->file) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                <span>{{ $dokumen->file_name ?? basename($dokumen->file_path) }}</span>
+                                <a href="{{ Storage::url($dokumen->file_path) }}" class="btn btn-sm btn-outline-info" target="_blank">
                                     <i class="bi bi-download me-1"></i>{{ __('admin.download') }}
                                 </a>
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="standar_mutu_id" class="form-label">Standar Mutu Terkait</label>
+                            <select class="form-select @error('standar_mutu_id') is-invalid @enderror" id="standar_mutu_id" name="standar_mutu_id">
+                                <option value="">-- Tidak Terkait --</option>
+                                @foreach($standarMutus as $standar)
+                                <option value="{{ $standar->id }}" {{ old('standar_mutu_id', $dokumen->standar_mutu_id) == $standar->id ? 'selected' : '' }}>
+                                    {{ $standar->nama }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('standar_mutu_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="mb-3">

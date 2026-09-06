@@ -26,25 +26,25 @@
 
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card border-secondary">
+            <div class="card border-info">
                 <div class="card-body text-center">
-                    <h3>{{ $stats['draft'] ?? 0 }}</h3>
-                    <small class="text-muted">Draft</small>
+                    <h3 class="text-info">{{ $stats['submitted'] ?? 0 }}</h3>
+                    <small class="text-muted">Submitted</small>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-primary">
+            <div class="card border-warning">
                 <div class="card-body text-center">
-                    <h3 class="text-primary">{{ $stats['diajukan'] ?? 0 }}</h3>
-                    <small class="text-muted">Diajukan</small>
+                    <h3 class="text-warning">{{ $stats['reviewed'] ?? 0 }}</h3>
+                    <small class="text-muted">Reviewed</small>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-success">
                 <div class="card-body text-center">
-                    <h3 class="text-success">{{ $stats['disetujui'] ?? 0 }}</h3>
+                    <h3 class="text-success">{{ $stats['approved'] ?? 0 }}</h3>
                     <small class="text-muted">Disetujui</small>
                 </div>
             </div>
@@ -52,7 +52,7 @@
         <div class="col-md-3">
             <div class="card border-danger">
                 <div class="card-body text-center">
-                    <h3 class="text-danger">{{ $stats['ditolak'] ?? 0 }}</h3>
+                    <h3 class="text-danger">{{ $stats['rejected'] ?? 0 }}</h3>
                     <small class="text-muted">Ditolak</small>
                 </div>
             </div>
@@ -70,12 +70,11 @@
                 </select>
                 <select name="status" class="form-select" style="max-width: 150px;">
                     <option value="">Semua Status</option>
-                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                    <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
-                    <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    @foreach($statusOptions as $status)
+                    <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                    @endforeach
                 </select>
-                <input type="text" name="search" class="form-control" style="max-width: 200px;" placeholder="Cari tindakan..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control" style="max-width: 200px;" placeholder="Cari deskripsi..." value="{{ request('search') }}">
                 <button type="submit" class="btn btn-outline-primary"><i class="bi bi-filter"></i></button>
             </form>
         </div>
@@ -86,9 +85,9 @@
                         <tr>
                             <th style="width: 50px;">#</th>
                             <th>Temuan</th>
-                            <th>Tindakan</th>
-                            <th>Penanggung Jawab</th>
-                            <th>Tanggal</th>
+                            <th>Deskripsi</th>
+                            <th>Diajukan Oleh</th>
+                            <th>Tanggal Submit</th>
                             <th>Status</th>
                             <th style="width: 120px;">Aksi</th>
                         </tr>
@@ -102,16 +101,18 @@
                                     <span class="badge bg-{{ $item->temuanAmi->kategori_color ?? 'secondary' }} me-1">{{ ucfirst($item->temuanAmi->kategori ?? '-') }}</span>
                                     {{ Str::limit($item->temuanAmi->standar ?? '-', 20) }}
                                 </a>
+                                <div class="small text-muted">{{ $item->temuanAmi->jadwalAmi->prodi->nama ?? '-' }}</div>
                             </td>
-                            <td>{{ Str::limit($item->tindakan, 40) }}</td>
-                            <td>{{ $item->penanggungJawab->name ?? '-' }}</td>
-                            <td>{{ $item->tanggal_selesai?->format('d M Y') ?? '-' }}</td>
+                            <td>{{ Str::limit($item->deskripsi, 40) }}</td>
+                            <td>{{ $item->user->name ?? '-' }}</td>
+                            <td>{{ $item->tanggal_submit?->format('d M Y') ?? '-' }}</td>
                             <td><span class="badge bg-{{ $item->status_color }}">{{ ucfirst($item->status) }}</span></td>
                             <td>
                                 <div class="btn-group">
                                     <a href="{{ route('admin.ami.tindak-lanjut.show', $item) }}" class="btn btn-sm btn-outline-info">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    @if(in_array($item->status, ['submitted', 'rejected']))
                                     <a href="{{ route('admin.ami.tindak-lanjut.edit', $item) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i>
                                     </a>
@@ -122,6 +123,7 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

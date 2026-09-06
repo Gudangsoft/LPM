@@ -57,6 +57,7 @@
                             <th>{{ __('admin.file_type') }}</th>
                             <th>{{ __('admin.file_size') }}</th>
                             <th>{{ __('admin.downloads') }}</th>
+                            <th>{{ __('admin.status') }}</th>
                             <th>{{ __('admin.date') }}</th>
                             <th width="150">{{ __('admin.actions') }}</th>
                         </tr>
@@ -87,8 +88,12 @@
                             </td>
                             <td>{{ $dokumen->formatted_size }}</td>
                             <td><span class="badge bg-info">{{ $dokumen->download_count }}</span></td>
+                            <td><span class="badge bg-{{ $dokumen->status_color }}">{{ ucfirst($dokumen->status) }}</span></td>
                             <td>{{ $dokumen->created_at->format('d M Y') }}</td>
                             <td>
+                                <a href="{{ route('admin.dokumen.show', $dokumen) }}" class="btn btn-sm btn-outline-secondary" title="Detail">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                                 <a href="{{ Storage::url($dokumen->file_path) }}" class="btn btn-sm btn-info" target="_blank" title="{{ __('admin.download') }}">
                                     <i class="bi bi-download"></i>
                                 </a>
@@ -106,7 +111,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">{{ __('admin.no_data') }}</td>
+                            <td colspan="9" class="text-center text-muted py-4">{{ __('admin.no_data') }}</td>
                         </tr>
                         @endforelse
                     </tbody>

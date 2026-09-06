@@ -14,11 +14,13 @@
                 </ol>
             </nav>
         </div>
+        @if(in_array($tindakLanjut->status, ['submitted', 'rejected']))
         <div>
             <a href="{{ route('admin.ami.tindak-lanjut.edit', $tindakLanjut) }}" class="btn btn-outline-primary">
                 <i class="bi bi-pencil me-1"></i>Edit
             </a>
         </div>
+        @endif
     </div>
 
     <div class="row">
@@ -34,16 +36,12 @@
                             <td><span class="badge bg-{{ $tindakLanjut->status_color }}">{{ ucfirst($tindakLanjut->status) }}</span></td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Penanggung Jawab</td>
-                            <td>{{ $tindakLanjut->penanggungJawab->name ?? '-' }}</td>
+                            <td class="text-muted">Diajukan Oleh</td>
+                            <td>{{ $tindakLanjut->user->name ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Tanggal Mulai</td>
-                            <td>{{ $tindakLanjut->tanggal_mulai?->format('d M Y') ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Tanggal Selesai</td>
-                            <td>{{ $tindakLanjut->tanggal_selesai?->format('d M Y') ?? '-' }}</td>
+                            <td class="text-muted">Tanggal Submit</td>
+                            <td>{{ $tindakLanjut->tanggal_submit?->format('d M Y') ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td class="text-muted">Reviewer</td>
@@ -51,22 +49,22 @@
                         </tr>
                         <tr>
                             <td class="text-muted">Tanggal Review</td>
-                            <td>{{ $tindakLanjut->tanggal_review?->format('d M Y H:i') ?? '-' }}</td>
+                            <td>{{ $tindakLanjut->reviewed_at?->format('d M Y H:i') ?? '-' }}</td>
                         </tr>
                     </table>
                 </div>
-                @if($tindakLanjut->status == 'diajukan')
+                @if($tindakLanjut->status == 'submitted')
                 <div class="card-footer">
                     <form action="{{ route('admin.ami.tindak-lanjut.review', $tindakLanjut) }}" method="POST">
                         @csrf
                         <div class="mb-2">
-                            <textarea name="catatan_reviewer" class="form-control form-control-sm" rows="2" placeholder="Catatan reviewer (opsional)"></textarea>
+                            <textarea name="catatan_reviewer" class="form-control form-control-sm" rows="2" placeholder="Catatan reviewer (wajib diisi jika menolak)"></textarea>
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="submit" name="status" value="disetujui" class="btn btn-sm btn-success flex-fill">
+                            <button type="submit" name="action" value="approve" class="btn btn-sm btn-success flex-fill">
                                 <i class="bi bi-check-lg"></i> Setujui
                             </button>
-                            <button type="submit" name="status" value="ditolak" class="btn btn-sm btn-danger flex-fill">
+                            <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger flex-fill">
                                 <i class="bi bi-x-lg"></i> Tolak
                             </button>
                         </div>
@@ -104,23 +102,15 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
-                        <h6 class="text-muted">Tindakan</h6>
-                        <p class="fs-5">{{ $tindakLanjut->tindakan }}</p>
-                    </div>
-                    <div class="mb-4">
                         <h6 class="text-muted">Deskripsi</h6>
                         <p>{{ $tindakLanjut->deskripsi }}</p>
                     </div>
-                    @if($tindakLanjut->bukti_tindak_lanjut)
+                    @if($tindakLanjut->file_bukti)
                     <div class="mb-4">
                         <h6 class="text-muted">Bukti Tindak Lanjut</h6>
-                        <p>{{ $tindakLanjut->bukti_tindak_lanjut }}</p>
-                    </div>
-                    @endif
-                    @if($tindakLanjut->catatan)
-                    <div class="mb-4">
-                        <h6 class="text-muted">Catatan</h6>
-                        <p>{{ $tindakLanjut->catatan }}</p>
+                        <a href="{{ Storage::url($tindakLanjut->file_bukti) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-paperclip me-1"></i>Lihat File
+                        </a>
                     </div>
                     @endif
                 </div>
@@ -128,16 +118,16 @@
 
             @if($tindakLanjut->catatan_reviewer)
             <div class="card">
-                <div class="card-header bg-{{ $tindakLanjut->status == 'disetujui' ? 'success' : ($tindakLanjut->status == 'ditolak' ? 'danger' : 'info') }} text-white">
+                <div class="card-header bg-{{ $tindakLanjut->status == 'approved' ? 'success' : ($tindakLanjut->status == 'rejected' ? 'danger' : 'info') }} text-white">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-{{ $tindakLanjut->status == 'disetujui' ? 'check-circle' : ($tindakLanjut->status == 'ditolak' ? 'x-circle' : 'info-circle') }}"></i>
+                        <i class="bi bi-{{ $tindakLanjut->status == 'approved' ? 'check-circle' : ($tindakLanjut->status == 'rejected' ? 'x-circle' : 'info-circle') }}"></i>
                         Catatan Reviewer
                     </h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-1">{{ $tindakLanjut->catatan_reviewer }}</p>
                     <small class="text-muted">
-                        oleh {{ $tindakLanjut->reviewer->name ?? '-' }} pada {{ $tindakLanjut->tanggal_review?->format('d M Y H:i') }}
+                        oleh {{ $tindakLanjut->reviewer->name ?? '-' }} pada {{ $tindakLanjut->reviewed_at?->format('d M Y H:i') }}
                     </small>
                 </div>
             </div>

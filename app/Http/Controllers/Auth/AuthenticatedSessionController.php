@@ -16,7 +16,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        $captchaNum1 = random_int(1, 10);
+        $captchaNum2 = random_int(1, 10);
+
+        session(['captcha_answer' => $captchaNum1 + $captchaNum2]);
+
+        return view('auth.login', [
+            'captchaNum1' => $captchaNum1,
+            'captchaNum2' => $captchaNum2,
+        ]);
     }
 
     /**
@@ -28,8 +36,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirect admin to admin dashboard
-        if (Auth::user()->isAdmin()) {
+        // Admin, and any other role granted access to the admin area
+        // (auditor/kaprodi/viewer all carry dashboard.view), land on the dashboard.
+        if (Auth::user()->isAdmin() || Auth::user()->hasAnyPermission(['dashboard.view'])) {
             return redirect()->intended(route('admin.dashboard'));
         }
 

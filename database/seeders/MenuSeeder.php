@@ -24,6 +24,7 @@ class MenuSeeder extends Seeder
                 'route_pattern' => 'admin.dashboard',
                 'tipe' => 'link',
                 'urutan' => 1,
+                'permission' => 'dashboard.view',
             ],
 
             // Content Section

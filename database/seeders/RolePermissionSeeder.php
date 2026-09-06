@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class RolePermissionSeeder extends Seeder
@@ -34,6 +35,16 @@ class RolePermissionSeeder extends Seeder
                 'name' => 'Viewer',
                 'slug' => 'viewer',
                 'description' => 'Hanya dapat melihat data tanpa edit',
+            ],
+            [
+                'name' => 'Asesor',
+                'slug' => 'asesor',
+                'description' => 'Asesor eksternal, hanya dapat melihat dan mengunduh dokumen mutu yang telah disetujui',
+            ],
+            [
+                'name' => 'Dosen',
+                'slug' => 'dosen',
+                'description' => 'Dosen: melihat data mutu, menindaklanjuti temuan AMI, dan mengunggah dokumen pendukung',
             ],
         ];
 
@@ -91,7 +102,11 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Lihat Tindak Lanjut', 'slug' => 'tindak-lanjut.view', 'module' => 'ami'],
             ['name' => 'Submit Tindak Lanjut', 'slug' => 'tindak-lanjut.submit', 'module' => 'ami'],
             ['name' => 'Review Tindak Lanjut', 'slug' => 'tindak-lanjut.review', 'module' => 'ami'],
-            
+
+            // Standar Mutu
+            ['name' => 'Lihat Standar Mutu', 'slug' => 'standar-mutu.view', 'module' => 'ami'],
+            ['name' => 'Kelola Standar Mutu', 'slug' => 'standar-mutu.manage', 'module' => 'ami'],
+
             // User Management
             ['name' => 'Lihat Users', 'slug' => 'users.view', 'module' => 'users'],
             ['name' => 'Kelola Users', 'slug' => 'users.manage', 'module' => 'users'],
@@ -103,6 +118,19 @@ class RolePermissionSeeder extends Seeder
             // Reports
             ['name' => 'Lihat Laporan AMI', 'slug' => 'laporan-ami.view', 'module' => 'laporan'],
             ['name' => 'Export Laporan', 'slug' => 'laporan.export', 'module' => 'laporan'],
+
+            // Buku Panduan
+            ['name' => 'Lihat Buku Panduan', 'slug' => 'panduan.view', 'module' => 'panduan'],
+            ['name' => 'Kelola Buku Panduan', 'slug' => 'panduan.manage', 'module' => 'panduan'],
+
+            // Dokumen
+            ['name' => 'Lihat Dokumen', 'slug' => 'dokumen.view', 'module' => 'dokumen'],
+            ['name' => 'Unggah Dokumen', 'slug' => 'dokumen.upload', 'module' => 'dokumen'],
+            ['name' => 'Kelola Dokumen', 'slug' => 'dokumen.manage', 'module' => 'dokumen'],
+
+            // DKPS (Data Kinerja Program Studi)
+            ['name' => 'Lihat DKPS', 'slug' => 'dkps.view', 'module' => 'dkps'],
+            ['name' => 'Kelola DKPS', 'slug' => 'dkps.manage', 'module' => 'dkps'],
         ];
 
         foreach ($permissions as $permData) {
@@ -114,6 +142,18 @@ class RolePermissionSeeder extends Seeder
 
         // Assign permissions to roles
         $this->assignPermissionsToRoles();
+
+        // Backfill: accounts created before RBAC existed only have the legacy
+        // 'admin' string column set, with no row in the roles pivot. The Users
+        // edit form now requires a resolvable RBAC role (needed for admins to
+        // edit their own account), so give those accounts the admin RBAC role too.
+        $adminRole = Role::where('slug', 'admin')->first();
+        if ($adminRole) {
+            User::where('role', 'admin')
+                ->doesntHave('roles')
+                ->get()
+                ->each(fn ($u) => $u->roles()->syncWithoutDetaching($adminRole));
+        }
     }
 
     private function assignPermissionsToRoles(): void
@@ -141,7 +181,10 @@ class RolePermissionSeeder extends Seeder
                 'temuan.edit',
                 'tindak-lanjut.view',
                 'tindak-lanjut.review',
+                'standar-mutu.view',
                 'laporan-ami.view',
+                'panduan.view',
+                'dkps.view',
             ])->pluck('id');
             $auditorRole->permissions()->sync($auditorPermissions);
         }
@@ -158,7 +201,11 @@ class RolePermissionSeeder extends Seeder
                 'temuan.view',
                 'tindak-lanjut.view',
                 'tindak-lanjut.submit',
+                'standar-mutu.view',
                 'laporan-ami.view',
+                'panduan.view',
+                'dkps.view',
+                'dkps.manage',
             ])->pluck('id');
             $kaprodiRole->permissions()->sync($kaprodiPermissions);
         }
@@ -174,9 +221,46 @@ class RolePermissionSeeder extends Seeder
                 'jadwal-ami.view',
                 'temuan.view',
                 'tindak-lanjut.view',
+                'standar-mutu.view',
                 'laporan-ami.view',
+                'panduan.view',
+                'dkps.view',
             ])->pluck('id');
             $viewerRole->permissions()->sync($viewerPermissions);
+        }
+
+        // Asesor permissions - external assessor, read-only access to approved documents only
+        $asesorRole = Role::where('slug', 'asesor')->first();
+        if ($asesorRole) {
+            $asesorPermissions = Permission::whereIn('slug', [
+                'dashboard.view',
+                'dokumen.view',
+                'panduan.view',
+            ])->pluck('id');
+            $asesorRole->permissions()->sync($asesorPermissions);
+        }
+
+        // Dosen permissions - same baseline visibility as Viewer, plus following up
+        // on AMI findings (submit tindak lanjut) and uploading supporting documents
+        $dosenRole = Role::where('slug', 'dosen')->first();
+        if ($dosenRole) {
+            $dosenPermissions = Permission::whereIn('slug', [
+                'dashboard.view',
+                'prodi.view',
+                'akreditasi.view',
+                'periode-ami.view',
+                'jadwal-ami.view',
+                'temuan.view',
+                'tindak-lanjut.view',
+                'tindak-lanjut.submit',
+                'standar-mutu.view',
+                'laporan-ami.view',
+                'panduan.view',
+                'dokumen.view',
+                'dokumen.upload',
+                'dkps.view',
+            ])->pluck('id');
+            $dosenRole->permissions()->sync($dosenPermissions);
         }
     }
 }

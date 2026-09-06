@@ -15,7 +15,7 @@
     </div>
 
     <div class="card">
-        <form action="{{ route('admin.ami.temuan.store') }}" method="POST">
+        <form action="{{ route('admin.ami.temuan.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="card-body">
                 <div class="row">
@@ -49,21 +49,17 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="standar" class="form-label">Standar <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('standar') is-invalid @enderror" id="standar" name="standar" value="{{ old('standar') }}" placeholder="Contoh: Standar Pembelajaran" required>
-                        @error('standar')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="klausul" class="form-label">Klausul/Butir</label>
-                        <input type="text" class="form-control @error('klausul') is-invalid @enderror" id="klausul" name="klausul" value="{{ old('klausul') }}" placeholder="Contoh: 4.1.2">
-                        @error('klausul')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                <div class="mb-3">
+                    <label for="standar_mutu_id" class="form-label">Standar <span class="text-danger">*</span></label>
+                    <select class="form-select @error('standar_mutu_id') is-invalid @enderror" id="standar_mutu_id" name="standar_mutu_id" required>
+                        <option value="">Pilih Standar</option>
+                        @foreach($standarMutus as $standar)
+                        <option value="{{ $standar->id }}" {{ old('standar_mutu_id') == $standar->id ? 'selected' : '' }}>{{ $standar->nama }}</option>
+                        @endforeach
+                    </select>
+                    @error('standar_mutu_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="row">
@@ -109,17 +105,34 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="bukti" class="form-label">Bukti/Evidence</label>
+                    <label for="bukti" class="form-label">Catatan Bukti</label>
                     <textarea class="form-control @error('bukti') is-invalid @enderror" id="bukti" name="bukti" rows="3">{{ old('bukti') }}</textarea>
                     @error('bukti')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-text">Tuliskan bukti-bukti yang mendukung temuan</div>
+                    <div class="form-text">Catatan tambahan tentang bukti (opsional)</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="rekomendasi" class="form-label">Rekomendasi Perbaikan</label>
-                    <textarea class="form-control @error('rekomendasi') is-invalid @enderror" id="rekomendasi" name="rekomendasi" rows="3">{{ old('rekomendasi') }}</textarea>
+                    <label for="bukti_file" class="form-label">File Bukti/Evidence</label>
+                    <input type="file" class="form-control @error('bukti_file') is-invalid @enderror" id="bukti_file" name="bukti_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                    @error('bukti_file')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="form-text">Format: PDF, DOC, DOCX, JPG, PNG. Maks 10MB.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="akar_masalah" class="form-label">Akar Masalah</label>
+                    <textarea class="form-control @error('akar_masalah') is-invalid @enderror" id="akar_masalah" name="akar_masalah" rows="3">{{ old('akar_masalah') }}</textarea>
+                    @error('akar_masalah')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="rekomendasi" class="form-label">Rekomendasi Perbaikan <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('rekomendasi') is-invalid @enderror" id="rekomendasi" name="rekomendasi" rows="3" required>{{ old('rekomendasi') }}</textarea>
                     @error('rekomendasi')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -127,9 +140,9 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="target_selesai" class="form-label">Target Penyelesaian</label>
-                        <input type="date" class="form-control @error('target_selesai') is-invalid @enderror" id="target_selesai" name="target_selesai" value="{{ old('target_selesai') }}">
-                        @error('target_selesai')
+                        <label for="batas_tindak_lanjut" class="form-label">Batas Waktu Tindak Lanjut</label>
+                        <input type="date" class="form-control @error('batas_tindak_lanjut') is-invalid @enderror" id="batas_tindak_lanjut" name="batas_tindak_lanjut" value="{{ old('batas_tindak_lanjut') }}">
+                        @error('batas_tindak_lanjut')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

@@ -6,9 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Auditor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class AuditorController extends Controller
+class AuditorController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:auditor.view', only: ['index', 'show']),
+            new Middleware('permission:auditor.manage', only: ['create', 'store', 'edit', 'update', 'destroy']),
+        ];
+    }
+
     public function index(Request $request)
     {
         $query = Auditor::with('user')->latest();

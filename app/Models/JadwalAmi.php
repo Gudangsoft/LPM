@@ -118,6 +118,14 @@ class JadwalAmi extends Model
     }
 
     /**
+     * Scope to only records belonging to a prodi the given user heads (kaprodi_id).
+     */
+    public function scopeOwnedByKaprodi($query, User $user)
+    {
+        return $query->whereHas('prodi', fn ($q) => $q->where('kaprodi_id', $user->id));
+    }
+
+    /**
      * Get formatted time range
      */
     public function getTimeRangeAttribute(): string

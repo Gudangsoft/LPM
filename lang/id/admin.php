@@ -28,6 +28,15 @@ return [
     'recent_activities' => 'Aktivitas Terbaru',
     'view_all' => 'Lihat Semua',
     'visitor_statistics' => 'Statistik Pengunjung',
+    'needs_attention' => 'Perlu Perhatian',
+    'notifications' => 'Notifikasi',
+    'no_notifications' => 'Tidak ada notifikasi',
+    'view_all_notifications' => 'Lihat Semua Notifikasi',
+    'mark_all_read' => 'Tandai Semua Dibaca',
+    'accreditation_expiring' => 'Akreditasi Akan Kadaluarsa',
+    'finding_overdue' => 'Temuan Terlambat Ditindaklanjuti',
+    'pending_review' => 'Tindak Lanjut Menunggu Review',
+    'auditor_cert_expiring' => 'Sertifikat Auditor Akan Kadaluarsa',
 
     // Header & Navigation
     'view_site' => 'Lihat Situs',
@@ -51,6 +60,7 @@ return [
     'search' => 'Cari',
     'filter' => 'Filter',
     'actions' => 'Aksi',
+    'action' => 'Aksi',
     'status' => 'Status',
     'date' => 'Tanggal',
     'no_data' => 'Tidak ada data',
@@ -81,6 +91,7 @@ return [
     'add_gallery' => 'Tambah Galeri',
     'edit_gallery' => 'Edit Galeri',
     'gallery_form' => 'Form Galeri',
+    'gallery_active_help' => 'Jika dicentang, foto ini akan tampil di halaman Galeri publik',
 
     // Documents
     'documents' => 'Dokumen',
@@ -99,6 +110,7 @@ return [
     'add_structure' => 'Tambah Anggota',
     'edit_structure' => 'Edit Anggota',
     'structure_form' => 'Form Struktur',
+    'structure_active_help' => 'Jika dicentang, anggota ini akan tampil di halaman Struktur Organisasi publik',
     'position' => 'Jabatan',
     'order' => 'Urutan',
 
@@ -184,6 +196,17 @@ return [
     'current_period_help' => 'Periode saat ini akan ditampilkan di halaman dashboard admin',
     'address' => 'Alamat',
 
+    // Demo Login Settings
+    'demo_login' => 'Login Demo',
+    'demo_login_settings' => 'Pengaturan Login Demo',
+    'enable_demo_login' => 'Aktifkan Login Demo',
+    'enable_demo_login_help' => 'Jika diaktifkan, tombol "Masuk sebagai Demo" akan tampil di halaman login menggunakan akun di bawah ini.',
+    'demo_email' => 'Email Akun Demo',
+    'demo_password' => 'Password Akun Demo',
+    'demo_note' => 'Catatan Demo',
+    'demo_note_help' => 'Teks singkat yang ditampilkan di atas tombol login demo (opsional)',
+    'demo_login_account_warning' => 'Pastikan akun ini sudah dibuat di menu Pengguna dan hanya diberi hak akses terbatas.',
+
     // Template Settings
     'color_scheme' => 'Skema Warna',
     'primary_color' => 'Warna Primer',
@@ -206,6 +229,7 @@ return [
     // Form Labels
     'title' => 'Judul',
     'name' => 'Nama',
+    'author' => 'Penulis',
     'email' => 'Email',
     'phone' => 'Telepon',
     'password' => 'Password',

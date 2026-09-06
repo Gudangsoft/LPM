@@ -53,6 +53,22 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="standar_mutu_id" class="form-label">Standar Mutu Terkait</label>
+                            <select class="form-select @error('standar_mutu_id') is-invalid @enderror" id="standar_mutu_id" name="standar_mutu_id">
+                                <option value="">-- Tidak Terkait --</option>
+                                @foreach($standarMutus as $standar)
+                                <option value="{{ $standar->id }}" {{ old('standar_mutu_id') == $standar->id ? 'selected' : '' }}>
+                                    {{ $standar->nama }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('standar_mutu_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Opsional - untuk mengorganisir dokumen sebagai bukti standar akreditasi</small>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="file" class="form-label">{{ __('admin.file') }} <span class="text-danger">*</span></label>
                             <input type="file" class="form-control @error('file') is-invalid @enderror" id="file" name="file" required>
                             @error('file')

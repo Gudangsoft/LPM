@@ -65,16 +65,17 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="role" class="form-label">{{ __('admin.role') }} <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required {{ $user->id === auth()->id() ? 'disabled' : '' }}>
-                                        <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
-                                        <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <label for="role_id" class="form-label">{{ __('admin.role') }} <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                                        @foreach($roles as $roleOption)
+                                        <option value="{{ $roleOption->id }}" {{ old('role_id', $currentRoleId) == $roleOption->id ? 'selected' : '' }}>{{ $roleOption->name }}</option>
+                                        @endforeach
                                     </select>
                                     @if($user->id === auth()->id())
-                                    <input type="hidden" name="role" value="{{ $user->role }}">
+                                    <input type="hidden" name="role_id" value="{{ $currentRoleId }}">
                                     <small class="text-muted">{{ __('admin.cannot_change_own_role') }}</small>
                                     @endif
-                                    @error('role')
+                                    @error('role_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

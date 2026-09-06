@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'visitor' => \App\Http\Middleware\TrackVisitor::class,
             'role' => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'dkps.own' => \App\Http\Middleware\EnsureDkpsOwnership::class,
         ]);
 
         $middleware->web(append: [

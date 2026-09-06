@@ -21,17 +21,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --sidebar-width: 280px;
             --sidebar-collapsed-width: 80px;
             --header-height: 70px;
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --sidebar-gradient: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-            --accent-color: #8b5cf6;
-            --accent-glow: rgba(139, 92, 246, 0.3);
+            --primary-color: #1e40af;
+            --primary-dark: #0a2463;
+            --secondary-color: #3b82f6;
+            --accent-color: #f59e0b;
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            --sidebar-gradient: linear-gradient(180deg, #0a2463 0%, #0f1f45 55%, #0b1226 100%);
+            --accent-glow: rgba(30, 64, 175, 0.25);
         }
 
         * {
@@ -41,8 +44,8 @@
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f8fafc 100%);
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
             min-height: 100vh;
         }
 
@@ -55,11 +58,11 @@
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(139, 92, 246, 0.3);
+            background: rgba(30, 64, 175, 0.3);
             border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(139, 92, 246, 0.5);
+            background: rgba(30, 64, 175, 0.5);
         }
 
         /* Sidebar */
@@ -72,10 +75,10 @@
             background: var(--sidebar-gradient);
             color: white;
             z-index: 1000;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             overflow-y: auto;
             overflow-x: hidden;
-            border-right: 1px solid rgba(139, 92, 246, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .sidebar::before {
@@ -84,8 +87,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 200px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+            height: 160px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, transparent 100%);
             pointer-events: none;
         }
 
@@ -109,20 +112,22 @@
             height: 42px;
             width: auto;
             margin-right: 14px;
-            filter: drop-shadow(0 4px 12px rgba(139, 92, 246, 0.4));
+            border-radius: 6px;
+            background: #fff;
+            padding: 2px;
         }
 
         .sidebar-brand-icon {
             width: 42px;
             height: 42px;
             background: var(--primary-gradient);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 14px;
             font-size: 1.25rem;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 4px 15px rgba(10, 36, 99, 0.4);
         }
 
         .sidebar-brand-text {
@@ -156,27 +161,26 @@
         .sidebar-nav .nav-link {
             display: flex;
             align-items: center;
-            padding: 14px 24px;
-            color: rgba(255,255,255,0.7);
+            padding: 13px 24px;
+            color: rgba(255,255,255,0.68);
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             margin: 2px 12px;
-            border-radius: 12px;
+            border-radius: 10px;
             position: relative;
             font-weight: 500;
             font-size: 0.9rem;
         }
 
         .sidebar-nav .nav-link:hover {
-            background: rgba(139, 92, 246, 0.15);
+            background: rgba(59, 130, 246, 0.15);
             color: white;
-            transform: translateX(4px);
         }
 
         .sidebar-nav .nav-link.active {
-            background: var(--primary-gradient);
+            background: var(--secondary-color);
             color: white;
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
         }
 
         .sidebar-nav .nav-link.active::before {
@@ -214,9 +218,7 @@
 
         /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: #ffffff;
             height: var(--header-height);
             padding: 0 30px;
             display: flex;
@@ -225,7 +227,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .header-left {
@@ -234,22 +236,20 @@
         }
 
         .toggle-sidebar {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border: 1px solid rgba(139, 92, 246, 0.2);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             font-size: 1.25rem;
             color: #64748b;
             cursor: pointer;
             padding: 10px 12px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            transition: all 0.2s ease;
         }
 
         .toggle-sidebar:hover {
-            background: var(--primary-gradient);
+            background: var(--primary-color);
             color: white;
             border-color: transparent;
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
         .header-right {
@@ -259,20 +259,18 @@
         }
 
         .header-right .btn-outline-primary {
-            border-color: rgba(139, 92, 246, 0.3);
-            color: #7c3aed;
+            border-color: rgba(30, 64, 175, 0.3);
+            color: var(--primary-color);
             font-weight: 600;
             padding: 8px 16px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
 
         .header-right .btn-outline-primary:hover {
-            background: var(--primary-gradient);
+            background: var(--primary-color);
             border-color: transparent;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
         .user-dropdown .dropdown-toggle {
@@ -282,10 +280,10 @@
             color: #1e293b;
             text-decoration: none;
             padding: 8px 16px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border: 1px solid rgba(139, 92, 246, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
         }
 
         .user-dropdown .dropdown-toggle:hover {
@@ -300,9 +298,9 @@
         .user-avatar {
             width: 38px;
             height: 38px;
-            border-radius: 10px;
+            border-radius: 8px;
             object-fit: cover;
-            border: 2px solid rgba(139, 92, 246, 0.3);
+            border: 2px solid rgba(30, 64, 175, 0.25);
         }
 
         .user-dropdown .dropdown-menu {
@@ -321,7 +319,7 @@
         }
 
         .user-dropdown .dropdown-item:hover {
-            background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+            background: #f1f5f9;
         }
 
         /* Content */
@@ -334,11 +332,11 @@
         }
 
         .page-title {
-            font-size: 1.75rem;
-            font-weight: 800;
+            font-size: 1.6rem;
+            font-weight: 700;
             color: #0f172a;
             margin-bottom: 8px;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
         }
 
         .breadcrumb {
@@ -348,7 +346,7 @@
         }
 
         .breadcrumb-item a {
-            color: #7c3aed;
+            color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
         }
@@ -360,23 +358,16 @@
         /* Cards */
         .card {
             border: none;
-            border-radius: 20px;
-            box-shadow: 0 4px 25px rgba(0,0,0,0.06);
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+            background: #ffffff;
             overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 8px 35px rgba(139, 92, 246, 0.12);
-            transform: translateY(-2px);
         }
 
         .card-header {
-            background: linear-gradient(135deg, #fafbff 0%, #f8fafc 100%);
-            border-bottom: 1px solid rgba(139, 92, 246, 0.08);
-            padding: 20px 24px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 18px 24px;
             font-weight: 700;
             color: #0f172a;
         }
@@ -386,19 +377,20 @@
         }
 
         .card-footer {
-            background: linear-gradient(135deg, #fafbff 0%, #f8fafc 100%);
-            border-top: 1px solid rgba(139, 92, 246, 0.08);
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
             padding: 16px 24px;
         }
 
         /* Stats Cards */
         .stat-card {
             padding: 24px;
-            border-radius: 20px;
+            border-radius: 12px;
             color: white;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
         }
 
         .stat-card::before {
@@ -408,43 +400,41 @@
             right: -50%;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-            transition: all 0.4s ease;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         }
 
         .stat-card:hover {
-            transform: translateY(-5px) scale(1.02);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
         }
 
-        .stat-card:hover::before {
-            transform: translate(10%, 10%);
-        }
-
-        .stat-card.bg-blue { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
-        .stat-card.bg-green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .stat-card.bg-purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-        .stat-card.bg-orange { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-        .stat-card.bg-red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-        .stat-card.bg-cyan { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
-        .stat-card.bg-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
-        .stat-card.bg-indigo { background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%); }
+        .stat-card.bg-blue { background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); }
+        .stat-card.bg-green { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+        .stat-card.bg-purple { background: linear-gradient(135deg, #3730a3 0%, #312e81 100%); }
+        .stat-card.bg-orange { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); }
+        .stat-card.bg-red { background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%); }
+        .stat-card.bg-cyan { background: linear-gradient(135deg, #0e7490 0%, #155e75 100%); }
+        .stat-card.bg-pink { background: linear-gradient(135deg, #9d174d 0%, #831843 100%); }
+        .stat-card.bg-indigo { background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%); }
+        .stat-card.bg-slate { background: linear-gradient(135deg, #475569 0%, #334155 100%); }
+        .stat-card.bg-teal { background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); }
+        .stat-card.bg-amber { background: linear-gradient(135deg, #b45309 0%, #92400e 100%); }
 
         .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
 
         .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
         .stat-label {
@@ -455,78 +445,79 @@
 
         /* Welcome Banner */
         .welcome-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6366f1 100%);
-            border-radius: 24px;
-            padding: 36px 40px;
+            background: linear-gradient(120deg, #0a2463 0%, #1e40af 60%, #1d4ed8 100%);
+            border-radius: 16px;
+            padding: 32px 40px;
             color: white;
             position: relative;
             overflow: hidden;
             margin-bottom: 30px;
-            min-height: 200px;
         }
 
         .welcome-banner::before {
             content: '';
             position: absolute;
-            top: -100%;
-            right: -20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-            animation: float 15s ease-in-out infinite;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: 0.08;
+            pointer-events: none;
         }
 
         .welcome-banner::after {
             content: '';
             position: absolute;
-            bottom: -50%;
-            left: -10%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
-            animation: float 10s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(30px, 30px) rotate(10deg); }
+            top: -40%;
+            right: -8%;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.12);
+            pointer-events: none;
         }
 
         .welcome-banner .date-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.12);
             color: white;
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-size: 0.875rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-banner .welcome-title {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -0.02em;
+            font-size: 1.65rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-banner .welcome-subtitle {
-            font-size: 1.25rem;
-            font-weight: 500;
-            opacity: 0.9;
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.85;
             margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-banner .welcome-period {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.85;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-banner .welcome-period strong {
-            color: #fcd34d;
+            color: #fbbf24;
         }
 
         /* Tables */
@@ -542,7 +533,7 @@
             letter-spacing: 0.05em;
             border-top: none;
             padding: 16px;
-            background: linear-gradient(135deg, #fafbff 0%, #f8fafc 100%);
+            background: #f8fafc;
         }
 
         .table td {
@@ -552,11 +543,11 @@
         }
 
         .table-hover tbody tr {
-            transition: all 0.2s ease;
+            transition: background 0.15s ease;
         }
 
         .table-hover tbody tr:hover {
-            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+            background: #f8fafc;
         }
 
         /* Forms */
@@ -568,51 +559,50 @@
         }
 
         .form-control, .form-select {
-            border-radius: 12px;
-            border: 2px solid #e2e8f0;
-            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 11px 16px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
         }
 
         /* Buttons */
         .btn {
-            border-radius: 12px;
-            padding: 12px 24px;
+            border-radius: 8px;
+            padding: 11px 22px;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
         }
 
         .btn-primary {
             background: var(--primary-gradient);
             border: none;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            box-shadow: 0 4px 14px rgba(30, 64, 175, 0.35);
+            background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
         }
 
         .btn-sm {
-            padding: 8px 14px;
+            padding: 7px 14px;
             font-size: 0.875rem;
-            border-radius: 10px;
+            border-radius: 6px;
         }
 
         .btn-outline-primary {
-            border: 2px solid rgba(139, 92, 246, 0.3);
-            color: #7c3aed;
+            border: 1px solid rgba(30, 64, 175, 0.35);
+            color: var(--primary-color);
         }
 
         .btn-outline-primary:hover {
-            background: var(--primary-gradient);
+            background: var(--primary-color);
             border-color: transparent;
             color: white;
         }
@@ -630,37 +620,42 @@
         /* Badges */
         .badge {
             font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 5px 10px;
+            border-radius: 6px;
             font-size: 0.75rem;
         }
 
         /* Alerts */
         .alert {
             border: none;
-            border-radius: 16px;
-            padding: 18px 24px;
+            border-left: 4px solid transparent;
+            border-radius: 8px;
+            padding: 16px 20px;
             font-weight: 500;
         }
 
         .alert-success {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            background: #ecfdf5;
+            border-left-color: #059669;
             color: #065f46;
         }
 
         .alert-danger {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            background: #fef2f2;
+            border-left-color: #dc2626;
             color: #991b1b;
         }
 
         .alert-warning {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            background: #fffbeb;
+            border-left-color: #d97706;
             color: #92400e;
         }
 
         .alert-info {
-            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-            color: #3730a3;
+            background: #eff6ff;
+            border-left-color: var(--secondary-color);
+            color: #1e3a8a;
         }
 
         /* Responsive */
@@ -741,8 +736,37 @@
         <nav class="sidebar-nav">
             @php
                 $menus = \App\Models\Menu::getMenuTree();
+                $authUser = auth()->user();
+
+                // Keep only links the user has permission for (filtering their
+                // children too), pass sections/dividers through for now.
+                $filteredMenus = $menus->filter(function ($menu) use ($authUser) {
+                    return $menu->tipe !== 'link' || $menu->isVisibleTo($authUser);
+                })->map(function ($menu) use ($authUser) {
+                    if ($menu->tipe === 'link') {
+                        $menu->setRelation('children', $menu->children->filter(
+                            fn ($child) => $child->isVisibleTo($authUser)
+                        )->values());
+                    }
+                    return $menu;
+                })->values();
+
+                // Drop a section header if no visible link follows it before the next section.
+                $visibleMenus = collect();
+                foreach ($filteredMenus as $index => $menu) {
+                    if ($menu->tipe === 'section') {
+                        $hasVisibleFollowing = false;
+                        for ($i = $index + 1; $i < $filteredMenus->count(); $i++) {
+                            $next = $filteredMenus[$i];
+                            if ($next->tipe === 'section') break;
+                            if ($next->tipe === 'link') { $hasVisibleFollowing = true; break; }
+                        }
+                        if (!$hasVisibleFollowing) continue;
+                    }
+                    $visibleMenus->push($menu);
+                }
             @endphp
-            @foreach($menus as $menu)
+            @foreach($visibleMenus as $menu)
                 @if($menu->tipe == 'section')
                     {{-- Section Header --}}
                     <div class="nav-section">{{ $menu->nama }}</div>
@@ -795,7 +819,48 @@
                 <a href="{{ route('home') }}" class="btn btn-outline-primary btn-sm" target="_blank">
                     <i class="bi bi-box-arrow-up-right me-1"></i>{{ __('admin.view_site') }}
                 </a>
-                
+
+                <div class="dropdown notification-dropdown">
+                    <a href="#" class="toggle-sidebar position-relative" data-bs-toggle="dropdown" title="{{ __('admin.notifications') }}">
+                        <i class="bi bi-bell"></i>
+                        @if($unreadNotificationsCount > 0)
+                        <span class="badge bg-danger rounded-pill position-absolute" style="top: -4px; right: -4px; font-size: 0.65rem;">
+                            {{ $unreadNotificationsCount > 9 ? '9+' : $unreadNotificationsCount }}
+                        </span>
+                        @endif
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 340px; max-height: 420px; overflow-y: auto;">
+                        <li class="px-3 py-2 fw-bold border-bottom">{{ __('admin.notifications') }}</li>
+                        @forelse($recentNotifications as $notif)
+                        <li>
+                            <a href="{{ route('admin.notifications.read', $notif->id) }}" class="dropdown-item text-wrap {{ $notif->read_at ? '' : 'bg-light fw-semibold' }}">
+                                <div class="small">{{ $notif->data['message'] ?? 'Notifikasi' }}</div>
+                                <div class="text-muted" style="font-size: 0.75rem;">{{ $notif->created_at->diffForHumans() }}</div>
+                            </a>
+                        </li>
+                        @empty
+                        <li class="px-3 py-3 text-center text-muted small">{{ __('admin.no_notifications') }}</li>
+                        @endforelse
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center small" href="{{ route('admin.notifications.index') }}">{{ __('admin.view_all_notifications') }}</a></li>
+                    </ul>
+                </div>
+
+                @if(auth()->user()->isAdmin())
+                <div class="dropdown settings-dropdown">
+                    <a href="#" class="toggle-sidebar" data-bs-toggle="dropdown" title="{{ __('admin.settings') }}">
+                        <i class="bi bi-gear"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{{ route('admin.pengaturan.index') }}"><i class="bi bi-sliders me-2"></i>{{ __('admin.general_settings') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.pengaturan.template') }}"><i class="bi bi-palette me-2"></i>{{ __('admin.template_settings') }}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.users.index') }}"><i class="bi bi-people me-2"></i>{{ __('admin.users') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.users.create') }}"><i class="bi bi-person-plus me-2"></i>{{ __('admin.add_user') }}</a></li>
+                    </ul>
+                </div>
+                @endif
+
                 <div class="dropdown user-dropdown">
                     <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                         @if(auth()->user()->avatar)
@@ -844,9 +909,12 @@
         </div>
     </div>
 
+    <!-- jQuery (required by Summernote and other admin widgets) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Toggle Sidebar
         document.getElementById('toggleSidebar').addEventListener('click', function() {

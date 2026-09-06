@@ -32,6 +32,7 @@ class AmiMenuSeeder extends Seeder
             'icon' => 'bi-mortarboard',
             'urutan' => $lastOrder + 2,
             'is_active' => true,
+            'permission' => 'prodi.view',
         ]);
 
         // Akreditasi
@@ -43,6 +44,7 @@ class AmiMenuSeeder extends Seeder
             'icon' => 'bi-award',
             'urutan' => $lastOrder + 3,
             'is_active' => true,
+            'permission' => 'akreditasi.view',
         ]);
 
         // Dashboard Akreditasi
@@ -53,6 +55,7 @@ class AmiMenuSeeder extends Seeder
             'icon' => 'bi-speedometer2',
             'urutan' => $lastOrder + 4,
             'is_active' => true,
+            'permission' => 'akreditasi.view',
         ]);
 
         // AMI Section
@@ -72,6 +75,7 @@ class AmiMenuSeeder extends Seeder
             'icon' => 'bi-calendar3',
             'urutan' => $lastOrder + 6,
             'is_active' => true,
+            'permission' => 'periode-ami.view',
         ]);
 
         // Auditor
@@ -83,6 +87,7 @@ class AmiMenuSeeder extends Seeder
             'icon' => 'bi-person-badge',
             'urutan' => $lastOrder + 7,
             'is_active' => true,
+            'permission' => 'auditor.view',
         ]);
 
         // Jadwal AMI
@@ -94,6 +99,19 @@ class AmiMenuSeeder extends Seeder
             'icon' => 'bi-calendar-check',
             'urutan' => $lastOrder + 8,
             'is_active' => true,
+            'permission' => 'jadwal-ami.view',
+        ]);
+
+        // Penugasan Saya (auditor's own assignment inbox)
+        Menu::create([
+            'nama' => 'Penugasan Saya',
+            'tipe' => 'link',
+            'route' => 'admin.ami.penugasan.saya',
+            'route_pattern' => 'admin.ami.penugasan.*',
+            'icon' => 'bi-inbox',
+            'urutan' => $lastOrder + 9,
+            'is_active' => true,
+            'permission' => 'penugasan.respond',
         ]);
 
         // Temuan AMI
@@ -103,8 +121,9 @@ class AmiMenuSeeder extends Seeder
             'route' => 'admin.ami.temuan.index',
             'route_pattern' => 'admin.ami.temuan.*',
             'icon' => 'bi-search',
-            'urutan' => $lastOrder + 9,
+            'urutan' => $lastOrder + 10,
             'is_active' => true,
+            'permission' => 'temuan.view',
         ]);
 
         // Tindak Lanjut
@@ -114,11 +133,60 @@ class AmiMenuSeeder extends Seeder
             'route' => 'admin.ami.tindak-lanjut.index',
             'route_pattern' => 'admin.ami.tindak-lanjut.*',
             'icon' => 'bi-clipboard-check',
-            'urutan' => $lastOrder + 10,
+            'urutan' => $lastOrder + 11,
             'is_active' => true,
+            'permission' => 'tindak-lanjut.view',
             'badge_model' => 'App\\Models\\TindakLanjut',
-            'badge_method' => 'pendingCount',
+            'badge_method' => 'pendingReview',
             'badge_class' => 'bg-warning',
+        ]);
+
+        // Standar Mutu
+        Menu::create([
+            'nama' => 'Standar Mutu',
+            'tipe' => 'link',
+            'route' => 'admin.ami.standar-mutu.index',
+            'route_pattern' => 'admin.ami.standar-mutu.*',
+            'icon' => 'bi-list-check',
+            'urutan' => $lastOrder + 12,
+            'is_active' => true,
+            'permission' => 'standar-mutu.view',
+        ]);
+
+        // Laporan
+        Menu::create([
+            'nama' => 'Laporan',
+            'tipe' => 'link',
+            'route' => 'admin.laporan.index',
+            'route_pattern' => 'admin.laporan.*',
+            'icon' => 'bi-file-earmark-bar-graph',
+            'urutan' => $lastOrder + 13,
+            'is_active' => true,
+            'permission' => 'laporan-ami.view',
+        ]);
+
+        // Buku Panduan
+        Menu::create([
+            'nama' => 'Buku Panduan',
+            'tipe' => 'link',
+            'route' => 'admin.panduan.index',
+            'route_pattern' => 'admin.panduan.*',
+            'icon' => 'bi-journal-bookmark',
+            'urutan' => $lastOrder + 14,
+            'is_active' => true,
+            'permission' => 'panduan.view',
+        ]);
+
+        // DKPS
+        Menu::create([
+            'nama' => 'DKPS',
+            'tipe' => 'link',
+            'route' => 'admin.dkps.index',
+            'route_pattern' => 'admin.dkps.*',
+            'icon' => 'bi-clipboard-data',
+            'urutan' => $lastOrder + 15,
+            'is_active' => true,
+            'permission' => 'dkps.view',
         ]);
     }
 }

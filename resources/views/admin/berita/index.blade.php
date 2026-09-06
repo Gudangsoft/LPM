@@ -19,11 +19,20 @@
     </div>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
             <form action="{{ route('admin.berita.index') }}" method="GET" class="d-flex gap-2">
-                <input type="text" name="search" class="form-control" style="max-width: 300px;" placeholder="{{ __('admin.search') }}..." value="{{ request('search') }}">
-                <button type="submit" class="btn btn-outline-primary"><i class="bi bi-search"></i></button>
+                <div class="input-group" style="max-width: 300px;">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="{{ __('admin.search') }}..." value="{{ request('search') }}">
+                </div>
+                <button type="submit" class="btn btn-outline-primary">{{ __('admin.search') }}</button>
+                @if(request('search'))
+                <a href="{{ route('admin.berita.index') }}" class="btn btn-outline-secondary" title="Reset">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+                @endif
             </form>
+            <span class="text-muted small">{{ $berita->total() }} {{ __('admin.news') }}</span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -48,6 +57,10 @@
                                 <div class="d-flex align-items-center">
                                     @if($item->thumbnail)
                                     <img src="{{ Storage::url($item->thumbnail) }}" alt="" class="rounded me-2" style="width: 50px; height: 35px; object-fit: cover;">
+                                    @else
+                                    <div class="rounded me-2 bg-light d-flex align-items-center justify-content-center text-muted flex-shrink-0" style="width: 50px; height: 35px;">
+                                        <i class="bi bi-image"></i>
+                                    </div>
                                     @endif
                                     <div>
                                         <div class="fw-semibold">{{ Str::limit($item->judul, 40) }}</div>
@@ -67,13 +80,18 @@
                             <td>{{ $item->created_at->format('d M Y') }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.berita.edit', $item) }}" class="btn btn-sm btn-outline-primary">
+                                    @if($item->is_published)
+                                    <a href="{{ route('berita.show', $item->slug) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="{{ __('admin.view') }}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @endif
+                                    <a href="{{ route('admin.berita.edit', $item) }}" class="btn btn-sm btn-outline-primary" title="{{ __('admin.edit') }}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <form action="{{ route('admin.berita.destroy', $item) }}" method="POST" onsubmit="return confirm('{{ __('admin.confirm_delete') }}')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ __('admin.delete') }}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>

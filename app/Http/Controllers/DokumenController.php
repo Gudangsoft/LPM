@@ -10,7 +10,7 @@ class DokumenController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Dokumen::active()->latest();
+        $query = Dokumen::published()->latest();
         
         if ($request->has('search') && $request->search) {
             $search = $request->search;
@@ -25,19 +25,19 @@ class DokumenController extends Controller
         }
         
         $dokumen = $query->paginate(20);
-        $kategoris = Dokumen::active()
+        $kategoris = Dokumen::published()
             ->distinct()
             ->whereNotNull('kategori')
             ->pluck('kategori');
-        
+
         return view('frontend.dokumen.index', compact('dokumen', 'kategoris'));
     }
 
     public function download($slug)
     {
-        $dokumen = Dokumen::where('slug', $slug)->active()->firstOrFail();
+        $dokumen = Dokumen::where('slug', $slug)->published()->firstOrFail();
         $dokumen->incrementDownload();
         
-        return Storage::download($dokumen->file_path, $dokumen->file_name);
+        return Storage::disk('public')->download($dokumen->file_path, $dokumen->file_name);
     }
 }

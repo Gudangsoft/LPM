@@ -5,9 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PeriodeAmi;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PeriodeAmiController extends Controller
+class PeriodeAmiController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:periode-ami.view', only: ['index', 'show']),
+            new Middleware('permission:periode-ami.manage', only: ['create', 'store', 'edit', 'update', 'destroy', 'activate', 'complete']),
+        ];
+    }
+
     public function index(Request $request)
     {
         $query = PeriodeAmi::withCount('jadwalAmi')->latest();

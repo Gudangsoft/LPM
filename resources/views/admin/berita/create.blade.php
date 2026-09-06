@@ -31,10 +31,11 @@
 
                         <div class="mb-3">
                             <label for="ringkasan" class="form-label">{{ __('admin.summary') }}</label>
-                            <textarea class="form-control @error('ringkasan') is-invalid @enderror" id="ringkasan" name="ringkasan" rows="3">{{ old('ringkasan') }}</textarea>
+                            <textarea class="form-control @error('ringkasan') is-invalid @enderror" id="ringkasan" name="ringkasan" rows="3" maxlength="500">{{ old('ringkasan') }}</textarea>
                             @error('ringkasan')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <small class="text-muted"><span id="ringkasanCount">0</span>/500 karakter</small>
                         </div>
 
                         <div class="mb-3">
@@ -132,6 +133,14 @@
             }
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    const ringkasanField = document.getElementById('ringkasan');
+    const ringkasanCount = document.getElementById('ringkasanCount');
+    if (ringkasanField && ringkasanCount) {
+        const updateCount = () => ringkasanCount.textContent = ringkasanField.value.length;
+        ringkasanField.addEventListener('input', updateCount);
+        updateCount();
     }
 </script>
 @endpush
