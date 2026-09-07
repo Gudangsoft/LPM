@@ -45,15 +45,20 @@ class AmiMenuSeeder extends Seeder
      */
     public static function rebuild(): void
     {
-        // Old section headers + any previous SPMI root (cascades to its children).
+        // Old section headers + any previous SPMI / Laporan root (cascades to children).
         Menu::where('lokasi', 'admin')
             ->whereNull('parent_id')
-            ->whereIn('nama', ['SPMI', 'PENJAMINAN MUTU', 'AUDIT MUTU INTERNAL'])
+            ->whereIn('nama', ['SPMI', 'Laporan', 'PENJAMINAN MUTU', 'AUDIT MUTU INTERNAL'])
             ->get()
             ->each->delete();
 
+        // Broken "Statistik" menu rows (invalid tipe) from the old StatistikMenuSeeder.
+        Menu::where('lokasi', 'admin')->where('tipe', 'admin')->get()->each->delete();
+
         // Any leftover flat leaf rows.
-        Menu::where('lokasi', 'admin')->whereIn('route', self::LEAF_ROUTES)->delete();
+        Menu::where('lokasi', 'admin')
+            ->whereIn('route', array_merge(self::LEAF_ROUTES, ['admin.statistik.index', 'admin.statistik.chart']))
+            ->delete();
 
         $base = (int) Menu::where('lokasi', 'admin')->whereNull('parent_id')->max('urutan');
 
@@ -94,8 +99,6 @@ class AmiMenuSeeder extends Seeder
         self::node($akr, 1, ['nama' => 'Data Akreditasi', 'route' => 'admin.akreditasi.index', 'route_pattern' => 'admin.akreditasi.*', 'icon' => 'bi-award', 'permission' => 'akreditasi.view']);
         self::node($akr, 2, ['nama' => 'Dashboard Akreditasi', 'route' => 'admin.akreditasi.dashboard', 'icon' => 'bi-speedometer2', 'permission' => 'akreditasi.view']);
 
-        self::node($ev, 3, ['nama' => 'Laporan Evaluasi', 'route' => 'admin.laporan.index', 'route_pattern' => 'admin.laporan.*', 'icon' => 'bi-file-earmark-bar-graph', 'permission' => 'laporan-ami.view']);
-
         // -- P-3 Pengendalian ----------------------------------------------
         $p3 = self::node($spmi, 4, ['nama' => 'P-3 Pengendalian', 'icon' => 'bi-3-circle']);
         self::node($p3, 1, [
@@ -111,6 +114,12 @@ class AmiMenuSeeder extends Seeder
 
         // -- P-4 Peningkatan ---------------------------------------------------
         self::node($spmi, 5, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
+
+        // -- Laporan (top-level group, sibling of SPMI) -----------------------
+        $laporan = self::node(null, $base + 3, ['nama' => 'Laporan', 'icon' => 'bi-bar-chart-line']);
+        self::node($laporan, 1, ['nama' => 'Laporan AMI', 'route' => 'admin.laporan.index', 'route_pattern' => 'admin.laporan.*', 'icon' => 'bi-file-earmark-bar-graph', 'permission' => 'laporan-ami.view']);
+        self::node($laporan, 2, ['nama' => 'Data Statistik', 'route' => 'admin.statistik.index', 'icon' => 'bi-table']);
+        self::node($laporan, 3, ['nama' => 'Grafik', 'route' => 'admin.statistik.chart', 'icon' => 'bi-bar-chart']);
 
         Menu::clearCache();
     }
