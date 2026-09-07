@@ -362,6 +362,8 @@ return [
     'menu_editor' => 'Admin Menu Editor',
     'website_menu' => 'Website Menu',
     'website_menu_editor' => 'Website Menu Editor',
+    'open_new_tab' => 'Open in new tab',
+    'new_tab_short' => 'New tab',
     'drag_to_reorder' => 'Drag to reorder',
     'menu_editor_hint' => 'Drag items to reorder or nest them (up to 3 levels). Changes are saved automatically.',
     'add_menu_item' => 'Add Menu Item',

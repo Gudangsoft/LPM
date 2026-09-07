@@ -162,6 +162,10 @@
                             <input type="checkbox" name="is_active" value="1" class="form-check-input" id="addMenuActive" checked>
                             <label class="form-check-label" for="addMenuActive">{{ __('admin.active') }}</label>
                         </div>
+                        <div class="form-check form-switch mt-2 add-link-field">
+                            <input type="checkbox" name="buka_tab" value="1" class="form-check-input" id="addMenuNewTab">
+                            <label class="form-check-label" for="addMenuNewTab">{{ __('admin.open_new_tab') }}</label>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('admin.cancel') }}</button>
@@ -289,10 +293,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target.closest('.js-qe-save')) {
             const panel = li.querySelector(':scope > .menu-node__quick');
             const btn = e.target.closest('.js-qe-save');
+            const newTabEl = panel.querySelector('.js-qe-newtab');
             const payload = {
                 nama: panel.querySelector('.js-qe-nama').value,
                 icon: panel.querySelector('.js-qe-icon').value,
                 is_active: panel.querySelector('.js-qe-active').checked ? 1 : 0,
+                buka_tab: newTabEl && newTabEl.checked ? 1 : 0,
             };
             btn.disabled = true;
             fetch(panel.dataset.quickUrl, {
@@ -307,6 +313,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const iconEl = li.querySelector(':scope > .menu-node__row .menu-node__icon i');
                 if (iconEl && m.icon) iconEl.className = 'bi ' + m.icon;
                 li.querySelector(':scope > .menu-node__row').classList.toggle('is-inactive', !m.is_active);
+                // toggle the "new tab" indicator badge
+                const meta = li.querySelector(':scope > .menu-node__row .menu-node__meta');
+                let ntBadge = meta.querySelector('.js-node-newtab');
+                if (m.buka_tab && !ntBadge) {
+                    ntBadge = document.createElement('span');
+                    ntBadge.className = 'badge bg-light text-dark border js-node-newtab';
+                    ntBadge.title = @json(__('admin.open_new_tab'));
+                    ntBadge.innerHTML = '<i class="bi bi-box-arrow-up-right"></i>';
+                    meta.insertBefore(ntBadge, meta.querySelector('.js-node-inactive') || null);
+                } else if (!m.buka_tab && ntBadge) {
+                    ntBadge.remove();
+                }
                 panel.hidden = true;
                 setStatus('is-saved', '<i class="bi bi-check-circle"></i> ' + T.saved);
             })

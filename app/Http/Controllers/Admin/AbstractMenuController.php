@@ -67,6 +67,7 @@ abstract class AbstractMenuController extends Controller
     {
         $validated = $this->validateMenu($request);
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['buka_tab'] = $request->boolean('buka_tab');
         $validated['badge_class'] = $validated['badge_class'] ?? 'bg-danger';
         $validated['lokasi'] = $this->location();
 
@@ -100,6 +101,7 @@ abstract class AbstractMenuController extends Controller
 
         $validated = $this->validateMenu($request);
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['buka_tab'] = $request->boolean('buka_tab');
 
         if ($validated['tipe'] !== 'link') {
             $validated['parent_id'] = null;
@@ -164,6 +166,7 @@ abstract class AbstractMenuController extends Controller
             'nama' => 'required|string|max:255',
             'icon' => 'nullable|string|max:50',
             'is_active' => 'required|boolean',
+            'buka_tab' => 'sometimes|boolean',
         ]);
 
         $menu->update($validated);
@@ -171,7 +174,7 @@ abstract class AbstractMenuController extends Controller
 
         return response()->json([
             'success' => true,
-            'menu' => $menu->only(['id', 'nama', 'icon', 'is_active']),
+            'menu' => $menu->only(['id', 'nama', 'icon', 'is_active', 'buka_tab']),
         ]);
     }
 
@@ -196,6 +199,7 @@ abstract class AbstractMenuController extends Controller
             'icon' => 'nullable|string|max:50',
             'route' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',
+            'buka_tab' => 'boolean',
             'route_pattern' => 'nullable|string|max:255',
             'tipe' => 'required|in:link,section,divider',
             'parent_id' => 'nullable|exists:menus,id',

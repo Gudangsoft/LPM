@@ -150,26 +150,32 @@
         }
 
         .nav-section {
-            padding: 18px 26px 8px;
-            font-size: 0.68rem;
+            margin: 14px 14px 4px;
+            padding: 14px 12px 6px;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            color: rgba(255,255,255,0.4);
-            letter-spacing: 0.14em;
-            font-weight: 600;
+            color: rgba(255,255,255,0.62);
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-nav > .nav-section:first-child {
+            border-top: 0;
+            margin-top: 2px;
         }
 
         .sidebar-nav .nav-link {
             display: flex;
             align-items: center;
             padding: 10px 14px;
-            color: rgba(255,255,255,0.72);
+            color: rgba(255,255,255,0.85);
             text-decoration: none;
             transition: background-color 0.18s ease, color 0.18s ease;
             margin: 2px 14px;
             border-radius: 10px;
             position: relative;
             font-weight: 500;
-            font-size: 0.875rem;
+            font-size: 0.88rem;
             white-space: nowrap;
         }
 
@@ -197,7 +203,7 @@
             width: 20px;
             margin-right: 12px;
             font-size: 1.05rem;
-            opacity: 0.7;
+            opacity: 0.85;
             transition: opacity 0.18s ease;
             flex-shrink: 0;
         }
@@ -205,8 +211,8 @@
         /* Nested / child items (level 2 & 3) */
         .sidebar-nav .nav-link--child,
         .sidebar-nav .nav-link--grandchild {
-            font-size: 0.83rem;
-            color: rgba(255,255,255,0.6);
+            font-size: 0.84rem;
+            color: rgba(255,255,255,0.75);
         }
         .sidebar-nav .nav-link--child { padding-left: 44px; }
         .sidebar-nav .nav-link--grandchild { padding-left: 62px; font-size: 0.8rem; }

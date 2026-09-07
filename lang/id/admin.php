@@ -363,6 +363,8 @@ return [
     'menu_editor' => 'Editor Menu Admin',
     'website_menu' => 'Menu Website',
     'website_menu_editor' => 'Editor Menu Website',
+    'open_new_tab' => 'Buka di tab baru',
+    'new_tab_short' => 'Tab baru',
     'drag_to_reorder' => 'Seret untuk mengubah urutan',
     'menu_editor_hint' => 'Seret item untuk mengubah urutan atau menjadikannya submenu (maksimal 3 tingkat). Perubahan tersimpan otomatis.',
     'add_menu_item' => 'Tambah Item Menu',

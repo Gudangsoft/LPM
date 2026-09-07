@@ -10,7 +10,7 @@
 
 @if($visible)
     @php $badgeCount = $item->getBadgeCount(); @endphp
-    <a href="{{ $item->getUrl() }}"
+    <a href="{{ $item->getUrl() }}" @if($item->buka_tab) target="_blank" rel="noopener" @endif
        class="nav-link {{ $depth === 1 ? 'nav-link--child' : ($depth >= 2 ? 'nav-link--grandchild' : '') }} {{ $item->isActive() ? 'active' : '' }}">
         @if($item->icon)
             <i class="bi {{ $item->icon }}"></i>

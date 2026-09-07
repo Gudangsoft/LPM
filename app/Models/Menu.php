@@ -18,6 +18,7 @@ class Menu extends Model
         'icon',
         'route',
         'url',
+        'buka_tab',
         'route_pattern',
         'tipe',
         'lokasi',
@@ -32,6 +33,7 @@ class Menu extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'buka_tab' => 'boolean',
     ];
 
     /**

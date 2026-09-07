@@ -165,6 +165,10 @@
                                 <input type="checkbox" name="is_active" class="form-check-input" id="isActive" value="1" {{ old('is_active', $menu->is_active) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="isActive">{{ __('admin.active') }}</label>
                             </div>
+                            <div class="form-check mt-1" id="newTabField">
+                                <input type="checkbox" name="buka_tab" class="form-check-input" id="bukaTab" value="1" {{ old('buka_tab', $menu->buka_tab) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="bukaTab">{{ __('admin.open_new_tab') }}</label>
+                            </div>
                         </div>
 
                         <div class="d-flex gap-2">

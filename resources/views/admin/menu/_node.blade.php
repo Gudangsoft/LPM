@@ -34,6 +34,9 @@
             @elseif($node->url)
                 <span class="text-muted small">{{ \Illuminate\Support\Str::limit($node->url, 36) }}</span>
             @endif
+            @if($node->buka_tab)
+                <span class="badge bg-light text-dark border js-node-newtab" title="{{ __('admin.open_new_tab') }}"><i class="bi bi-box-arrow-up-right"></i></span>
+            @endif
             @unless($node->is_active)
                 <span class="badge bg-warning text-dark js-node-inactive">{{ __('admin.inactive') }}</span>
             @endunless
@@ -56,14 +59,20 @@
                 <label class="form-label small mb-1">{{ __('admin.name') }}</label>
                 <input type="text" class="form-control form-control-sm js-qe-nama" value="{{ $node->nama }}">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <label class="form-label small mb-1">{{ __('admin.icon') }}</label>
                 <input type="text" class="form-control form-control-sm js-qe-icon" value="{{ $node->icon }}" placeholder="bi-house">
             </div>
-            <div class="col-sm-3 d-flex align-items-end">
+            <div class="col-sm-2 d-flex align-items-end">
                 <div class="form-check form-switch mb-1">
                     <input type="checkbox" class="form-check-input js-qe-active" {{ $node->is_active ? 'checked' : '' }}>
                     <label class="form-check-label small">{{ __('admin.active') }}</label>
+                </div>
+            </div>
+            <div class="col-sm-2 d-flex align-items-end">
+                <div class="form-check form-switch mb-1">
+                    <input type="checkbox" class="form-check-input js-qe-newtab" {{ $node->buka_tab ? 'checked' : '' }}>
+                    <label class="form-check-label small">{{ __('admin.new_tab_short') }}</label>
                 </div>
             </div>
         </div>

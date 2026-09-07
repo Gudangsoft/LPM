@@ -9,8 +9,7 @@
     $maxChildDepth = \App\Models\Menu::MAX_DEPTH - 1;
 
     $url = $item->getUrl();
-    $external = \Illuminate\Support\Str::startsWith($url, ['http://', 'https://', 'mailto:', 'tel:']);
-    $attr = $external ? ' target="_blank" rel="noopener"' : '';
+    $attr = $item->buka_tab ? ' target="_blank" rel="noopener"' : '';
     $active = $item->isBranchActive();
 @endphp
 
