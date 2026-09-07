@@ -146,19 +146,21 @@ class AmiMenuSeeder extends Seeder
             'badge_method' => 'pendingReview',
             'badge_class' => 'bg-warning',
         ]);
-        self::node($p3, 2, ['nama' => 'Monitoring', 'route' => 'admin.ami.monitoring', 'route_pattern' => 'admin.ami.monitoring', 'icon' => 'bi-activity', 'permission' => 'tindak-lanjut.view']);
-        self::node($p3, 3, ['nama' => 'Audit Trail', 'route' => 'admin.ami.audit-trail', 'route_pattern' => 'admin.ami.audit-trail', 'icon' => 'bi-clock-history', 'permission' => 'audit-trail.view']);
+        self::node($p3, 2, ['nama' => 'Verifikasi RTL', 'route' => 'admin.ami.verifikasi-rtl.index', 'route_pattern' => 'admin.ami.verifikasi-rtl.*', 'icon' => 'bi-check2-square', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 3, ['nama' => 'Monitoring', 'route' => 'admin.ami.monitoring', 'route_pattern' => 'admin.ami.monitoring', 'icon' => 'bi-activity', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 4, ['nama' => 'Audit Trail', 'route' => 'admin.ami.audit-trail', 'route_pattern' => 'admin.ami.audit-trail', 'icon' => 'bi-clock-history', 'permission' => 'audit-trail.view']);
 
         $p4 = self::node($spmi, 5, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
-        self::cs($p4, 1, 'Rapat Tinjauan Manajemen', 'rapat-tinjauan-manajemen', 'bi-people');
+        self::node($p4, 1, ['nama' => 'Rapat Tinjauan Manajemen', 'route' => 'admin.ami.rtm.index', 'route_pattern' => 'admin.ami.rtm.*', 'icon' => 'bi-people', 'permission' => 'rtm.view']);
         self::cs($p4, 2, 'Rencana Peningkatan Mutu', 'rencana-peningkatan-mutu', 'bi-graph-up');
         self::cs($p4, 3, 'Benchmarking', 'benchmarking', 'bi-bar-chart-steps');
 
         // ---- Laporan (top-level group) --------------------------------------
         $laporan = self::node(null, 4, ['nama' => 'Laporan', 'icon' => 'bi-bar-chart-line']);
         self::node($laporan, 1, ['nama' => 'Laporan AMI', 'route' => 'admin.laporan.index', 'route_pattern' => 'admin.laporan.*', 'icon' => 'bi-file-earmark-bar-graph', 'permission' => 'laporan-ami.view']);
-        self::node($laporan, 2, ['nama' => 'Data Statistik', 'route' => 'admin.statistik.index', 'icon' => 'bi-table']);
-        self::node($laporan, 3, ['nama' => 'Grafik', 'route' => 'admin.statistik.chart', 'icon' => 'bi-bar-chart']);
+        self::node($laporan, 2, ['nama' => 'Analitik Mutu', 'route' => 'admin.ami.analitik', 'route_pattern' => 'admin.ami.analitik', 'icon' => 'bi-graph-up-arrow', 'permission' => 'laporan-ami.view']);
+        self::node($laporan, 3, ['nama' => 'Data Statistik', 'route' => 'admin.statistik.index', 'icon' => 'bi-table']);
+        self::node($laporan, 4, ['nama' => 'Grafik', 'route' => 'admin.statistik.chart', 'icon' => 'bi-bar-chart']);
 
         self::normalizeRootOrder();
 

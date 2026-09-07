@@ -141,6 +141,10 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Lihat Lembar Kerja Audit', 'slug' => 'lembar-audit.view', 'module' => 'ami'],
             ['name' => 'Isi Lembar Kerja Audit', 'slug' => 'lembar-audit.fill', 'module' => 'ami'],
             ['name' => 'Lihat Dokumen/Bukti Audit', 'slug' => 'bukti.view', 'module' => 'ami'],
+
+            // RTM (Fase 3)
+            ['name' => 'Lihat RTM', 'slug' => 'rtm.view', 'module' => 'ami'],
+            ['name' => 'Kelola RTM', 'slug' => 'rtm.manage', 'module' => 'ami'],
         ];
 
         foreach ($permissions as $permData) {
@@ -199,6 +203,7 @@ class RolePermissionSeeder extends Seeder
                 'lembar-audit.view',
                 'lembar-audit.fill',
                 'bukti.view',
+                'rtm.view',
             ])->pluck('id');
             $auditorRole->permissions()->sync($auditorPermissions);
         }
@@ -224,6 +229,7 @@ class RolePermissionSeeder extends Seeder
                 'evaluasi-diri.fill',
                 'lembar-audit.view',
                 'bukti.view',
+                'rtm.view',
             ])->pluck('id');
             $kaprodiRole->permissions()->sync($kaprodiPermissions);
         }
@@ -246,6 +252,7 @@ class RolePermissionSeeder extends Seeder
                 'evaluasi-diri.view',
                 'lembar-audit.view',
                 'bukti.view',
+                'rtm.view',
             ])->pluck('id');
             $viewerRole->permissions()->sync($viewerPermissions);
         }

@@ -36,6 +36,9 @@ use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\EvaluasiDiriController;
 use App\Http\Controllers\Admin\LembarAuditController;
 use App\Http\Controllers\Admin\BuktiAuditController;
+use App\Http\Controllers\Admin\RtmController;
+use App\Http\Controllers\Admin\AnalitikMutuController;
+use App\Http\Controllers\Admin\VerifikasiRtlController;
 use App\Http\Controllers\Admin\AuditorController;
 use App\Http\Controllers\Admin\JadwalAmiController;
 use App\Http\Controllers\Admin\TemuanAmiController;
@@ -229,6 +232,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
         // Dokumen / Bukti Audit (browse) - Fase 2
         Route::get('bukti', [BuktiAuditController::class, 'index'])->name('bukti.index');
+
+        // Fase 3: Verifikasi RTL, Analitik Mutu, RTM
+        Route::get('verifikasi-rtl', [VerifikasiRtlController::class, 'index'])->name('verifikasi-rtl.index');
+        Route::post('verifikasi-rtl/{tindakLanjut}/verify', [VerifikasiRtlController::class, 'verify'])->name('verifikasi-rtl.verify');
+
+        Route::get('analitik', [AnalitikMutuController::class, 'index'])->name('analitik');
+
+        Route::post('rtm/{rtm}/generate-ringkasan', [RtmController::class, 'generateRingkasan'])->name('rtm.generate-ringkasan');
+        Route::post('rtm/{rtm}/agenda', [RtmController::class, 'addAgenda'])->name('rtm.agenda.add');
+        Route::put('rtm/agenda/{agenda}', [RtmController::class, 'updateAgenda'])->name('rtm.agenda.update');
+        Route::delete('rtm/agenda/{agenda}', [RtmController::class, 'deleteAgenda'])->name('rtm.agenda.delete');
+        Route::post('rtm/{rtm}/keputusan', [RtmController::class, 'addKeputusan'])->name('rtm.keputusan.add');
+        Route::put('rtm/keputusan/{keputusan}', [RtmController::class, 'updateKeputusan'])->name('rtm.keputusan.update');
+        Route::delete('rtm/keputusan/{keputusan}', [RtmController::class, 'deleteKeputusan'])->name('rtm.keputusan.delete');
+        Route::resource('rtm', RtmController::class);
 
         // Periode AMI
         Route::post('periode/{periode}/activate', [PeriodeAmiController::class, 'activate'])->name('periode.activate');

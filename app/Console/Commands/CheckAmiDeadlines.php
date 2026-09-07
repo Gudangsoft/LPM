@@ -4,11 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\Akreditasi;
 use App\Models\Auditor;
+use App\Models\JadwalAmi;
 use App\Models\TemuanAmi;
 use App\Models\TindakLanjut;
 use App\Models\User;
 use App\Notifications\AccreditationExpiringSoon;
 use App\Notifications\AuditorCertExpiringSoon;
+use App\Notifications\EvaluasiDiriBelumDikirim;
 use App\Notifications\TemuanOverdue;
 use App\Notifications\TindakLanjutPendingReview;
 use Illuminate\Console\Command;
@@ -52,6 +54,19 @@ class CheckAmiDeadlines extends Command
         foreach (TindakLanjut::pendingReview()->with('temuanAmi.auditor.user')->get() as $tindakLanjut) {
             if ($reviewer = $tindakLanjut->temuanAmi?->auditor?->user) {
                 $created += $this->notifyOnce($reviewer, TindakLanjutPendingReview::class, $tindakLanjut->id, fn () => new TindakLanjutPendingReview($tindakLanjut));
+            }
+        }
+
+        // Evaluasi diri belum dikirim, audit dalam 7 hari ke depan
+        $ambang = now()->addDays(7);
+        $jadwalDekat = JadwalAmi::with('prodi.kaprodi')
+            ->whereBetween('tanggal_audit', [now()->startOfDay(), $ambang])
+            ->whereDoesntHave('evaluasiDiri', fn ($q) => $q->where('status', 'submitted'))
+            ->get();
+
+        foreach ($jadwalDekat as $jadwal) {
+            if ($kaprodi = $jadwal->prodi?->kaprodi) {
+                $created += $this->notifyOnce($kaprodi, EvaluasiDiriBelumDikirim::class, $jadwal->id, fn () => new EvaluasiDiriBelumDikirim($jadwal));
             }
         }
 
