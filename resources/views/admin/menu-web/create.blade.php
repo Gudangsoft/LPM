@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@php $routePrefix = $routePrefix ?? 'admin.menu'; @endphp
+@php $routePrefix = $routePrefix ?? 'admin.menu-web'; @endphp
 
 @section('title', __('admin.add_menu'))
 

@@ -1,6 +1,6 @@
 @php
     $hasKids = $node->relationLoaded('childrenRecursive') && $node->childrenRecursive->isNotEmpty();
-    $routePrefix = $routePrefix ?? 'admin.menu';
+    $routePrefix = $routePrefix ?? 'admin.menu-web';
 @endphp
 <li class="menu-node" data-id="{{ $node->id }}" data-type="{{ $node->tipe }}" data-depth="{{ $depth }}">
     <div class="menu-node__row menu-node__row--{{ $node->tipe }} {{ $node->is_active ? '' : 'is-inactive' }}">
@@ -99,7 +99,7 @@
     <ul class="menu-tree" data-depth="{{ $depth + 1 }}">
         @if($hasKids)
             @foreach($node->childrenRecursive as $child)
-                @include('admin.menu._node', ['node' => $child, 'depth' => $depth + 1, 'routePrefix' => $routePrefix])
+                @include('admin.menu-web._node', ['node' => $child, 'depth' => $depth + 1, 'routePrefix' => $routePrefix])
             @endforeach
         @endif
     </ul>

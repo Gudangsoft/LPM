@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@php $routePrefix = $routePrefix ?? 'admin.menu'; $pageTitle = $pageTitle ?? __('admin.menu_editor'); @endphp
+@php $routePrefix = $routePrefix ?? 'admin.menu-web'; $pageTitle = $pageTitle ?? __('admin.website_menu_editor'); @endphp
 
 @section('title', $pageTitle)
 
@@ -95,7 +95,7 @@
 
             <ul class="menu-tree" id="menuTreeRoot" data-depth="1">
                 @foreach($tree as $item)
-                    @include('admin.menu._node', ['node' => $item, 'depth' => 1, 'routePrefix' => $routePrefix])
+                    @include('admin.menu-web._node', ['node' => $item, 'depth' => 1, 'routePrefix' => $routePrefix])
                 @endforeach
             </ul>
         </div>

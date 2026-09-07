@@ -146,14 +146,6 @@ class MenuSeeder extends Seeder
                 'urutan' => 16,
             ],
             [
-                'nama' => 'Menu',
-                'icon' => 'bi-list-nested',
-                'route' => 'admin.menu.index',
-                'route_pattern' => 'admin.menu.*',
-                'tipe' => 'link',
-                'urutan' => 17,
-            ],
-            [
                 'nama' => 'Pengaturan',
                 'icon' => 'bi-gear',
                 'route' => 'admin.pengaturan.index',

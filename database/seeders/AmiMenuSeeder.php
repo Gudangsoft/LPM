@@ -61,7 +61,6 @@ class AmiMenuSeeder extends Seeder
         ['route' => 'admin.halaman.index'],
         ['route' => 'admin.struktur-organisasi.index'],
         ['section' => 'Sistem'],
-        ['route' => 'admin.menu.index'],
         ['route' => 'admin.menu-web.index'],
         ['route' => 'admin.users.index'],
         ['route' => 'admin.kontak.index'],
