@@ -27,13 +27,15 @@
         <span class="menu-node__name js-node-name">{{ $node->nama }}</span>
 
         <span class="menu-node__meta">
-            @if($node->tipe !== 'link')
-                <span class="badge bg-secondary text-uppercase">{{ $node->tipe }}</span>
-            @elseif($node->route)
-                <code class="small">{{ $node->route }}</code>
-            @elseif($node->url)
-                <span class="text-muted small">{{ \Illuminate\Support\Str::limit($node->url, 36) }}</span>
-            @endif
+            <span class="js-node-target">
+                @if($node->tipe !== 'link')
+                    <span class="badge bg-secondary text-uppercase">{{ $node->tipe }}</span>
+                @elseif($node->route)
+                    <code class="small">{{ $node->route }}</code>
+                @elseif($node->url)
+                    <span class="text-muted small">{{ \Illuminate\Support\Str::limit($node->url, 40) }}</span>
+                @endif
+            </span>
             @if($node->buka_tab)
                 <span class="badge bg-light text-dark border js-node-newtab" title="{{ __('admin.open_new_tab') }}"><i class="bi bi-box-arrow-up-right"></i></span>
             @endif
@@ -76,6 +78,17 @@
                 </div>
             </div>
         </div>
+        @if($node->tipe === 'link')
+        <div class="row g-2 mt-1">
+            <div class="col-12">
+                <label class="form-label small mb-1">{{ __('admin.target') }} / Link</label>
+                <input type="text" class="form-control form-control-sm js-qe-target"
+                       value="{{ $node->route ?: $node->url }}"
+                       placeholder="admin.berita.index  •  /halaman/anu  •  https://situs.lain">
+                <small class="text-muted">{{ __('admin.target_hint') }}</small>
+            </div>
+        </div>
+        @endif
         <div class="mt-2 d-flex gap-2">
             <button type="button" class="btn btn-sm btn-primary js-qe-save">{{ __('admin.save') }}</button>
             <button type="button" class="btn btn-sm btn-outline-secondary js-qe-cancel">{{ __('admin.cancel') }}</button>

@@ -364,6 +364,7 @@ return [
     'website_menu_editor' => 'Website Menu Editor',
     'open_new_tab' => 'Open in new tab',
     'new_tab_short' => 'New tab',
+    'target_hint' => 'Enter a route name (e.g. admin.berita.index), a relative path (/pages/x), or a full URL (https://...). Leave blank for a menu with no link.',
     'drag_to_reorder' => 'Drag to reorder',
     'menu_editor_hint' => 'Drag items to reorder or nest them (up to 3 levels). Changes are saved automatically.',
     'add_menu_item' => 'Add Menu Item',

@@ -294,12 +294,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const panel = li.querySelector(':scope > .menu-node__quick');
             const btn = e.target.closest('.js-qe-save');
             const newTabEl = panel.querySelector('.js-qe-newtab');
+            const targetEl = panel.querySelector('.js-qe-target');
             const payload = {
                 nama: panel.querySelector('.js-qe-nama').value,
                 icon: panel.querySelector('.js-qe-icon').value,
                 is_active: panel.querySelector('.js-qe-active').checked ? 1 : 0,
                 buka_tab: newTabEl && newTabEl.checked ? 1 : 0,
             };
+            if (targetEl) payload.target = targetEl.value;
             btn.disabled = true;
             fetch(panel.dataset.quickUrl, {
                 method: 'PATCH',
@@ -324,6 +326,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     meta.insertBefore(ntBadge, meta.querySelector('.js-node-inactive') || null);
                 } else if (!m.buka_tab && ntBadge) {
                     ntBadge.remove();
+                }
+                // refresh the target (route / url) shown in the row
+                const tgtEl = meta.querySelector('.js-node-target');
+                if (tgtEl) {
+                    if (m.route) {
+                        tgtEl.innerHTML = '<code class="small"></code>';
+                        tgtEl.querySelector('code').textContent = m.route;
+                    } else if (m.url) {
+                        tgtEl.innerHTML = '<span class="text-muted small"></span>';
+                        tgtEl.querySelector('span').textContent = m.url.length > 40 ? m.url.slice(0, 39) + '…' : m.url;
+                    } else {
+                        tgtEl.innerHTML = '';
+                    }
                 }
                 panel.hidden = true;
                 setStatus('is-saved', '<i class="bi bi-check-circle"></i> ' + T.saved);

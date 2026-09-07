@@ -167,14 +167,33 @@ abstract class AbstractMenuController extends Controller
             'icon' => 'nullable|string|max:50',
             'is_active' => 'required|boolean',
             'buka_tab' => 'sometimes|boolean',
+            'target' => 'sometimes|nullable|string|max:255',
         ]);
 
-        $menu->update($validated);
+        // "target" is a single field the user types: a route name, a relative
+        // path, or an absolute URL. Split it back into route / url columns.
+        if ($request->has('target')) {
+            $target = trim((string) $request->input('target'));
+
+            if ($target === '') {
+                $menu->route = null;
+                $menu->url = null;
+            } elseif (\Illuminate\Support\Str::startsWith($target, ['http://', 'https://', '/', '#', 'mailto:', 'tel:'])) {
+                $menu->url = $target;
+                $menu->route = null;
+            } else {
+                $menu->route = $target;
+                $menu->url = null;
+            }
+        }
+
+        $menu->fill(array_diff_key($validated, ['target' => null]));
+        $menu->save();
         Menu::clearCache();
 
         return response()->json([
             'success' => true,
-            'menu' => $menu->only(['id', 'nama', 'icon', 'is_active', 'buka_tab']),
+            'menu' => $menu->only(['id', 'nama', 'icon', 'is_active', 'buka_tab', 'route', 'url']),
         ]);
     }
 
