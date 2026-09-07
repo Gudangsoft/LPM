@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Pengaturan;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Both layouts load Bootstrap 5, so render pagination with Bootstrap markup
+        // (default is Tailwind, whose unstyled SVG chevrons render full-screen here).
+        Paginator::useBootstrapFive();
+
         // Share site settings with all views
         View::composer('*', function ($view) {
             $siteSettings = Cache::remember('site_settings', 3600, function () {

@@ -11,6 +11,8 @@ return [
     'quality_system' => 'Quality Assurance System',
     'internal_audit' => 'Internal Quality Audit',
     'accreditation' => 'Accreditation',
+    'spmi' => 'SPMI',
+    'information' => 'Information',
     'news' => 'News',
     'gallery' => 'Gallery',
     'documents' => 'Documents',

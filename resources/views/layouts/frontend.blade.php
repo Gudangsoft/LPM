@@ -56,6 +56,7 @@
         }
 
         .navbar-lpm .nav-link {
+            position: relative;
             color: rgba(255,255,255,0.9) !important;
             font-weight: 500;
             padding: 20px 15px !important;
@@ -67,20 +68,57 @@
             color: white !important;
         }
 
+        .navbar-lpm .nav-link.active {
+            color: #fff !important;
+            background: rgba(255,255,255,0.16);
+        }
+
         .navbar-lpm .dropdown-menu {
             border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
             border-radius: 10px;
+            margin-top: 0;
+            padding: 8px;
+            min-width: 240px;
         }
 
         .navbar-lpm .dropdown-item {
-            padding: 10px 20px;
+            padding: 10px 16px;
             font-weight: 500;
+            border-radius: 8px;
         }
 
         .navbar-lpm .dropdown-item:hover {
             background: var(--secondary-color);
             color: white;
+        }
+
+        .navbar-lpm .dropdown-item.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        @media (min-width: 992px) {
+            /* Animated accent underline for simple links */
+            .navbar-lpm .nav-link:not(.dropdown-toggle)::after {
+                content: '';
+                position: absolute;
+                left: 15px;
+                right: 15px;
+                bottom: 12px;
+                height: 2px;
+                background: var(--accent-color);
+                transform: scaleX(0);
+                transition: transform .25s ease;
+            }
+            .navbar-lpm .nav-link:not(.dropdown-toggle):hover::after,
+            .navbar-lpm .nav-link:not(.dropdown-toggle).active::after {
+                transform: scaleX(1);
+            }
+            /* Open dropdowns on hover */
+            .navbar-lpm .nav-item.dropdown:hover > .dropdown-menu {
+                display: block;
+            }
         }
 
         /* Top Bar */
@@ -745,28 +783,41 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('menu.home') }}</a>
                     </li>
+
+                    {{-- Profil LPM --}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{ __('menu.about') }}</a>
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('profil', 'visi-misi', 'struktur-organisasi') ? 'active' : '' }}"
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.profile') }}</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('profil') }}">{{ __('menu.profile') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('visi-misi') }}">{{ __('menu.vision_mission') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('struktur-organisasi') }}">{{ __('menu.structure') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('profil') ? 'active' : '' }}" href="{{ route('profil') }}">{{ __('menu.about') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('visi-misi') ? 'active' : '' }}" href="{{ route('visi-misi') }}">{{ __('menu.vision_mission') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('struktur-organisasi') ? 'active' : '' }}" href="{{ route('struktur-organisasi') }}">{{ __('menu.structure') }}</a></li>
                         </ul>
                     </li>
+
+                    {{-- SPMI --}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{ __('menu.quality_assurance') }}</a>
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('sistem-penjaminan-mutu', 'audit-mutu-internal', 'akreditasi') ? 'active' : '' }}"
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.spmi') }}</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('sistem-penjaminan-mutu') }}">{{ __('menu.quality_system') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('audit-mutu-internal') }}">{{ __('menu.internal_audit') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ route('akreditasi') }}">{{ __('menu.accreditation') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}" href="{{ route('sistem-penjaminan-mutu') }}">{{ __('menu.quality_system') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}" href="{{ route('audit-mutu-internal') }}">{{ __('menu.internal_audit') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('akreditasi') ? 'active' : '' }}" href="{{ route('akreditasi') }}">{{ __('menu.accreditation') }}</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">{{ __('menu.news') }}</a>
+
+                    {{-- Informasi --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('berita.*', 'pengumuman.*', 'agenda.*', 'galeri.*') ? 'active' : '' }}"
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.information') }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item {{ request()->routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">{{ __('menu.news') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('pengumuman.*') ? 'active' : '' }}" href="{{ route('pengumuman.index') }}">{{ __('menu.announcements') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('agenda.*') ? 'active' : '' }}" href="{{ route('agenda.index') }}">{{ __('menu.agenda') }}</a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('galeri.*') ? 'active' : '' }}" href="{{ route('galeri.index') }}">{{ __('menu.gallery') }}</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('galeri.*') ? 'active' : '' }}" href="{{ route('galeri.index') }}">{{ __('menu.gallery') }}</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('dokumen.*') ? 'active' : '' }}" href="{{ route('dokumen.index') }}">{{ __('menu.documents') }}</a>
                     </li>

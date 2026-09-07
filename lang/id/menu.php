@@ -11,6 +11,8 @@ return [
     'quality_system' => 'Sistem Penjaminan Mutu',
     'internal_audit' => 'Audit Mutu Internal',
     'accreditation' => 'Akreditasi',
+    'spmi' => 'SPMI',
+    'information' => 'Informasi',
     'news' => 'Berita',
     'gallery' => 'Galeri',
     'documents' => 'Dokumen',
