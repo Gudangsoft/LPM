@@ -131,6 +131,9 @@ class RolePermissionSeeder extends Seeder
             // DKPS (Data Kinerja Program Studi)
             ['name' => 'Lihat DKPS', 'slug' => 'dkps.view', 'module' => 'dkps'],
             ['name' => 'Kelola DKPS', 'slug' => 'dkps.manage', 'module' => 'dkps'],
+
+            // Audit Trail
+            ['name' => 'Lihat Audit Trail', 'slug' => 'audit-trail.view', 'module' => 'ami'],
         ];
 
         foreach ($permissions as $permData) {

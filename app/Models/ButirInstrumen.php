@@ -5,40 +5,35 @@ namespace App\Models;
 use App\Models\Concerns\RecordsAuditTrail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StandarMutu extends Model
+class ButirInstrumen extends Model
 {
     use HasFactory;
     use RecordsAuditTrail;
 
-    protected $table = 'standar_mutu';
+    protected $table = 'butir_instrumen';
 
     protected $fillable = [
+        'standar_mutu_id',
         'kode',
-        'nama',
-        'deskripsi',
+        'pertanyaan',
+        'indikator',
+        'bobot',
+        'target',
+        'jenis_bukti',
         'urutan',
         'is_active',
     ];
 
     protected $casts = [
+        'bobot' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 
-    public function temuan(): HasMany
+    public function standarMutu(): BelongsTo
     {
-        return $this->hasMany(TemuanAmi::class);
-    }
-
-    public function butir(): HasMany
-    {
-        return $this->hasMany(ButirInstrumen::class)->orderBy('urutan');
-    }
-
-    public function dokumen(): HasMany
-    {
-        return $this->hasMany(Dokumen::class);
+        return $this->belongsTo(StandarMutu::class);
     }
 
     public function scopeActive($query)
@@ -48,6 +43,6 @@ class StandarMutu extends Model
 
     public function scopeOrdered($query)
     {
-        return $query->orderBy('urutan', 'asc');
+        return $query->orderBy('urutan')->orderBy('id');
     }
 }

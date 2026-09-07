@@ -101,9 +101,10 @@ class AmiMenuSeeder extends Seeder
         self::cs($p1, 1, 'Kebijakan SPMI', 'kebijakan-spmi', 'bi-shield-check');
         self::cs($p1, 2, 'Manual SPMI', 'manual-spmi', 'bi-book');
         self::node($p1, 3, ['nama' => 'Standar Mutu', 'route' => 'admin.ami.standar-mutu.index', 'route_pattern' => 'admin.ami.standar-mutu.*', 'icon' => 'bi-list-check', 'permission' => 'standar-mutu.view']);
-        self::cs($p1, 4, 'Formulir SPMI', 'formulir-spmi', 'bi-ui-checks');
-        self::node($p1, 5, ['nama' => 'Program Studi', 'route' => 'admin.prodi.index', 'route_pattern' => 'admin.prodi.*', 'icon' => 'bi-mortarboard', 'permission' => 'prodi.view']);
-        self::node($p1, 6, ['nama' => 'Buku Panduan', 'route' => 'admin.panduan.index', 'route_pattern' => 'admin.panduan.*', 'icon' => 'bi-journal-bookmark', 'permission' => 'panduan.view']);
+        self::node($p1, 4, ['nama' => 'Instrumen Audit', 'route' => 'admin.ami.instrumen.index', 'route_pattern' => 'admin.ami.instrumen.*', 'icon' => 'bi-ui-checks-grid', 'permission' => 'standar-mutu.view']);
+        self::cs($p1, 5, 'Formulir SPMI', 'formulir-spmi', 'bi-ui-checks');
+        self::node($p1, 6, ['nama' => 'Program Studi', 'route' => 'admin.prodi.index', 'route_pattern' => 'admin.prodi.*', 'icon' => 'bi-mortarboard', 'permission' => 'prodi.view']);
+        self::node($p1, 7, ['nama' => 'Buku Panduan', 'route' => 'admin.panduan.index', 'route_pattern' => 'admin.panduan.*', 'icon' => 'bi-journal-bookmark', 'permission' => 'panduan.view']);
 
         $p2 = self::node($spmi, 2, ['nama' => 'P-2 Pelaksanaan', 'icon' => 'bi-2-circle']);
         self::node($p2, 1, ['nama' => 'DKPS', 'route' => 'admin.dkps.index', 'route_pattern' => 'admin.dkps.*', 'icon' => 'bi-clipboard-data', 'permission' => 'dkps.view']);
@@ -113,12 +114,13 @@ class AmiMenuSeeder extends Seeder
         $ev = self::node($spmi, 3, ['nama' => 'E-Evaluasi', 'icon' => 'bi-clipboard-check']);
 
         $ami = self::node($ev, 1, ['nama' => 'Audit Mutu Internal', 'icon' => 'bi-search']);
-        self::cs($ami, 1, 'Aturan AMI', 'aturan-ami', 'bi-gear');
-        self::node($ami, 2, ['nama' => 'Periode AMI', 'route' => 'admin.ami.periode.index', 'route_pattern' => 'admin.ami.periode.*', 'icon' => 'bi-calendar3', 'permission' => 'periode-ami.view']);
-        self::node($ami, 3, ['nama' => 'Auditor', 'route' => 'admin.ami.auditor.index', 'route_pattern' => 'admin.ami.auditor.*', 'icon' => 'bi-person-badge', 'permission' => 'auditor.view']);
-        self::node($ami, 4, ['nama' => 'Jadwal Audit', 'route' => 'admin.ami.jadwal.index', 'route_pattern' => 'admin.ami.jadwal.*', 'icon' => 'bi-calendar-check', 'permission' => 'jadwal-ami.view']);
-        self::node($ami, 5, ['nama' => 'Penugasan Saya', 'route' => 'admin.ami.penugasan.saya', 'route_pattern' => 'admin.ami.penugasan.*', 'icon' => 'bi-inbox', 'permission' => 'penugasan.respond']);
-        self::node($ami, 6, ['nama' => 'Temuan', 'route' => 'admin.ami.temuan.index', 'route_pattern' => 'admin.ami.temuan.*', 'icon' => 'bi-exclamation-diamond', 'permission' => 'temuan.view']);
+        self::node($ami, 1, ['nama' => 'Dashboard AMI', 'route' => 'admin.ami.dashboard', 'route_pattern' => 'admin.ami.dashboard', 'icon' => 'bi-speedometer2', 'permission' => 'periode-ami.view']);
+        self::cs($ami, 2, 'Aturan AMI', 'aturan-ami', 'bi-gear');
+        self::node($ami, 3, ['nama' => 'Periode AMI', 'route' => 'admin.ami.periode.index', 'route_pattern' => 'admin.ami.periode.*', 'icon' => 'bi-calendar3', 'permission' => 'periode-ami.view']);
+        self::node($ami, 4, ['nama' => 'Auditor', 'route' => 'admin.ami.auditor.index', 'route_pattern' => 'admin.ami.auditor.*', 'icon' => 'bi-person-badge', 'permission' => 'auditor.view']);
+        self::node($ami, 5, ['nama' => 'Jadwal Audit', 'route' => 'admin.ami.jadwal.index', 'route_pattern' => 'admin.ami.jadwal.*', 'icon' => 'bi-calendar-check', 'permission' => 'jadwal-ami.view']);
+        self::node($ami, 6, ['nama' => 'Penugasan Saya', 'route' => 'admin.ami.penugasan.saya', 'route_pattern' => 'admin.ami.penugasan.*', 'icon' => 'bi-inbox', 'permission' => 'penugasan.respond']);
+        self::node($ami, 7, ['nama' => 'Temuan', 'route' => 'admin.ami.temuan.index', 'route_pattern' => 'admin.ami.temuan.*', 'icon' => 'bi-exclamation-diamond', 'permission' => 'temuan.view']);
 
         $akr = self::node($ev, 2, ['nama' => 'Akreditasi', 'icon' => 'bi-award']);
         self::node($akr, 1, ['nama' => 'Data Akreditasi', 'route' => 'admin.akreditasi.index', 'route_pattern' => 'admin.akreditasi.*', 'icon' => 'bi-award', 'permission' => 'akreditasi.view']);
@@ -141,7 +143,8 @@ class AmiMenuSeeder extends Seeder
             'badge_method' => 'pendingReview',
             'badge_class' => 'bg-warning',
         ]);
-        self::cs($p3, 2, 'Monitoring', 'monitoring', 'bi-activity');
+        self::node($p3, 2, ['nama' => 'Monitoring', 'route' => 'admin.ami.monitoring', 'route_pattern' => 'admin.ami.monitoring', 'icon' => 'bi-activity', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 3, ['nama' => 'Audit Trail', 'route' => 'admin.ami.audit-trail', 'route_pattern' => 'admin.ami.audit-trail', 'icon' => 'bi-clock-history', 'permission' => 'audit-trail.view']);
 
         $p4 = self::node($spmi, 5, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
         self::cs($p4, 1, 'Rapat Tinjauan Manajemen', 'rapat-tinjauan-manajemen', 'bi-people');

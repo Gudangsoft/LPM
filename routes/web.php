@@ -29,6 +29,10 @@ use App\Http\Controllers\Admin\DatabaseController;
 use App\Http\Controllers\Admin\ProdiController;
 use App\Http\Controllers\Admin\AkreditasiController;
 use App\Http\Controllers\Admin\PeriodeAmiController;
+use App\Http\Controllers\Admin\AmiDashboardController;
+use App\Http\Controllers\Admin\ButirInstrumenController;
+use App\Http\Controllers\Admin\MonitoringController;
+use App\Http\Controllers\Admin\AuditTrailController;
 use App\Http\Controllers\Admin\AuditorController;
 use App\Http\Controllers\Admin\JadwalAmiController;
 use App\Http\Controllers\Admin\TemuanAmiController;
@@ -196,6 +200,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('akreditasi', AkreditasiController::class);
 
     Route::prefix('ami')->name('ami.')->group(function () {
+        // Dashboard AMI + Monitoring + Audit Trail (Fase 1)
+        Route::get('dashboard', [AmiDashboardController::class, 'index'])->name('dashboard');
+        Route::get('monitoring', [MonitoringController::class, 'index'])->name('monitoring');
+        Route::get('audit-trail', [AuditTrailController::class, 'index'])->name('audit-trail')
+            ->middleware('permission:audit-trail.view');
+
+        // Instrumen Audit (butir per Standar Mutu)
+        Route::resource('instrumen', ButirInstrumenController::class)->except(['show'])
+            ->parameters(['instrumen' => 'instrumen']);
+
         // Periode AMI
         Route::post('periode/{periode}/activate', [PeriodeAmiController::class, 'activate'])->name('periode.activate');
         Route::post('periode/{periode}/complete', [PeriodeAmiController::class, 'complete'])->name('periode.complete');
