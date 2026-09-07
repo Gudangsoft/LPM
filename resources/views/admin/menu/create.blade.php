@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@php $routePrefix = $routePrefix ?? 'admin.menu'; @endphp
+
 @section('title', __('admin.add_menu'))
 
 @section('content')
@@ -8,7 +10,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.menu.index') }}">{{ __('admin.menu_management') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route($routePrefix.'.index') }}">{{ __('admin.menu_management') }}</a></li>
                 <li class="breadcrumb-item active">{{ __('admin.add_new') }}</li>
             </ol>
         </nav>
@@ -18,7 +20,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('admin.menu.store') }}" method="POST">
+                    <form action="{{ route($routePrefix.'.store') }}" method="POST">
                         @csrf
 
                         <div class="row">
@@ -168,7 +170,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-lg me-1"></i>{{ __('admin.save') }}
                             </button>
-                            <a href="{{ route('admin.menu.index') }}" class="btn btn-secondary">
+                            <a href="{{ route($routePrefix.'.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-x-lg me-1"></i>{{ __('admin.cancel') }}
                             </a>
                         </div>

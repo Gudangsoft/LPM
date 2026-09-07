@@ -864,115 +864,20 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 @php
                     try {
-                        $navDocCategories = \Illuminate\Support\Facades\Cache::remember('nav_doc_categories', 3600, function () {
-                            return \App\Models\Dokumen::published()
-                                ->whereNotNull('kategori')->where('kategori', '!=', '')
-                                ->distinct()->orderBy('kategori')->pluck('kategori');
-                        });
+                        $frontendMenu = \App\Models\Menu::getFrontendTree();
                     } catch (\Throwable $e) {
-                        $navDocCategories = collect();
+                        $frontendMenu = collect();
                     }
-                    $docCat = fn ($c) => route('dokumen.index', ['kategori' => $c]);
                 @endphp
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('menu.home') }}</a>
-                    </li>
-
-                    {{-- Profil --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('profil', 'visi-misi', 'struktur-organisasi') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.profile') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {{ request()->routeIs('profil') ? 'active' : '' }}" href="{{ route('profil') }}">{{ __('menu.about') }}</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('visi-misi') ? 'active' : '' }}" href="{{ route('visi-misi') }}">{{ __('menu.vision_mission') }}</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('struktur-organisasi') ? 'active' : '' }}" href="{{ route('struktur-organisasi') }}">{{ __('menu.structure') }}</a></li>
-                        </ul>
-                    </li>
-
-                    {{-- SPMI --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.spmi') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}" href="{{ route('sistem-penjaminan-mutu') }}">{{ __('menu.quality_system') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Kebijakan') }}">{{ __('menu.quality_policy') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Manual') }}">{{ __('menu.quality_manual') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Standar') }}">{{ __('menu.quality_standard') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Formulir') }}">{{ __('menu.quality_form') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('SOP') }}">{{ __('menu.sop') }}</a></li>
-                        </ul>
-                    </li>
-
-                    {{-- AMI --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.ami') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}" href="{{ route('audit-mutu-internal') }}">{{ __('menu.internal_audit') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Laporan') }}">{{ __('menu.ami_report') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Panduan') }}">{{ __('menu.ami_guide') }}</a></li>
-                        </ul>
-                    </li>
-
-                    {{-- Akreditasi --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('akreditasi') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.accreditation') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {{ request()->routeIs('akreditasi') ? 'active' : '' }}" href="{{ route('akreditasi') }}">{{ __('menu.accreditation_data') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('Akreditasi') }}">{{ __('menu.accreditation_docs') }}</a></li>
-                            <li><a class="dropdown-item" href="{{ $docCat('SK') }}">{{ __('menu.decree') }}</a></li>
-                        </ul>
-                    </li>
-
-                    {{-- Dokumen (with category flyout) --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('dokumen.*') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">{{ __('menu.documents') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('dokumen.index') }}">{{ __('menu.all_documents') }}</a></li>
-                            @if($navDocCategories->isNotEmpty())
-                            <li><hr class="dropdown-divider"></li>
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item" href="{{ route('dokumen.index') }}">{{ __('menu.by_category') }}</a>
-                                <ul class="dropdown-menu">
-                                    @foreach($navDocCategories as $cat)
-                                    <li><a class="dropdown-item" href="{{ $docCat($cat) }}">{{ $cat }}</a></li>
-                                    @endforeach
-                                </ul>
-                            </li>
-                            @endif
-                        </ul>
-                    </li>
-
-                    {{-- Informasi --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('berita.*', 'pengumuman.*', 'agenda.*', 'galeri.*') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.information') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item {{ request()->routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">{{ __('menu.news') }}</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('pengumuman.*') ? 'active' : '' }}" href="{{ route('pengumuman.index') }}">{{ __('menu.announcements') }}</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('agenda.*') ? 'active' : '' }}" href="{{ route('agenda.index') }}">{{ __('menu.agenda') }}</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('galeri.*') ? 'active' : '' }}" href="{{ route('galeri.index') }}">{{ __('menu.gallery') }}</a></li>
-                        </ul>
-                    </li>
-
-                    {{-- Tautan --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.links') }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="https://www.banpt.or.id" target="_blank" rel="noopener">BAN-PT</a></li>
-                            <li><a class="dropdown-item" href="https://lamemba.or.id" target="_blank" rel="noopener">LAMEMBA</a></li>
-                            <li><a class="dropdown-item" href="https://pddikti.kemdikbud.go.id" target="_blank" rel="noopener">PDDikti</a></li>
-                            <li><a class="dropdown-item" href="https://sinta.kemdikbud.go.id" target="_blank" rel="noopener">SINTA</a></li>
-                            <li><a class="dropdown-item" href="https://spmi.kemdikbud.go.id" target="_blank" rel="noopener">SPMI Dikti</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('kontak.*') ? 'active' : '' }}" href="{{ route('kontak.index') }}">{{ __('menu.contact') }}</a>
-                    </li>
+                    @forelse($frontendMenu as $navItem)
+                        @include('partials.frontend-menu-item', ['item' => $navItem, 'depth' => 0])
+                    @empty
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('menu.home') }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">{{ __('menu.news') }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('dokumen.*') ? 'active' : '' }}" href="{{ route('dokumen.index') }}">{{ __('menu.documents') }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('kontak.*') ? 'active' : '' }}" href="{{ route('kontak.index') }}">{{ __('menu.contact') }}</a></li>
+                    @endforelse
                 </ul>
             </div>
         </div>

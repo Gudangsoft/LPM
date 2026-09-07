@@ -12,8 +12,8 @@ class MenuSeeder extends Seeder
      */
     public function run(): void
     {
-        // Clear existing menus
-        Menu::truncate();
+        // Reset only the admin sidebar menu; the public website menu (lokasi=frontend) is kept.
+        Menu::where('lokasi', 'admin')->delete();
 
         $menus = [
             // Dashboard
@@ -172,7 +172,22 @@ class MenuSeeder extends Seeder
         ];
 
         foreach ($menus as $menu) {
-            Menu::create($menu);
+            Menu::create($menu + ['lokasi' => 'admin']);
         }
+
+        // Keep the "Menu Website" sidebar entry that the migration adds.
+        if (! Menu::where('route', 'admin.menu-web.index')->exists()) {
+            Menu::create([
+                'nama' => 'Menu Website',
+                'icon' => 'bi-list-nested',
+                'route' => 'admin.menu-web.index',
+                'route_pattern' => 'admin.menu-web.*',
+                'tipe' => 'link',
+                'lokasi' => 'admin',
+                'urutan' => 17,
+            ]);
+        }
+
+        Menu::clearCache();
     }
 }

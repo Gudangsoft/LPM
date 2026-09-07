@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 
-@section('title', __('admin.menu_management'))
+@php $routePrefix = $routePrefix ?? 'admin.menu'; $pageTitle = $pageTitle ?? __('admin.menu_editor'); @endphp
+
+@section('title', $pageTitle)
 
 @push('styles')
 <style>
@@ -60,7 +62,7 @@
 @section('content')
     <div class="page-header d-flex flex-wrap justify-content-between align-items-start gap-2">
         <div>
-            <h1 class="page-title">{{ __('admin.menu_editor') }}</h1>
+            <h1 class="page-title">{{ $pageTitle }}</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
@@ -93,7 +95,7 @@
 
             <ul class="menu-tree" id="menuTreeRoot" data-depth="1">
                 @foreach($tree as $item)
-                    @include('admin.menu._node', ['node' => $item, 'depth' => 1])
+                    @include('admin.menu._node', ['node' => $item, 'depth' => 1, 'routePrefix' => $routePrefix])
                 @endforeach
             </ul>
         </div>
@@ -103,7 +105,7 @@
     <div class="modal fade" id="addMenuModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form action="{{ route('admin.menu.store') }}" method="POST">
+                <form action="{{ route($routePrefix.'.store') }}" method="POST">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title">{{ __('admin.add_menu_item') }}</h5>
@@ -180,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!root) return;
 
     const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const treeUrl = @json(route('admin.menu.tree'));
+    const treeUrl = @json(route($routePrefix.'.tree'));
     const status = document.getElementById('menuSaveStatus');
     const T = {
         saving: @json(__('admin.saving')),

@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 /**
- * Admin sidebar menu (lokasi = admin).
+ * Public website navbar menu (lokasi = frontend).
  */
-class MenuController extends AbstractMenuController
+class FrontendMenuController extends AbstractMenuController
 {
     protected function location(): string
     {
-        return 'admin';
+        return 'frontend';
     }
 
     protected function routePrefix(): string
     {
-        return 'admin.menu';
+        return 'admin.menu-web';
     }
 
     protected function pageTitle(): string
     {
-        return __('admin.menu_editor');
+        return __('admin.website_menu_editor');
     }
 }

@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\AgendaController as AdminAgendaController;
 use App\Http\Controllers\Admin\KontakController as AdminKontakController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\FrontendMenuController;
 use App\Http\Controllers\Admin\DatabaseController;
 use App\Http\Controllers\Admin\ProdiController;
 use App\Http\Controllers\Admin\AkreditasiController;
@@ -164,10 +165,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('pengaturan/template', [PengaturanController::class, 'template'])->name('pengaturan.template');
         Route::post('pengaturan/template', [PengaturanController::class, 'updateTemplate'])->name('pengaturan.template.update');
 
-        // Menu Management
+        // Menu Management - admin sidebar
         Route::post('menu/tree', [MenuController::class, 'updateTree'])->name('menu.tree');
         Route::patch('menu/{menu}/quick', [MenuController::class, 'quickUpdate'])->name('menu.quick');
         Route::resource('menu', MenuController::class)->except(['show']);
+
+        // Menu Management - public website navbar
+        Route::post('menu-web/tree', [FrontendMenuController::class, 'updateTree'])->name('menu-web.tree');
+        Route::patch('menu-web/{menu}/quick', [FrontendMenuController::class, 'quickUpdate'])->name('menu-web.quick');
+        Route::resource('menu-web', FrontendMenuController::class)->except(['show'])->parameters(['menu-web' => 'menu']);
 
         // Database Backup & Restore
         Route::get('database', [DatabaseController::class, 'index'])->name('database.index');

@@ -20,6 +20,7 @@ class Menu extends Model
         'url',
         'route_pattern',
         'tipe',
+        'lokasi',
         'parent_id',
         'badge_model',
         'badge_method',
@@ -79,12 +80,36 @@ class Menu extends Model
     }
 
     /**
-     * Get all menus as a tree structure for the sidebar (active only, MAX_DEPTH levels).
+     * Scope by placement: 'admin' (sidebar) or 'frontend' (public navbar).
+     */
+    public function scopeLokasi($query, string $lokasi)
+    {
+        return $query->where('lokasi', $lokasi);
+    }
+
+    /**
+     * Admin sidebar tree (active only, MAX_DEPTH levels).
      */
     public static function getMenuTree()
     {
         return Cache::remember('admin_menu_tree_v2', 3600, function () {
             return self::active()
+                ->lokasi('admin')
+                ->root()
+                ->with('activeChildrenRecursive')
+                ->orderBy('urutan')
+                ->get();
+        });
+    }
+
+    /**
+     * Public navbar tree (active only, MAX_DEPTH levels).
+     */
+    public static function getFrontendTree()
+    {
+        return Cache::remember('frontend_menu_tree_v1', 3600, function () {
+            return self::active()
+                ->lokasi('frontend')
                 ->root()
                 ->with('activeChildrenRecursive')
                 ->orderBy('urutan')
@@ -95,12 +120,29 @@ class Menu extends Model
     /**
      * Full tree (including inactive) for the menu editor.
      */
-    public static function editorTree()
+    public static function editorTree(string $lokasi = 'admin')
     {
-        return self::root()
+        return self::lokasi($lokasi)
+            ->root()
             ->with('childrenRecursive')
             ->orderBy('urutan')
             ->get();
+    }
+
+    /**
+     * True when this item or any of its (loaded) descendants is the active route.
+     */
+    public function isBranchActive(): bool
+    {
+        if ($this->isActive()) {
+            return true;
+        }
+
+        $kids = $this->relationLoaded('activeChildrenRecursive')
+            ? $this->activeChildrenRecursive
+            : $this->children;
+
+        return $kids->contains(fn ($child) => $child->isBranchActive());
     }
 
     /**
@@ -204,6 +246,7 @@ class Menu extends Model
     public static function clearCache()
     {
         Cache::forget('admin_menu_tree_v2');
+        Cache::forget('frontend_menu_tree_v1');
     }
 
     /**
