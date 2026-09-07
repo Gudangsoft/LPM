@@ -42,83 +42,148 @@
             color: var(--dark-color);
         }
 
-        /* Navbar */
+        /* Navbar (multi-level, reference: lpm.uin-suka.ac.id) */
         .navbar-lpm {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: #ffffff;
             padding: 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+            border-bottom: 3px solid var(--primary-color);
         }
 
         .navbar-lpm .navbar-brand {
-            font-weight: 700;
-            font-size: 1.3rem;
-            color: white !important;
-            padding: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1rem;
+            line-height: 1.15;
+            color: var(--primary-color) !important;
+            padding: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: -.01em;
         }
+
+        .navbar-lpm .navbar-toggler {
+            border-color: rgba(30, 64, 175, .25);
+            color: var(--primary-color);
+            padding: 6px 10px;
+        }
+        .navbar-lpm .navbar-toggler:focus { box-shadow: none; }
+
+        .navbar-lpm .navbar-nav { align-items: stretch; }
+        .navbar-lpm .nav-item { display: flex; }
 
         .navbar-lpm .nav-link {
             position: relative;
-            color: rgba(255,255,255,0.9) !important;
-            font-weight: 500;
-            padding: 20px 15px !important;
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--primary-color) !important;
+            font-weight: 700;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            padding: 22px 13px !important;
+            transition: background-color .18s ease, color .18s ease;
         }
 
-        .navbar-lpm .nav-link:hover {
-            background: rgba(255,255,255,0.1);
-            color: white !important;
+        .navbar-lpm .nav-link:hover,
+        .navbar-lpm .nav-link.show {
+            background: rgba(30, 64, 175, .08);
         }
 
         .navbar-lpm .nav-link.active {
             color: #fff !important;
-            background: rgba(255,255,255,0.16);
+            background: var(--primary-color);
         }
 
+        .navbar-lpm .dropdown-toggle::after {
+            margin-left: 3px;
+            vertical-align: middle;
+            border-top-color: currentColor;
+        }
+
+        /* Dropdown panels */
         .navbar-lpm .dropdown-menu {
             border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
-            border-radius: 10px;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, .14);
             margin-top: 0;
-            padding: 8px;
-            min-width: 240px;
+            padding: 4px 0;
+            min-width: 264px;
         }
 
         .navbar-lpm .dropdown-item {
-            padding: 10px 16px;
+            padding: 10px 18px;
+            font-size: .86rem;
             font-weight: 500;
-            border-radius: 8px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: normal;
         }
+        .navbar-lpm .dropdown-menu > li:last-child > .dropdown-item { border-bottom: 0; }
 
-        .navbar-lpm .dropdown-item:hover {
-            background: var(--secondary-color);
-            color: white;
+        .navbar-lpm .dropdown-item:hover,
+        .navbar-lpm .dropdown-item:focus {
+            background: #eff2f7;
+            color: var(--primary-color);
         }
-
         .navbar-lpm .dropdown-item.active {
             background: var(--primary-color);
             color: #fff;
         }
 
+        .navbar-lpm .dropdown-divider { margin: 4px 0; border-color: #e2e8f0; }
+
+        /* Flyout submenu */
+        .navbar-lpm .dropdown-submenu { position: relative; }
+        .navbar-lpm .dropdown-submenu > .dropdown-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .navbar-lpm .dropdown-submenu > .dropdown-item::after {
+            content: "\F285"; /* bi-chevron-right */
+            font-family: "bootstrap-icons";
+            font-size: .7rem;
+            line-height: 1;
+        }
+
         @media (min-width: 992px) {
-            /* Animated accent underline for simple links */
-            .navbar-lpm .nav-link:not(.dropdown-toggle)::after {
-                content: '';
+            .navbar-lpm .nav-item.dropdown:hover > .dropdown-menu { display: block; }
+            /* flyout opens to the left (parent sits right-of-centre in the bar) */
+            .navbar-lpm .dropdown-submenu > .dropdown-menu {
                 position: absolute;
-                left: 15px;
-                right: 15px;
-                bottom: 12px;
-                height: 2px;
-                background: var(--accent-color);
-                transform: scaleX(0);
-                transition: transform .25s ease;
+                top: -7px;
+                right: 100%;
+                left: auto;
+                margin: 0;
+                border-radius: 8px;
             }
-            .navbar-lpm .nav-link:not(.dropdown-toggle):hover::after,
-            .navbar-lpm .nav-link:not(.dropdown-toggle).active::after {
-                transform: scaleX(1);
+            .navbar-lpm .dropdown-submenu:hover > .dropdown-menu { display: block; }
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-lpm .navbar-collapse {
+                max-height: 76vh;
+                overflow-y: auto;
+                margin-top: 8px;
             }
-            /* Open dropdowns on hover */
-            .navbar-lpm .nav-item.dropdown:hover > .dropdown-menu {
-                display: block;
+            .navbar-lpm .nav-item { display: block; }
+            .navbar-lpm .nav-link { padding: 12px 6px !important; border-radius: 6px; }
+            .navbar-lpm .dropdown-menu {
+                border: none;
+                box-shadow: none;
+                background: #f8fafc;
+                border-radius: 8px;
+                margin: 0 0 6px 10px;
             }
+            .navbar-lpm .dropdown-submenu > .dropdown-menu { display: none; }
+            .navbar-lpm .dropdown-submenu.open > .dropdown-menu { display: block; }
+            .navbar-lpm .dropdown-submenu > .dropdown-item::after { transition: transform .2s ease; }
+            .navbar-lpm .dropdown-submenu.open > .dropdown-item::after { transform: rotate(90deg); }
         }
 
         /* Top Bar */
@@ -779,12 +844,24 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                @php
+                    try {
+                        $navDocCategories = \Illuminate\Support\Facades\Cache::remember('nav_doc_categories', 3600, function () {
+                            return \App\Models\Dokumen::published()
+                                ->whereNotNull('kategori')->where('kategori', '!=', '')
+                                ->distinct()->orderBy('kategori')->pluck('kategori');
+                        });
+                    } catch (\Throwable $e) {
+                        $navDocCategories = collect();
+                    }
+                    $docCat = fn ($c) => route('dokumen.index', ['kategori' => $c]);
+                @endphp
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('menu.home') }}</a>
                     </li>
 
-                    {{-- Profil LPM --}}
+                    {{-- Profil --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('profil', 'visi-misi', 'struktur-organisasi') ? 'active' : '' }}"
                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.profile') }}</a>
@@ -797,12 +874,57 @@
 
                     {{-- SPMI --}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('sistem-penjaminan-mutu', 'audit-mutu-internal', 'akreditasi') ? 'active' : '' }}"
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}"
                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.spmi') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}" href="{{ route('sistem-penjaminan-mutu') }}">{{ __('menu.quality_system') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Kebijakan') }}">{{ __('menu.quality_policy') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Manual') }}">{{ __('menu.quality_manual') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Standar') }}">{{ __('menu.quality_standard') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Formulir') }}">{{ __('menu.quality_form') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('SOP') }}">{{ __('menu.sop') }}</a></li>
+                        </ul>
+                    </li>
+
+                    {{-- AMI --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}"
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.ami') }}</a>
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}" href="{{ route('audit-mutu-internal') }}">{{ __('menu.internal_audit') }}</a></li>
-                            <li><a class="dropdown-item {{ request()->routeIs('akreditasi') ? 'active' : '' }}" href="{{ route('akreditasi') }}">{{ __('menu.accreditation') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Laporan') }}">{{ __('menu.ami_report') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Panduan') }}">{{ __('menu.ami_guide') }}</a></li>
+                        </ul>
+                    </li>
+
+                    {{-- Akreditasi --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('akreditasi') ? 'active' : '' }}"
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.accreditation') }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item {{ request()->routeIs('akreditasi') ? 'active' : '' }}" href="{{ route('akreditasi') }}">{{ __('menu.accreditation_data') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('Akreditasi') }}">{{ __('menu.accreditation_docs') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ $docCat('SK') }}">{{ __('menu.decree') }}</a></li>
+                        </ul>
+                    </li>
+
+                    {{-- Dokumen (with category flyout) --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('dokumen.*') ? 'active' : '' }}"
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">{{ __('menu.documents') }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('dokumen.index') }}">{{ __('menu.all_documents') }}</a></li>
+                            @if($navDocCategories->isNotEmpty())
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item" href="{{ route('dokumen.index') }}">{{ __('menu.by_category') }}</a>
+                                <ul class="dropdown-menu">
+                                    @foreach($navDocCategories as $cat)
+                                    <li><a class="dropdown-item" href="{{ $docCat($cat) }}">{{ $cat }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                            @endif
                         </ul>
                     </li>
 
@@ -818,9 +940,18 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dokumen.*') ? 'active' : '' }}" href="{{ route('dokumen.index') }}">{{ __('menu.documents') }}</a>
+                    {{-- Tautan --}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.links') }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="https://www.banpt.or.id" target="_blank" rel="noopener">BAN-PT</a></li>
+                            <li><a class="dropdown-item" href="https://lamemba.or.id" target="_blank" rel="noopener">LAMEMBA</a></li>
+                            <li><a class="dropdown-item" href="https://pddikti.kemdikbud.go.id" target="_blank" rel="noopener">PDDikti</a></li>
+                            <li><a class="dropdown-item" href="https://sinta.kemdikbud.go.id" target="_blank" rel="noopener">SINTA</a></li>
+                            <li><a class="dropdown-item" href="https://spmi.kemdikbud.go.id" target="_blank" rel="noopener">SPMI Dikti</a></li>
+                        </ul>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('kontak.*') ? 'active' : '' }}" href="{{ route('kontak.index') }}">{{ __('menu.contact') }}</a>
                     </li>
@@ -902,6 +1033,24 @@
         AOS.init({
             duration: 800,
             once: true
+        });
+
+        // Multi-level navbar: toggle flyout submenus on mobile (Bootstrap 5 has no submenu support)
+        document.querySelectorAll('.navbar-lpm .dropdown-submenu > .dropdown-item').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                if (window.matchMedia('(max-width: 991.98px)').matches) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.parentElement.classList.toggle('open');
+                }
+            });
+        });
+
+        // Reset any open submenus when the parent dropdown closes
+        document.querySelectorAll('.navbar-lpm .nav-item.dropdown').forEach(function (dd) {
+            dd.addEventListener('hidden.bs.dropdown', function () {
+                dd.querySelectorAll('.dropdown-submenu.open').forEach(function (s) { s.classList.remove('open'); });
+            });
         });
     </script>
 
