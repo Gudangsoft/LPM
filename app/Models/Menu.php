@@ -11,7 +11,7 @@ class Menu extends Model
     use HasFactory;
 
     /** Maximum nesting depth supported by the editor and the sidebar. */
-    public const MAX_DEPTH = 3;
+    public const MAX_DEPTH = 4;
 
     protected $fillable = [
         'nama',
@@ -129,6 +129,27 @@ class Menu extends Model
             ->with('childrenRecursive')
             ->orderBy('urutan')
             ->get();
+    }
+
+    /**
+     * Visible in a rendered tree: the item itself is visible, OR it is a group
+     * whose subtree contains at least one item this user may see. Guests see all.
+     */
+    public function isVisibleInTree(?User $user): bool
+    {
+        if (! $user) {
+            return true;
+        }
+
+        if ($this->isVisibleTo($user)) {
+            return true;
+        }
+
+        $kids = $this->relationLoaded('activeChildrenRecursive')
+            ? $this->activeChildrenRecursive
+            : $this->children;
+
+        return $kids->contains(fn ($child) => $child->isVisibleInTree($user));
     }
 
     /**
