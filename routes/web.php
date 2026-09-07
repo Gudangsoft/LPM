@@ -33,6 +33,9 @@ use App\Http\Controllers\Admin\AmiDashboardController;
 use App\Http\Controllers\Admin\ButirInstrumenController;
 use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\Admin\AuditTrailController;
+use App\Http\Controllers\Admin\EvaluasiDiriController;
+use App\Http\Controllers\Admin\LembarAuditController;
+use App\Http\Controllers\Admin\BuktiAuditController;
 use App\Http\Controllers\Admin\AuditorController;
 use App\Http\Controllers\Admin\JadwalAmiController;
 use App\Http\Controllers\Admin\TemuanAmiController;
@@ -209,6 +212,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         // Instrumen Audit (butir per Standar Mutu)
         Route::resource('instrumen', ButirInstrumenController::class)->except(['show'])
             ->parameters(['instrumen' => 'instrumen']);
+
+        // Evaluasi Diri (auditee) - Fase 2
+        Route::get('evaluasi-diri', [EvaluasiDiriController::class, 'index'])->name('evaluasi-diri.index');
+        Route::get('evaluasi-diri/{jadwal}', [EvaluasiDiriController::class, 'show'])->name('evaluasi-diri.show');
+        Route::put('evaluasi-diri/{jadwal}', [EvaluasiDiriController::class, 'save'])->name('evaluasi-diri.save');
+        Route::post('evaluasi-diri/{jadwal}/submit', [EvaluasiDiriController::class, 'submit'])->name('evaluasi-diri.submit');
+        Route::post('evaluasi-diri/butir/{auditButir}/bukti', [EvaluasiDiriController::class, 'addBukti'])->name('evaluasi-diri.bukti.add');
+        Route::delete('evaluasi-diri/bukti/{bukti}', [EvaluasiDiriController::class, 'deleteBukti'])->name('evaluasi-diri.bukti.delete');
+
+        // Lembar Kerja Audit (auditor) - Fase 2
+        Route::get('lembar-audit', [LembarAuditController::class, 'index'])->name('lembar-audit.index');
+        Route::get('lembar-audit/{jadwal}', [LembarAuditController::class, 'show'])->name('lembar-audit.show');
+        Route::put('lembar-audit/{jadwal}', [LembarAuditController::class, 'save'])->name('lembar-audit.save');
+        Route::post('lembar-audit/bukti/{bukti}/validasi', [LembarAuditController::class, 'validateBukti'])->name('lembar-audit.bukti.validasi');
+
+        // Dokumen / Bukti Audit (browse) - Fase 2
+        Route::get('bukti', [BuktiAuditController::class, 'index'])->name('bukti.index');
 
         // Periode AMI
         Route::post('periode/{periode}/activate', [PeriodeAmiController::class, 'activate'])->name('periode.activate');

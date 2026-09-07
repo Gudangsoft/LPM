@@ -62,6 +62,24 @@ class JadwalAmi extends Model
         return $this->hasMany(TemuanAmi::class);
     }
 
+    public function evaluasiDiri()
+    {
+        return $this->hasOne(EvaluasiDiri::class);
+    }
+
+    public function auditButir(): HasMany
+    {
+        return $this->hasMany(AuditButir::class);
+    }
+
+    /**
+     * Jadwal where $userId is one of the assigned auditors.
+     */
+    public function scopeAssignedToUser($query, int $userId)
+    {
+        return $query->whereHas('penugasan.auditor', fn ($q) => $q->where('user_id', $userId));
+    }
+
     /**
      * Get ketua auditor
      */

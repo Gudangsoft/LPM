@@ -134,6 +134,13 @@ class RolePermissionSeeder extends Seeder
 
             // Audit Trail
             ['name' => 'Lihat Audit Trail', 'slug' => 'audit-trail.view', 'module' => 'ami'],
+
+            // Evaluasi Diri & Lembar Kerja Audit (Fase 2)
+            ['name' => 'Lihat Evaluasi Diri', 'slug' => 'evaluasi-diri.view', 'module' => 'ami'],
+            ['name' => 'Isi Evaluasi Diri', 'slug' => 'evaluasi-diri.fill', 'module' => 'ami'],
+            ['name' => 'Lihat Lembar Kerja Audit', 'slug' => 'lembar-audit.view', 'module' => 'ami'],
+            ['name' => 'Isi Lembar Kerja Audit', 'slug' => 'lembar-audit.fill', 'module' => 'ami'],
+            ['name' => 'Lihat Dokumen/Bukti Audit', 'slug' => 'bukti.view', 'module' => 'ami'],
         ];
 
         foreach ($permissions as $permData) {
@@ -188,6 +195,10 @@ class RolePermissionSeeder extends Seeder
                 'laporan-ami.view',
                 'panduan.view',
                 'dkps.view',
+                'evaluasi-diri.view',
+                'lembar-audit.view',
+                'lembar-audit.fill',
+                'bukti.view',
             ])->pluck('id');
             $auditorRole->permissions()->sync($auditorPermissions);
         }
@@ -209,6 +220,10 @@ class RolePermissionSeeder extends Seeder
                 'panduan.view',
                 'dkps.view',
                 'dkps.manage',
+                'evaluasi-diri.view',
+                'evaluasi-diri.fill',
+                'lembar-audit.view',
+                'bukti.view',
             ])->pluck('id');
             $kaprodiRole->permissions()->sync($kaprodiPermissions);
         }
@@ -228,6 +243,9 @@ class RolePermissionSeeder extends Seeder
                 'laporan-ami.view',
                 'panduan.view',
                 'dkps.view',
+                'evaluasi-diri.view',
+                'lembar-audit.view',
+                'bukti.view',
             ])->pluck('id');
             $viewerRole->permissions()->sync($viewerPermissions);
         }
