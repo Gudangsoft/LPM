@@ -40,6 +40,7 @@ return [
 
     // Header & Navigation
     'view_site' => 'Lihat Situs',
+    'toggle_sidebar' => 'Sembunyikan / tampilkan menu samping',
     'profile' => 'Profil',
     'logout' => 'Keluar',
     'content' => 'Konten',

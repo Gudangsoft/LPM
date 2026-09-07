@@ -39,6 +39,7 @@ return [
 
     // Header & Navigation
     'view_site' => 'View Site',
+    'toggle_sidebar' => 'Hide / show sidebar',
     'profile' => 'Profile',
     'logout' => 'Logout',
     'content' => 'Content',

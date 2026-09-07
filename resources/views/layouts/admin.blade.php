@@ -251,6 +251,16 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Desktop: collapsed sidebar (toggled by the header hamburger, remembered per browser) */
+        @media (min-width: 992px) {
+            body.sidebar-collapsed .sidebar {
+                transform: translateX(-100%);
+            }
+            body.sidebar-collapsed .main-content {
+                margin-left: 0;
+            }
+        }
+
         /* Header */
         .header {
             background: #ffffff;
@@ -747,6 +757,15 @@
     @stack('styles')
 </head>
 <body>
+    <script>
+        // Restore the collapsed sidebar state before paint to avoid a flash
+        try {
+            if (localStorage.getItem('admin.sidebarCollapsed') === '1') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        } catch (e) {}
+    </script>
+
     @include('partials.impersonation-banner')
 
     <!-- Sidebar Overlay -->
@@ -848,7 +867,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <button class="toggle-sidebar" id="toggleSidebar">
+                <button class="toggle-sidebar" id="toggleSidebar" type="button" aria-label="{{ __('admin.toggle_sidebar') }}" title="{{ __('admin.toggle_sidebar') }}">
                     <i class="bi bi-list"></i>
                 </button>
             </div>
@@ -954,15 +973,37 @@
 
     <script>
         // Toggle Sidebar
-        document.getElementById('toggleSidebar').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-            document.getElementById('sidebarOverlay').classList.toggle('show');
-        });
+        // Desktop (>=992px): hide/show the sidebar and let the content reflow; state is remembered.
+        // Mobile (<992px): slide the sidebar in as an overlay.
+        (function () {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            var toggle = document.getElementById('toggleSidebar');
+            var isDesktop = function () { return window.matchMedia('(min-width: 992px)').matches; };
 
-        document.getElementById('sidebarOverlay').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.remove('show');
-            this.classList.remove('show');
-        });
+            toggle.addEventListener('click', function () {
+                if (isDesktop()) {
+                    var collapsed = document.body.classList.toggle('sidebar-collapsed');
+                    try { localStorage.setItem('admin.sidebarCollapsed', collapsed ? '1' : '0'); } catch (e) {}
+                } else {
+                    sidebar.classList.toggle('show');
+                    overlay.classList.toggle('show');
+                }
+            });
+
+            overlay.addEventListener('click', function () {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            });
+
+            // Leaving mobile: drop the overlay state so it can't linger on desktop
+            window.addEventListener('resize', function () {
+                if (isDesktop()) {
+                    sidebar.classList.remove('show');
+                    overlay.classList.remove('show');
+                }
+            });
+        })();
     </script>
 
     @stack('scripts')
