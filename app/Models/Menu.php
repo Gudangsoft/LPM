@@ -10,6 +10,9 @@ class Menu extends Model
 {
     use HasFactory;
 
+    /** Maximum nesting depth supported by the editor and the sidebar. */
+    public const MAX_DEPTH = 3;
+
     protected $fillable = [
         'nama',
         'icon',
@@ -47,6 +50,19 @@ class Menu extends Model
     }
 
     /**
+     * Children eager-loaded recursively up to MAX_DEPTH (for the editor / sidebar).
+     */
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive');
+    }
+
+    public function activeChildrenRecursive()
+    {
+        return $this->children()->where('is_active', true)->with('activeChildrenRecursive');
+    }
+
+    /**
      * Scope for active menus
      */
     public function scopeActive($query)
@@ -63,19 +79,48 @@ class Menu extends Model
     }
 
     /**
-     * Get all menus as tree structure for sidebar
+     * Get all menus as a tree structure for the sidebar (active only, MAX_DEPTH levels).
      */
     public static function getMenuTree()
     {
-        return Cache::remember('admin_menu_tree', 3600, function () {
+        return Cache::remember('admin_menu_tree_v2', 3600, function () {
             return self::active()
                 ->root()
-                ->with(['children' => function ($query) {
-                    $query->active()->orderBy('urutan');
-                }])
+                ->with('activeChildrenRecursive')
                 ->orderBy('urutan')
                 ->get();
         });
+    }
+
+    /**
+     * Full tree (including inactive) for the menu editor.
+     */
+    public static function editorTree()
+    {
+        return self::root()
+            ->with('childrenRecursive')
+            ->orderBy('urutan')
+            ->get();
+    }
+
+    /**
+     * Depth of this menu in the tree (1 = root).
+     */
+    public function depth(): int
+    {
+        $depth = 1;
+        $node = $this;
+
+        while ($node->parent_id) {
+            $depth++;
+            $node = $node->parent()->first();
+
+            if (! $node || $depth > self::MAX_DEPTH + 1) {
+                break;
+            }
+        }
+
+        return $depth;
     }
 
     /**
@@ -158,7 +203,7 @@ class Menu extends Model
      */
     public static function clearCache()
     {
-        Cache::forget('admin_menu_tree');
+        Cache::forget('admin_menu_tree_v2');
     }
 
     /**

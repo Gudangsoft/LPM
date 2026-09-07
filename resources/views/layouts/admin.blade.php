@@ -202,21 +202,24 @@
             flex-shrink: 0;
         }
 
-        /* Nested / child items */
-        .sidebar-nav .nav-link.ps-5 {
-            padding-left: 42px !important;
+        /* Nested / child items (level 2 & 3) */
+        .sidebar-nav .nav-link--child,
+        .sidebar-nav .nav-link--grandchild {
             font-size: 0.83rem;
             color: rgba(255,255,255,0.6);
         }
+        .sidebar-nav .nav-link--child { padding-left: 44px; }
+        .sidebar-nav .nav-link--grandchild { padding-left: 62px; font-size: 0.8rem; }
 
-        .sidebar-nav .nav-link.ps-5 i {
-            font-size: 0.95rem;
+        .sidebar-nav .nav-link--child i,
+        .sidebar-nav .nav-link--grandchild i {
+            font-size: 0.9rem;
         }
 
-        .sidebar-nav .nav-link.ps-5::before {
+        .sidebar-nav .nav-link--child::before,
+        .sidebar-nav .nav-link--grandchild::before {
             content: '';
             position: absolute;
-            left: 24px;
             top: 50%;
             width: 6px;
             height: 6px;
@@ -225,9 +228,13 @@
             transform: translateY(-50%);
             transition: background-color 0.18s ease;
         }
+        .sidebar-nav .nav-link--child::before { left: 26px; }
+        .sidebar-nav .nav-link--grandchild::before { left: 44px; width: 5px; height: 5px; }
 
-        .sidebar-nav .nav-link.ps-5:hover::before,
-        .sidebar-nav .nav-link.ps-5.active::before {
+        .sidebar-nav .nav-link--child:hover::before,
+        .sidebar-nav .nav-link--child.active::before,
+        .sidebar-nav .nav-link--grandchild:hover::before,
+        .sidebar-nav .nav-link--grandchild.active::before {
             background: #fff;
         }
 
@@ -794,69 +801,35 @@
                 $menus = \App\Models\Menu::getMenuTree();
                 $authUser = auth()->user();
 
-                // Keep only links the user has permission for (filtering their
-                // children too), pass sections/dividers through for now.
-                $filteredMenus = $menus->filter(function ($menu) use ($authUser) {
-                    return $menu->tipe !== 'link' || $menu->isVisibleTo($authUser);
-                })->map(function ($menu) use ($authUser) {
-                    if ($menu->tipe === 'link') {
-                        $menu->setRelation('children', $menu->children->filter(
-                            fn ($child) => $child->isVisibleTo($authUser)
-                        )->values());
+                // Would this root menu (and its subtree) show anything for this user?
+                $rootShows = function ($menu) use ($authUser) {
+                    if ($menu->tipe !== 'link') {
+                        return false;
                     }
-                    return $menu;
-                })->values();
+                    return ! $authUser || $menu->isVisibleTo($authUser);
+                };
 
                 // Drop a section header if no visible link follows it before the next section.
                 $visibleMenus = collect();
-                foreach ($filteredMenus as $index => $menu) {
+                foreach ($menus as $index => $menu) {
                     if ($menu->tipe === 'section') {
                         $hasVisibleFollowing = false;
-                        for ($i = $index + 1; $i < $filteredMenus->count(); $i++) {
-                            $next = $filteredMenus[$i];
-                            if ($next->tipe === 'section') break;
-                            if ($next->tipe === 'link') { $hasVisibleFollowing = true; break; }
+                        for ($i = $index + 1; $i < $menus->count(); $i++) {
+                            if ($menus[$i]->tipe === 'section') break;
+                            if ($rootShows($menus[$i])) { $hasVisibleFollowing = true; break; }
                         }
-                        if (!$hasVisibleFollowing) continue;
+                        if (! $hasVisibleFollowing) continue;
                     }
                     $visibleMenus->push($menu);
                 }
             @endphp
             @foreach($visibleMenus as $menu)
                 @if($menu->tipe == 'section')
-                    {{-- Section Header --}}
                     <div class="nav-section">{{ $menu->nama }}</div>
                 @elseif($menu->tipe == 'divider')
-                    {{-- Divider --}}
                     <hr class="my-2 border-secondary">
-                @elseif($menu->tipe == 'link')
-                    {{-- Menu Item --}}
-                    <a href="{{ $menu->getUrl() }}" class="nav-link {{ $menu->isActive() ? 'active' : '' }}">
-                        @if($menu->icon)
-                        <i class="bi {{ $menu->icon }}"></i>
-                        @endif
-                        {{ $menu->nama }}
-                        @php $badgeCount = $menu->getBadgeCount(); @endphp
-                        @if($badgeCount > 0)
-                            <span class="badge {{ $menu->badge_class ?? 'bg-danger' }} ms-auto">{{ $badgeCount }}</span>
-                        @endif
-                    </a>
-                    
-                    {{-- Children --}}
-                    @if($menu->children->count() > 0)
-                        @foreach($menu->children as $child)
-                        <a href="{{ $child->getUrl() }}" class="nav-link ps-5 {{ $child->isActive() ? 'active' : '' }}">
-                            @if($child->icon)
-                            <i class="bi {{ $child->icon }}"></i>
-                            @endif
-                            {{ $child->nama }}
-                            @php $childBadge = $child->getBadgeCount(); @endphp
-                            @if($childBadge > 0)
-                                <span class="badge {{ $child->badge_class ?? 'bg-danger' }} ms-auto">{{ $childBadge }}</span>
-                            @endif
-                        </a>
-                        @endforeach
-                    @endif
+                @else
+                    @include('partials.admin-sidebar-item', ['item' => $menu, 'depth' => 0, 'authUser' => $authUser])
                 @endif
             @endforeach
         </nav>

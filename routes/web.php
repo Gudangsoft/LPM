@@ -165,8 +165,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('pengaturan/template', [PengaturanController::class, 'updateTemplate'])->name('pengaturan.template.update');
 
         // Menu Management
+        Route::post('menu/tree', [MenuController::class, 'updateTree'])->name('menu.tree');
+        Route::patch('menu/{menu}/quick', [MenuController::class, 'quickUpdate'])->name('menu.quick');
         Route::resource('menu', MenuController::class)->except(['show']);
-        Route::post('menu/reorder', [MenuController::class, 'reorder'])->name('menu.reorder');
 
         // Database Backup & Restore
         Route::get('database', [DatabaseController::class, 'index'])->name('database.index');
