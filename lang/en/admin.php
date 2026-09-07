@@ -134,6 +134,11 @@ return [
     'new_avatar' => 'New Avatar',
     'registered_at' => 'Registered',
     'cannot_change_own_role' => 'Cannot change your own role',
+    'login_as_user' => 'Log in as this user',
+    'cannot_impersonate_self' => 'You cannot log in as your own account.',
+    'impersonating' => 'You are logged in as :name',
+    'stop_impersonating' => 'Back to admin account',
+    'impersonation_ended' => 'You have returned to your admin account.',
 
     // Sliders
     'sliders' => 'Sliders',

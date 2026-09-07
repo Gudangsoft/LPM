@@ -747,6 +747,8 @@
     @stack('styles')
 </head>
 <body>
+    @include('partials.impersonation-banner')
+
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 

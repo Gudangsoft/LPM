@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 
@@ -115,6 +117,72 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', __('admin.user_updated'));
+    }
+
+    /**
+     * Log in as another user (impersonation). Opened in a new tab from the user list;
+     * a banner lets the admin switch back. Session is shared across tabs, so once
+     * started the whole browser acts as the target user until "back to admin".
+     */
+    public function impersonate(Request $request, User $user)
+    {
+        $admin = auth()->user();
+
+        if (! $admin || ! $admin->isAdmin()) {
+            abort(403);
+        }
+
+        if ($user->id === $admin->id) {
+            return redirect()->route('admin.users.index')
+                ->with('error', __('admin.cannot_impersonate_self'));
+        }
+
+        // Preserve the original admin id across the session migration that Auth::login triggers.
+        $impersonatorId = $admin->id;
+
+        Log::info('Impersonation started', [
+            'admin_id' => $admin->id,
+            'admin_email' => $admin->email,
+            'target_id' => $user->id,
+            'target_email' => $user->email,
+        ]);
+
+        Auth::login($user);
+        $request->session()->put('impersonator_id', $impersonatorId);
+
+        if ($user->isAdmin() || $user->hasAnyPermission(['dashboard.view'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('home');
+    }
+
+    /**
+     * Stop impersonating and return to the original admin account.
+     * Not admin-gated: the current session is the impersonated (non-admin) user.
+     */
+    public function leaveImpersonation(Request $request)
+    {
+        $impersonatorId = $request->session()->pull('impersonator_id');
+
+        if (! $impersonatorId) {
+            return redirect()->route('home');
+        }
+
+        $admin = User::find($impersonatorId);
+
+        if (! $admin) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login');
+        }
+
+        Auth::login($admin);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', __('admin.impersonation_ended'));
     }
 
     public function destroy(User $user)

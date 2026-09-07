@@ -135,6 +135,11 @@ return [
     'new_avatar' => 'Photo Baru',
     'registered_at' => 'Terdaftar',
     'cannot_change_own_role' => 'Tidak dapat mengubah role sendiri',
+    'login_as_user' => 'Login sebagai user ini',
+    'cannot_impersonate_self' => 'Anda tidak dapat login sebagai akun sendiri.',
+    'impersonating' => 'Anda sedang login sebagai :name',
+    'stop_impersonating' => 'Kembali ke akun admin',
+    'impersonation_ended' => 'Anda telah kembali ke akun admin.',
 
     // Sliders
     'sliders' => 'Slider',

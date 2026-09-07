@@ -805,6 +805,8 @@
     @stack('styles')
 </head>
 <body>
+    @include('partials.impersonation-banner')
+
     <!-- Top Bar -->
     <div class="top-bar d-none d-lg-block">
         <div class="container">

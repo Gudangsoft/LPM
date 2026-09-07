@@ -85,14 +85,22 @@
                             </td>
                             <td>{{ $user->created_at->format('d M Y') }}</td>
                             <td>
-                                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-warning">
+                                @if($user->id !== auth()->id())
+                                <form action="{{ route('admin.users.impersonate', $user) }}" method="POST" target="_blank" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="{{ __('admin.login_as_user') }}">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                    </button>
+                                </form>
+                                @endif
+                                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-warning" title="{{ __('admin.edit') }}">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 @if($user->id !== auth()->id())
                                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('admin.confirm_delete') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="{{ __('admin.delete') }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>

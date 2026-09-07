@@ -106,6 +106,10 @@ Route::post('/kontak', [KontakController::class, 'store'])->name('kontak.store')
 // Halaman Dinamis
 Route::get('/halaman/{slug}', [HalamanController::class, 'show'])->name('halaman.show');
 
+// Stop impersonating - available to the impersonated (possibly non-admin) user
+Route::post('impersonate/leave', [UserController::class, 'leaveImpersonation'])
+    ->middleware('auth')->name('impersonate.leave');
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -136,6 +140,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::resource('halaman', AdminHalamanController::class)->except(['show'])->parameters(['halaman' => 'halaman']);
 
         // Users
+        Route::post('users/{user}/impersonate', [UserController::class, 'impersonate'])->name('users.impersonate');
         Route::resource('users', UserController::class)->except(['show']);
 
         // Slider
