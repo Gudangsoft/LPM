@@ -111,13 +111,15 @@
             box-shadow: 0 18px 40px rgba(0, 0, 0, .14);
             margin-top: 0;
             padding: 4px 0;
-            min-width: 264px;
+            min-width: 248px;
+            max-width: 320px;
         }
 
         .navbar-lpm .dropdown-item {
-            padding: 10px 18px;
-            font-size: .86rem;
+            padding: 9px 18px;
+            font-size: .85rem;
             font-weight: 500;
+            line-height: 1.35;
             color: #334155;
             border-bottom: 1px solid #f1f5f9;
             white-space: normal;
@@ -152,8 +154,22 @@
         }
 
         @media (min-width: 992px) {
+            /* Anchor panels directly under their toggle (Popper is disabled via
+               data-bs-display="static", so we position them ourselves). */
+            .navbar-lpm .nav-item.dropdown > .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: auto;
+            }
+            /* Panels near the end of the bar align to the right so they don't clip */
+            .navbar-lpm .navbar-nav > .nav-item.dropdown:nth-last-child(-n+3) > .dropdown-menu {
+                left: auto;
+                right: 0;
+            }
             .navbar-lpm .nav-item.dropdown:hover > .dropdown-menu { display: block; }
-            /* flyout opens to the left (parent sits right-of-centre in the bar) */
+
+            /* Flyout submenu opens beside its row */
             .navbar-lpm .dropdown-submenu > .dropdown-menu {
                 position: absolute;
                 top: -7px;
@@ -866,7 +882,7 @@
                     {{-- Profil --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('profil', 'visi-misi', 'struktur-organisasi') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.profile') }}</a>
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.profile') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('profil') ? 'active' : '' }}" href="{{ route('profil') }}">{{ __('menu.about') }}</a></li>
                             <li><a class="dropdown-item {{ request()->routeIs('visi-misi') ? 'active' : '' }}" href="{{ route('visi-misi') }}">{{ __('menu.vision_mission') }}</a></li>
@@ -877,7 +893,7 @@
                     {{-- SPMI --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.spmi') }}</a>
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.spmi') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('sistem-penjaminan-mutu') ? 'active' : '' }}" href="{{ route('sistem-penjaminan-mutu') }}">{{ __('menu.quality_system') }}</a></li>
                             <li><a class="dropdown-item" href="{{ $docCat('Kebijakan') }}">{{ __('menu.quality_policy') }}</a></li>
@@ -891,7 +907,7 @@
                     {{-- AMI --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.ami') }}</a>
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.ami') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('audit-mutu-internal') ? 'active' : '' }}" href="{{ route('audit-mutu-internal') }}">{{ __('menu.internal_audit') }}</a></li>
                             <li><a class="dropdown-item" href="{{ $docCat('Laporan') }}">{{ __('menu.ami_report') }}</a></li>
@@ -902,7 +918,7 @@
                     {{-- Akreditasi --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('akreditasi') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.accreditation') }}</a>
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.accreditation') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('akreditasi') ? 'active' : '' }}" href="{{ route('akreditasi') }}">{{ __('menu.accreditation_data') }}</a></li>
                             <li><a class="dropdown-item" href="{{ $docCat('Akreditasi') }}">{{ __('menu.accreditation_docs') }}</a></li>
@@ -913,7 +929,7 @@
                     {{-- Dokumen (with category flyout) --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('dokumen.*') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">{{ __('menu.documents') }}</a>
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" data-bs-auto-close="outside" aria-expanded="false">{{ __('menu.documents') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('dokumen.index') }}">{{ __('menu.all_documents') }}</a></li>
                             @if($navDocCategories->isNotEmpty())
@@ -933,7 +949,7 @@
                     {{-- Informasi --}}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('berita.*', 'pengumuman.*', 'agenda.*', 'galeri.*') ? 'active' : '' }}"
-                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.information') }}</a>
+                           href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.information') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item {{ request()->routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">{{ __('menu.news') }}</a></li>
                             <li><a class="dropdown-item {{ request()->routeIs('pengumuman.*') ? 'active' : '' }}" href="{{ route('pengumuman.index') }}">{{ __('menu.announcements') }}</a></li>
@@ -944,7 +960,7 @@
 
                     {{-- Tautan --}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ __('menu.links') }}</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">{{ __('menu.links') }}</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="https://www.banpt.or.id" target="_blank" rel="noopener">BAN-PT</a></li>
                             <li><a class="dropdown-item" href="https://lamemba.or.id" target="_blank" rel="noopener">LAMEMBA</a></li>
