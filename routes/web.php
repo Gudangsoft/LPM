@@ -120,6 +120,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Dashboard - reachable by every admin-area role (admin/auditor/kaprodi/viewer)
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:dashboard.view');
 
+    // Placeholder page for planned-but-unbuilt admin modules
+    Route::get('coming-soon/{module}', [\App\Http\Controllers\Admin\ComingSoonController::class, 'show'])
+        ->where('module', '[a-z0-9-]+')->name('coming-soon');
+
     // Pure admin-only content management - unchanged behavior, only admin role may enter
     Route::middleware('admin')->group(function () {
         // Berita
