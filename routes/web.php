@@ -456,6 +456,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/sessions/logout-others', [App\Http\Controllers\ProfileController::class, 'logoutOtherSessions'])->name('profile.sessions.logout-others');
+    Route::delete('/profile/sessions/{session}', [App\Http\Controllers\ProfileController::class, 'revokeSession'])->name('profile.sessions.revoke');
 });
 
 require __DIR__.'/auth.php';

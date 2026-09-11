@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">{{ __('admin.logo') }}</label>
                                     @if(isset($settings['site_logo']) && $settings['site_logo'])
@@ -70,7 +70,23 @@
                                     <small class="text-muted">{{ __('admin.recommended_size') }}: 200x50px</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ __('admin.logo_2') }}</label>
+                                    @if(isset($settings['site_logo_2']) && $settings['site_logo_2'])
+                                    <div class="mb-2">
+                                        <img src="{{ Storage::url($settings['site_logo_2']) }}" alt="" style="max-height: 50px;">
+                                        <div class="form-check mt-1">
+                                            <input type="checkbox" class="form-check-input" id="remove_site_logo_2" name="settings[remove_site_logo_2]" value="1">
+                                            <label class="form-check-label small" for="remove_site_logo_2">{{ __('admin.remove_logo_2') }}</label>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <input type="file" class="form-control" name="site_logo_2" accept="image/*">
+                                    <small class="text-muted">{{ __('admin.logo_2_help') }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">{{ __('admin.favicon') }}</label>
                                     @if(isset($settings['site_favicon']) && $settings['site_favicon'])

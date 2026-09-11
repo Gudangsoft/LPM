@@ -857,6 +857,9 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" height="40" class="d-inline-block me-2" onerror="this.style.display='none'">
                 @endif
                 {{ $siteSettings['site_name'] ?? 'LPM KAMPUS' }}
+                @if(!empty($siteSettings['site_logo_2']))
+                <img src="{{ Storage::url($siteSettings['site_logo_2']) }}" alt="" height="36" class="d-inline-block ms-2">
+                @endif
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

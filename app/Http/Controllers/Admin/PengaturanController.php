@@ -29,7 +29,22 @@ class PengaturanController extends Controller
             }
             $settings['site_logo'] = $request->file('site_logo')->store('settings', 'public');
         }
-        
+
+        if ($request->hasFile('site_logo_2')) {
+            $oldLogo2 = Pengaturan::get('site_logo_2');
+            if ($oldLogo2) {
+                Storage::disk('public')->delete($oldLogo2);
+            }
+            $settings['site_logo_2'] = $request->file('site_logo_2')->store('settings', 'public');
+        } elseif (($settings['remove_site_logo_2'] ?? null) == '1') {
+            $oldLogo2 = Pengaturan::get('site_logo_2');
+            if ($oldLogo2) {
+                Storage::disk('public')->delete($oldLogo2);
+            }
+            $settings['site_logo_2'] = '';
+        }
+        unset($settings['remove_site_logo_2']);
+
         if ($request->hasFile('site_favicon')) {
             $oldFavicon = Pengaturan::get('site_favicon');
             if ($oldFavicon) {
