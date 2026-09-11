@@ -9,10 +9,14 @@ use Illuminate\Database\Seeder;
  * Builds the "PENJAMINAN MUTU" part of the admin sidebar and normalises the
  * order of every top-level admin menu item.
  *
- *   SPMI          – sisi kebijakan & dokumen (PPEPP): P-1 Penetapan, P-2 Pelaksanaan,
- *                   E-Evaluasi (Non-AMI), P-4 Peningkatan
- *   AMI           – seluruh operasional audit, rata satu tingkat: Dashboard, Periode,
- *                   Auditor, Jadwal, Penugasan, Evaluasi Diri, Lembar Kerja, Temuan,
+ *   SPMI          – siklus PPEPP lengkap (kebijakan/dokumen sisi P-1/P-2/E-non-AMI,
+ *                   P-3/P-4 berupa tautan pintas ke halaman yang sama dengan grup AMI
+ *                   supaya penomoran P-1..P-4 tidak bolong):
+ *                     P-1 Penetapan, P-2 Pelaksanaan, E-Evaluasi (Non-AMI),
+ *                     P-3 Pengendalian (-> Tindak Lanjut, Verifikasi RTL, Monitoring),
+ *                     P-4 Peningkatan (-> RTM, dst.)
+ *   AMI           – seluruh operasional audit, rata satu tingkat (menu kerja utama): Dashboard,
+ *                   Periode, Auditor, Jadwal, Penugasan, Evaluasi Diri, Lembar Kerja, Temuan,
  *                   Tindak Lanjut, Verifikasi RTL, Monitoring, Dokumen/Bukti, RTM, Audit Trail
  *   Akreditasi    – Data Akreditasi, Dashboard Akreditasi
  *   Laporan       – Laporan AMI, Analitik Mutu, Data Statistik, Grafik
@@ -119,9 +123,17 @@ class AmiMenuSeeder extends Seeder
         self::cs($ev, 4, 'Capaian Pembelajaran', 'capaian-pembelajaran', 'bi-graph-up-arrow');
         self::cs($ev, 5, 'Review RPS', 'review-rps', 'bi-file-earmark-text');
 
-        $p4 = self::node($spmi, 4, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
-        self::cs($p4, 1, 'Rencana Peningkatan Mutu', 'rencana-peningkatan-mutu', 'bi-graph-up');
-        self::cs($p4, 2, 'Benchmarking', 'benchmarking', 'bi-bar-chart-steps');
+        // Pengendalian itu sendiri hidup di grup AMI (operasional); di sini hanya
+        // tautan pintas ke halaman yang sama, supaya siklus PPEPP di bawah SPMI lengkap.
+        $p3 = self::node($spmi, 4, ['nama' => 'P-3 Pengendalian', 'icon' => 'bi-3-circle']);
+        self::node($p3, 1, ['nama' => 'Tindak Lanjut', 'route' => 'admin.ami.tindak-lanjut.index', 'route_pattern' => 'admin.ami.tindak-lanjut.*', 'icon' => 'bi-clipboard-check', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 2, ['nama' => 'Verifikasi RTL', 'route' => 'admin.ami.verifikasi-rtl.index', 'route_pattern' => 'admin.ami.verifikasi-rtl.*', 'icon' => 'bi-check2-square', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 3, ['nama' => 'Monitoring', 'route' => 'admin.ami.monitoring', 'route_pattern' => 'admin.ami.monitoring', 'icon' => 'bi-activity', 'permission' => 'tindak-lanjut.view']);
+
+        $p4 = self::node($spmi, 5, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
+        self::node($p4, 1, ['nama' => 'Rapat Tinjauan Manajemen', 'route' => 'admin.ami.rtm.index', 'route_pattern' => 'admin.ami.rtm.*', 'icon' => 'bi-people', 'permission' => 'rtm.view']);
+        self::cs($p4, 2, 'Rencana Peningkatan Mutu', 'rencana-peningkatan-mutu', 'bi-graph-up');
+        self::cs($p4, 3, 'Benchmarking', 'benchmarking', 'bi-bar-chart-steps');
 
         // ---- AMI: seluruh operasional audit, rata di satu tingkat -------------
         $ami = self::node(null, 4, ['nama' => 'AMI', 'icon' => 'bi-search']);
