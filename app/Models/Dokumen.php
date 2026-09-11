@@ -31,6 +31,7 @@ class Dokumen extends Model
         'reviewed_at',
         'catatan_reviewer',
         'current_version',
+        'periode_tinjau_bulan',
     ];
 
     protected $casts = [
@@ -99,6 +100,25 @@ class Dokumen extends Model
             'rejected' => 'danger',
             default => 'secondary',
         };
+    }
+
+    /**
+     * When this document is next due for a periodic review, based on the last
+     * review date plus the configured review cycle (in months). Null when no
+     * review has happened yet or no cycle has been configured.
+     */
+    public function getNextReviewDateAttribute(): ?\Illuminate\Support\Carbon
+    {
+        if (! $this->reviewed_at || ! $this->periode_tinjau_bulan) {
+            return null;
+        }
+
+        return $this->reviewed_at->copy()->addMonths($this->periode_tinjau_bulan);
+    }
+
+    public function getIsReviewOverdueAttribute(): bool
+    {
+        return $this->next_review_date !== null && $this->next_review_date->isPast();
     }
 
     public function submit(): void

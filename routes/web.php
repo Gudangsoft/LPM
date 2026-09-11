@@ -40,6 +40,14 @@ use App\Http\Controllers\Admin\RtmController;
 use App\Http\Controllers\Admin\AnalitikMutuController;
 use App\Http\Controllers\Admin\VerifikasiRtlController;
 use App\Http\Controllers\Admin\RpsReviewController;
+use App\Http\Controllers\Admin\PengendalianDokumenController;
+use App\Http\Controllers\Admin\RencanaPeningkatanMutuController;
+use App\Http\Controllers\Admin\SasaranMutuController;
+use App\Http\Controllers\Admin\BenchmarkingController;
+use App\Http\Controllers\Admin\SurveyKepuasanController;
+use App\Http\Controllers\Admin\MonevController;
+use App\Http\Controllers\Admin\EvaluasiPembelajaranController;
+use App\Http\Controllers\Admin\CapaianPembelajaranController;
 use App\Http\Controllers\Admin\AuditorController;
 use App\Http\Controllers\Admin\JadwalAmiController;
 use App\Http\Controllers\Admin\TemuanAmiController;
@@ -243,6 +251,32 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         // Review RPS
         Route::post('rps-review/{rpsReview}/review', [RpsReviewController::class, 'review'])->name('rps-review.review');
         Route::resource('rps-review', RpsReviewController::class)->except(['show']);
+
+        // Pengendalian Dokumen (dashboard atas modul Dokumen yang sudah ada)
+        Route::get('pengendalian-dokumen', [PengendalianDokumenController::class, 'index'])->name('pengendalian-dokumen.index');
+        Route::patch('pengendalian-dokumen/{dokumen}', [PengendalianDokumenController::class, 'updatePeriodeTinjau'])->name('pengendalian-dokumen.update');
+
+        // Rencana Peningkatan Mutu (dashboard atas rtm_keputusan yang sudah ada)
+        Route::get('rencana-peningkatan-mutu', [RencanaPeningkatanMutuController::class, 'index'])->name('rencana-peningkatan-mutu.index');
+
+        // Sasaran Mutu
+        Route::resource('sasaran-mutu', SasaranMutuController::class)->except(['show']);
+
+        // Benchmarking
+        Route::resource('benchmarking', BenchmarkingController::class)->except(['show']);
+
+        // Survey Kepuasan
+        Route::resource('survey-kepuasan', SurveyKepuasanController::class)->except(['show']);
+
+        // Monev
+        Route::resource('monev', MonevController::class)->except(['show']);
+
+        // Evaluasi Pembelajaran
+        Route::post('evaluasi-pembelajaran/{evaluasiPembelajaran}/evaluasi', [EvaluasiPembelajaranController::class, 'evaluasi'])->name('evaluasi-pembelajaran.evaluasi');
+        Route::resource('evaluasi-pembelajaran', EvaluasiPembelajaranController::class)->except(['show']);
+
+        // Capaian Pembelajaran
+        Route::resource('capaian-pembelajaran', CapaianPembelajaranController::class)->except(['show']);
 
         Route::post('rtm/{rtm}/generate-ringkasan', [RtmController::class, 'generateRingkasan'])->name('rtm.generate-ringkasan');
         Route::post('rtm/{rtm}/agenda', [RtmController::class, 'addAgenda'])->name('rtm.agenda.add');

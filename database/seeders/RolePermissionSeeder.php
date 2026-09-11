@@ -149,6 +149,20 @@ class RolePermissionSeeder extends Seeder
             // Review RPS
             ['name' => 'Lihat Review RPS', 'slug' => 'rps.view', 'module' => 'ami'],
             ['name' => 'Kelola Review RPS', 'slug' => 'rps.manage', 'module' => 'ami'],
+
+            // Sasaran Mutu, Benchmarking, Survey Kepuasan, Monev, Evaluasi/Capaian Pembelajaran
+            ['name' => 'Lihat Sasaran Mutu', 'slug' => 'sasaran-mutu.view', 'module' => 'ami'],
+            ['name' => 'Kelola Sasaran Mutu', 'slug' => 'sasaran-mutu.manage', 'module' => 'ami'],
+            ['name' => 'Lihat Benchmarking', 'slug' => 'benchmarking.view', 'module' => 'ami'],
+            ['name' => 'Kelola Benchmarking', 'slug' => 'benchmarking.manage', 'module' => 'ami'],
+            ['name' => 'Lihat Survey Kepuasan', 'slug' => 'survey.view', 'module' => 'ami'],
+            ['name' => 'Kelola Survey Kepuasan', 'slug' => 'survey.manage', 'module' => 'ami'],
+            ['name' => 'Lihat Monev', 'slug' => 'monev.view', 'module' => 'ami'],
+            ['name' => 'Kelola Monev', 'slug' => 'monev.manage', 'module' => 'ami'],
+            ['name' => 'Lihat Evaluasi Pembelajaran', 'slug' => 'evaluasi-pembelajaran.view', 'module' => 'ami'],
+            ['name' => 'Kelola Evaluasi Pembelajaran', 'slug' => 'evaluasi-pembelajaran.manage', 'module' => 'ami'],
+            ['name' => 'Lihat Capaian Pembelajaran', 'slug' => 'capaian-pembelajaran.view', 'module' => 'ami'],
+            ['name' => 'Kelola Capaian Pembelajaran', 'slug' => 'capaian-pembelajaran.manage', 'module' => 'ami'],
         ];
 
         foreach ($permissions as $permData) {
@@ -209,6 +223,12 @@ class RolePermissionSeeder extends Seeder
                 'bukti.view',
                 'rtm.view',
                 'rps.view',
+                'sasaran-mutu.view',
+                'benchmarking.view',
+                'survey.view',
+                'monev.view',
+                'evaluasi-pembelajaran.view',
+                'capaian-pembelajaran.view',
             ])->pluck('id');
             $auditorRole->permissions()->sync($auditorPermissions);
         }
@@ -237,6 +257,16 @@ class RolePermissionSeeder extends Seeder
                 'rtm.view',
                 'rps.view',
                 'rps.manage',
+                'sasaran-mutu.view',
+                'sasaran-mutu.manage',
+                'monev.view',
+                'monev.manage',
+                'evaluasi-pembelajaran.view',
+                'evaluasi-pembelajaran.manage',
+                'capaian-pembelajaran.view',
+                'capaian-pembelajaran.manage',
+                'benchmarking.view',
+                'survey.view',
             ])->pluck('id');
             $kaprodiRole->permissions()->sync($kaprodiPermissions);
         }
@@ -261,6 +291,12 @@ class RolePermissionSeeder extends Seeder
                 'bukti.view',
                 'rtm.view',
                 'rps.view',
+                'sasaran-mutu.view',
+                'benchmarking.view',
+                'survey.view',
+                'monev.view',
+                'evaluasi-pembelajaran.view',
+                'capaian-pembelajaran.view',
             ])->pluck('id');
             $viewerRole->permissions()->sync($viewerPermissions);
         }

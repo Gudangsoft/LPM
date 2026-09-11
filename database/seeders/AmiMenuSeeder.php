@@ -117,8 +117,8 @@ class AmiMenuSeeder extends Seeder
 
         $p2 = self::node($spmi, 2, ['nama' => 'P-2 Pelaksanaan', 'icon' => 'bi-2-circle']);
         self::node($p2, 1, ['nama' => 'DKPS', 'route' => 'admin.dkps.index', 'route_pattern' => 'admin.dkps.*', 'icon' => 'bi-clipboard-data', 'permission' => 'dkps.view']);
-        self::cs($p2, 2, 'Sasaran Mutu', 'sasaran-mutu', 'bi-bullseye');
-        self::cs($p2, 3, 'Pengendalian Dokumen', 'pengendalian-dokumen', 'bi-folder-check');
+        self::node($p2, 2, ['nama' => 'Sasaran Mutu', 'route' => 'admin.ami.sasaran-mutu.index', 'route_pattern' => 'admin.ami.sasaran-mutu.*', 'icon' => 'bi-bullseye', 'permission' => 'sasaran-mutu.view']);
+        self::node($p2, 3, ['nama' => 'Pengendalian Dokumen', 'route' => 'admin.ami.pengendalian-dokumen.index', 'route_pattern' => 'admin.ami.pengendalian-dokumen.*', 'icon' => 'bi-folder-check', 'permission' => 'dokumen.view']);
 
         // Pengendalian itu sendiri hidup di grup AMI (operasional); di sini hanya
         // tautan pintas ke halaman yang sama, supaya siklus PPEPP di bawah SPMI lengkap.
@@ -129,16 +129,16 @@ class AmiMenuSeeder extends Seeder
 
         $p4 = self::node($spmi, 4, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
         self::node($p4, 1, ['nama' => 'Rapat Tinjauan Manajemen', 'route' => 'admin.ami.rtm.index', 'route_pattern' => 'admin.ami.rtm.*', 'icon' => 'bi-people', 'permission' => 'rtm.view']);
-        self::cs($p4, 2, 'Rencana Peningkatan Mutu', 'rencana-peningkatan-mutu', 'bi-graph-up');
-        self::cs($p4, 3, 'Benchmarking', 'benchmarking', 'bi-bar-chart-steps');
+        self::node($p4, 2, ['nama' => 'Rencana Peningkatan Mutu', 'route' => 'admin.ami.rencana-peningkatan-mutu.index', 'route_pattern' => 'admin.ami.rencana-peningkatan-mutu.*', 'icon' => 'bi-graph-up', 'permission' => 'rtm.view']);
+        self::node($p4, 3, ['nama' => 'Benchmarking', 'route' => 'admin.ami.benchmarking.index', 'route_pattern' => 'admin.ami.benchmarking.*', 'icon' => 'bi-bar-chart-steps', 'permission' => 'benchmarking.view']);
 
-        // Ditaruh terakhir (bukan di posisi PPEPP baku P-2/P-3) karena seluruh isinya
-        // masih placeholder - biar tidak memutus alur P-1..P-4 yang sudah berfungsi.
+        // Ditaruh terakhir (bukan di posisi PPEPP baku P-2/P-3) karena isinya evaluasi
+        // non-audit lintas semester, bukan bagian dari alur P-1..P-4 per standar.
         $ev = self::node($spmi, 5, ['nama' => 'E-Evaluasi (Non-AMI)', 'icon' => 'bi-clipboard-check']);
-        self::cs($ev, 1, 'Survey Kepuasan', 'survey-kepuasan', 'bi-emoji-smile');
-        self::cs($ev, 2, 'Monev', 'monev', 'bi-binoculars');
-        self::cs($ev, 3, 'Evaluasi Pembelajaran', 'evaluasi-pembelajaran', 'bi-easel');
-        self::cs($ev, 4, 'Capaian Pembelajaran', 'capaian-pembelajaran', 'bi-graph-up-arrow');
+        self::node($ev, 1, ['nama' => 'Survey Kepuasan', 'route' => 'admin.ami.survey-kepuasan.index', 'route_pattern' => 'admin.ami.survey-kepuasan.*', 'icon' => 'bi-emoji-smile', 'permission' => 'survey.view']);
+        self::node($ev, 2, ['nama' => 'Monev', 'route' => 'admin.ami.monev.index', 'route_pattern' => 'admin.ami.monev.*', 'icon' => 'bi-binoculars', 'permission' => 'monev.view']);
+        self::node($ev, 3, ['nama' => 'Evaluasi Pembelajaran', 'route' => 'admin.ami.evaluasi-pembelajaran.index', 'route_pattern' => 'admin.ami.evaluasi-pembelajaran.*', 'icon' => 'bi-easel', 'permission' => 'evaluasi-pembelajaran.view']);
+        self::node($ev, 4, ['nama' => 'Capaian Pembelajaran', 'route' => 'admin.ami.capaian-pembelajaran.index', 'route_pattern' => 'admin.ami.capaian-pembelajaran.*', 'icon' => 'bi-graph-up-arrow', 'permission' => 'capaian-pembelajaran.view']);
         self::node($ev, 5, ['nama' => 'Review RPS', 'route' => 'admin.ami.rps-review.index', 'route_pattern' => 'admin.ami.rps-review.*', 'icon' => 'bi-file-earmark-text', 'permission' => 'rps.view']);
 
         // ---- AMI: seluruh operasional audit, rata di satu tingkat -------------
