@@ -218,6 +218,22 @@ return [
     'demo_note_help' => 'Teks singkat yang ditampilkan di atas tombol login demo (opsional)',
     'demo_login_account_warning' => 'Pastikan akun ini sudah dibuat di menu Pengguna dan hanya diberi hak akses terbatas.',
 
+    // Aturan AMI Settings
+    'ami_rules' => 'Aturan AMI',
+    'ami_rules_settings' => 'Pengaturan Aturan AMI',
+    'ami_rules_help' => 'Parameter umum yang dipakai di seluruh siklus Audit Mutu Internal — pengingat, batas waktu, dan skala penilaian.',
+    'ami_reminder_days' => 'Pengingat Evaluasi Diri (hari)',
+    'ami_reminder_days_help' => 'Jumlah hari sebelum tenggat jadwal audit untuk mengirim pengingat "evaluasi diri belum dikirim" ke auditee.',
+    'ami_rtl_days' => 'Batas Waktu RTL Standar (hari)',
+    'ami_rtl_days_help' => 'Acuan jumlah hari pengisian tanggal batas tindak lanjut saat sebuah temuan baru dibuat.',
+    'ami_score_min' => 'Nilai Minimum',
+    'ami_score_max' => 'Nilai Maksimum',
+    'ami_score_scale_help' => 'Rentang skala penilaian yang dipakai pada evaluasi diri dan lembar kerja audit.',
+    'ami_require_rtl_evidence' => 'Wajibkan Bukti Tindak Lanjut',
+    'ami_require_rtl_evidence_help' => 'Jika diaktifkan, auditee wajib melampirkan berkas bukti saat mengajukan tindak lanjut (RTL).',
+    'ami_general_note' => 'Catatan/Instruksi Umum AMI',
+    'ami_general_note_help' => 'Ditampilkan sebagai pengantar di halaman Evaluasi Diri dan Lembar Kerja Audit (opsional).',
+
     // Template Settings
     'color_scheme' => 'Skema Warna',
     'primary_color' => 'Warna Primer',

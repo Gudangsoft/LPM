@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Akreditasi;
 use App\Models\Auditor;
 use App\Models\JadwalAmi;
+use App\Models\Pengaturan;
 use App\Models\TemuanAmi;
 use App\Models\TindakLanjut;
 use App\Models\User;
@@ -57,8 +58,8 @@ class CheckAmiDeadlines extends Command
             }
         }
 
-        // Evaluasi diri belum dikirim, audit dalam 7 hari ke depan
-        $ambang = now()->addDays(7);
+        // Evaluasi diri belum dikirim, audit dalam N hari ke depan (lihat Aturan AMI)
+        $ambang = now()->addDays((int) Pengaturan::get('ami_reminder_evaluasi_diri_hari', 7));
         $jadwalDekat = JadwalAmi::with('prodi.kaprodi')
             ->whereBetween('tanggal_audit', [now()->startOfDay(), $ambang])
             ->whereDoesntHave('evaluasiDiri', fn ($q) => $q->where('status', 'submitted'))

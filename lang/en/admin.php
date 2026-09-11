@@ -217,6 +217,22 @@ return [
     'demo_note_help' => 'Short text shown above the demo login button (optional)',
     'demo_login_account_warning' => 'Make sure this account already exists under Users and only has limited permissions.',
 
+    // Aturan AMI Settings
+    'ami_rules' => 'AMI Rules',
+    'ami_rules_settings' => 'AMI Rules Settings',
+    'ami_rules_help' => 'General parameters used across the whole Internal Quality Audit (AMI) cycle — reminders, deadlines, and scoring scale.',
+    'ami_reminder_days' => 'Self-Assessment Reminder (days)',
+    'ami_reminder_days_help' => 'Number of days before the audit schedule deadline to send an "self-assessment not submitted" reminder to the auditee.',
+    'ami_rtl_days' => 'Default Follow-up Deadline (days)',
+    'ami_rtl_days_help' => 'Reference number of days used to fill in the follow-up deadline when a new finding is created.',
+    'ami_score_min' => 'Minimum Score',
+    'ami_score_max' => 'Maximum Score',
+    'ami_score_scale_help' => 'Scoring range used on self-assessment and audit worksheets.',
+    'ami_require_rtl_evidence' => 'Require Follow-up Evidence',
+    'ami_require_rtl_evidence_help' => 'When enabled, the auditee must attach an evidence file when submitting a follow-up (RTL).',
+    'ami_general_note' => 'General AMI Note/Instructions',
+    'ami_general_note_help' => 'Shown as an intro on the Self-Assessment and Audit Worksheet pages (optional).',
+
     // Template Settings
     'color_scheme' => 'Color Scheme',
     'primary_color' => 'Primary Color',

@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\BuktiAuditController;
 use App\Http\Controllers\Admin\RtmController;
 use App\Http\Controllers\Admin\AnalitikMutuController;
 use App\Http\Controllers\Admin\VerifikasiRtlController;
+use App\Http\Controllers\Admin\RpsReviewController;
 use App\Http\Controllers\Admin\AuditorController;
 use App\Http\Controllers\Admin\JadwalAmiController;
 use App\Http\Controllers\Admin\TemuanAmiController;
@@ -238,6 +239,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('verifikasi-rtl/{tindakLanjut}/verify', [VerifikasiRtlController::class, 'verify'])->name('verifikasi-rtl.verify');
 
         Route::get('analitik', [AnalitikMutuController::class, 'index'])->name('analitik');
+
+        // Review RPS
+        Route::post('rps-review/{rpsReview}/review', [RpsReviewController::class, 'review'])->name('rps-review.review');
+        Route::resource('rps-review', RpsReviewController::class)->except(['show']);
 
         Route::post('rtm/{rtm}/generate-ringkasan', [RtmController::class, 'generateRingkasan'])->name('rtm.generate-ringkasan');
         Route::post('rtm/{rtm}/agenda', [RtmController::class, 'addAgenda'])->name('rtm.agenda.add');

@@ -145,6 +145,10 @@ class RolePermissionSeeder extends Seeder
             // RTM (Fase 3)
             ['name' => 'Lihat RTM', 'slug' => 'rtm.view', 'module' => 'ami'],
             ['name' => 'Kelola RTM', 'slug' => 'rtm.manage', 'module' => 'ami'],
+
+            // Review RPS
+            ['name' => 'Lihat Review RPS', 'slug' => 'rps.view', 'module' => 'ami'],
+            ['name' => 'Kelola Review RPS', 'slug' => 'rps.manage', 'module' => 'ami'],
         ];
 
         foreach ($permissions as $permData) {
@@ -204,6 +208,7 @@ class RolePermissionSeeder extends Seeder
                 'lembar-audit.fill',
                 'bukti.view',
                 'rtm.view',
+                'rps.view',
             ])->pluck('id');
             $auditorRole->permissions()->sync($auditorPermissions);
         }
@@ -230,6 +235,8 @@ class RolePermissionSeeder extends Seeder
                 'lembar-audit.view',
                 'bukti.view',
                 'rtm.view',
+                'rps.view',
+                'rps.manage',
             ])->pluck('id');
             $kaprodiRole->permissions()->sync($kaprodiPermissions);
         }
@@ -253,6 +260,7 @@ class RolePermissionSeeder extends Seeder
                 'lembar-audit.view',
                 'bukti.view',
                 'rtm.view',
+                'rps.view',
             ])->pluck('id');
             $viewerRole->permissions()->sync($viewerPermissions);
         }

@@ -139,12 +139,14 @@ class AmiMenuSeeder extends Seeder
         self::cs($ev, 2, 'Monev', 'monev', 'bi-binoculars');
         self::cs($ev, 3, 'Evaluasi Pembelajaran', 'evaluasi-pembelajaran', 'bi-easel');
         self::cs($ev, 4, 'Capaian Pembelajaran', 'capaian-pembelajaran', 'bi-graph-up-arrow');
-        self::cs($ev, 5, 'Review RPS', 'review-rps', 'bi-file-earmark-text');
+        self::node($ev, 5, ['nama' => 'Review RPS', 'route' => 'admin.ami.rps-review.index', 'route_pattern' => 'admin.ami.rps-review.*', 'icon' => 'bi-file-earmark-text', 'permission' => 'rps.view']);
 
         // ---- AMI: seluruh operasional audit, rata di satu tingkat -------------
         $ami = self::node(null, 4, ['nama' => 'AMI', 'icon' => 'bi-search']);
         self::node($ami, 1, ['nama' => 'Dashboard AMI', 'route' => 'admin.ami.dashboard', 'route_pattern' => 'admin.ami.dashboard', 'icon' => 'bi-speedometer2', 'permission' => 'periode-ami.view']);
-        self::cs($ami, 2, 'Aturan AMI', 'aturan-ami', 'bi-gear');
+        // Tidak ada permission granular untuk Pengaturan (lihat menu "Pengaturan" itu
+        // sendiri) - admin-only secara implisit lewat Menu::isVisibleTo().
+        self::node($ami, 2, ['nama' => 'Aturan AMI', 'url' => '/admin/pengaturan?tab=ami', 'icon' => 'bi-gear']);
         self::node($ami, 3, ['nama' => 'Periode AMI', 'route' => 'admin.ami.periode.index', 'route_pattern' => 'admin.ami.periode.*', 'icon' => 'bi-calendar3', 'permission' => 'periode-ami.view']);
         self::node($ami, 4, ['nama' => 'Auditor', 'route' => 'admin.ami.auditor.index', 'route_pattern' => 'admin.ami.auditor.*', 'icon' => 'bi-person-badge', 'permission' => 'auditor.view']);
         self::node($ami, 5, ['nama' => 'Jadwal Audit', 'route' => 'admin.ami.jadwal.index', 'route_pattern' => 'admin.ami.jadwal.*', 'icon' => 'bi-calendar-check', 'permission' => 'jadwal-ami.view']);

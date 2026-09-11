@@ -28,6 +28,9 @@
                 <a href="{{ route('admin.pengaturan.index', ['tab' => 'demo']) }}" class="list-group-item list-group-item-action {{ request('tab') == 'demo' ? 'active' : '' }}">
                     <i class="bi bi-lightning-charge me-2"></i>{{ __('admin.demo_login') }}
                 </a>
+                <a href="{{ route('admin.pengaturan.index', ['tab' => 'ami']) }}" class="list-group-item list-group-item-action {{ request('tab') == 'ami' ? 'active' : '' }}">
+                    <i class="bi bi-search me-2"></i>{{ __('admin.ami_rules') }}
+                </a>
                 <a href="{{ route('admin.pengaturan.template') }}" class="list-group-item list-group-item-action {{ request()->routeIs('admin.pengaturan.template') ? 'active' : '' }}">
                     <i class="bi bi-palette me-2"></i>{{ __('admin.template_settings') }}
                 </a>
@@ -247,6 +250,63 @@
                             <label for="demo_login_note" class="form-label">{{ __('admin.demo_note') }}</label>
                             <input type="text" class="form-control" id="demo_login_note" name="settings[demo_login_note]" value="{{ $settings['demo_login_note'] ?? '' }}" placeholder="Ingin mencoba tanpa akun?">
                             <div class="form-text">{{ __('admin.demo_note_help') }}</div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+                @if(request('tab') == 'ami')
+                <div class="card mb-4">
+                    <div class="card-header">{{ __('admin.ami_rules_settings') }}</div>
+                    <div class="card-body">
+                        <p class="text-muted small">{{ __('admin.ami_rules_help') }}</p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ami_reminder_evaluasi_diri_hari" class="form-label">{{ __('admin.ami_reminder_days') }}</label>
+                                    <input type="number" min="1" max="60" class="form-control" id="ami_reminder_evaluasi_diri_hari" name="settings[ami_reminder_evaluasi_diri_hari]" value="{{ $settings['ami_reminder_evaluasi_diri_hari'] ?? 7 }}">
+                                    <div class="form-text">{{ __('admin.ami_reminder_days_help') }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ami_batas_hari_rtl" class="form-label">{{ __('admin.ami_rtl_days') }}</label>
+                                    <input type="number" min="1" max="180" class="form-control" id="ami_batas_hari_rtl" name="settings[ami_batas_hari_rtl]" value="{{ $settings['ami_batas_hari_rtl'] ?? 14 }}">
+                                    <div class="form-text">{{ __('admin.ami_rtl_days_help') }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ami_skala_nilai_min" class="form-label">{{ __('admin.ami_score_min') }}</label>
+                                    <input type="number" step="0.01" class="form-control" id="ami_skala_nilai_min" name="settings[ami_skala_nilai_min]" value="{{ $settings['ami_skala_nilai_min'] ?? 1 }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ami_skala_nilai_maks" class="form-label">{{ __('admin.ami_score_max') }}</label>
+                                    <input type="number" step="0.01" class="form-control" id="ami_skala_nilai_maks" name="settings[ami_skala_nilai_maks]" value="{{ $settings['ami_skala_nilai_maks'] ?? 4 }}">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-text mt-n2">{{ __('admin.ami_score_scale_help') }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input type="hidden" name="settings[ami_wajib_bukti_rtl]" value="0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="ami_wajib_bukti_rtl" name="settings[ami_wajib_bukti_rtl]" value="1" {{ !empty($settings['ami_wajib_bukti_rtl']) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="ami_wajib_bukti_rtl">{{ __('admin.ami_require_rtl_evidence') }}</label>
+                            <div class="form-text">{{ __('admin.ami_require_rtl_evidence_help') }}</div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label for="ami_deskripsi_umum" class="form-label">{{ __('admin.ami_general_note') }}</label>
+                            <textarea class="form-control" id="ami_deskripsi_umum" name="settings[ami_deskripsi_umum]" rows="3">{{ $settings['ami_deskripsi_umum'] ?? '' }}</textarea>
+                            <div class="form-text">{{ __('admin.ami_general_note_help') }}</div>
                         </div>
                     </div>
                 </div>
