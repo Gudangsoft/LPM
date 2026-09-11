@@ -81,14 +81,14 @@ class DummyDataSeeder extends Seeder
     private function seedJenisDokumen(): void
     {
         $types = [
-            ['nama' => 'Kebijakan SPMI', 'slug' => 'kebijakan-spmi', 'icon' => 'bi-file-earmark-text', 'urutan' => 1],
-            ['nama' => 'Standar SPMI', 'slug' => 'standar-spmi', 'icon' => 'bi-file-earmark-check', 'urutan' => 2],
-            ['nama' => 'Manual SPMI', 'slug' => 'manual-spmi', 'icon' => 'bi-book', 'urutan' => 3],
-            ['nama' => 'Formulir', 'slug' => 'formulir', 'icon' => 'bi-file-earmark-ruled', 'urutan' => 4],
-            ['nama' => 'SOP', 'slug' => 'sop', 'icon' => 'bi-diagram-3', 'urutan' => 5],
-            ['nama' => 'Laporan', 'slug' => 'laporan', 'icon' => 'bi-file-earmark-bar-graph', 'urutan' => 6],
-            ['nama' => 'Panduan', 'slug' => 'panduan', 'icon' => 'bi-journal-text', 'urutan' => 7],
-            ['nama' => 'SK & Surat', 'slug' => 'sk-surat', 'icon' => 'bi-envelope-paper', 'urutan' => 8],
+            ['nama' => 'Kebijakan SPMI', 'slug' => 'kebijakan-spmi', 'icon' => 'bi-file-earmark-text', 'urutan' => 1, 'deskripsi' => 'Dokumen yang memuat garis besar bagaimana perguruan tinggi memahami, merancang, dan melaksanakan penjaminan mutu internal.'],
+            ['nama' => 'Standar SPMI', 'slug' => 'standar-spmi', 'icon' => 'bi-file-earmark-check', 'urutan' => 2, 'deskripsi' => 'Dokumen berisi kriteria, ukuran, atau spesifikasi mutu yang wajib dipenuhi dan terus dilampaui.'],
+            ['nama' => 'Manual SPMI', 'slug' => 'manual-spmi', 'icon' => 'bi-book', 'urutan' => 3, 'deskripsi' => 'Dokumen berisi petunjuk praktis penetapan, pelaksanaan, evaluasi, pengendalian, dan peningkatan standar mutu (siklus PPEPP).'],
+            ['nama' => 'Formulir', 'slug' => 'formulir', 'icon' => 'bi-file-earmark-ruled', 'urutan' => 4, 'deskripsi' => 'Formulir/rekaman yang digunakan untuk mencatat pelaksanaan setiap standar mutu.'],
+            ['nama' => 'SOP', 'slug' => 'sop', 'icon' => 'bi-diagram-3', 'urutan' => 5, 'deskripsi' => 'Prosedur atau langkah kerja baku untuk pelaksanaan kegiatan penjaminan mutu.'],
+            ['nama' => 'Laporan', 'slug' => 'laporan', 'icon' => 'bi-file-earmark-bar-graph', 'urutan' => 6, 'deskripsi' => 'Laporan hasil pelaksanaan kegiatan penjaminan mutu, termasuk audit dan evaluasi.'],
+            ['nama' => 'Panduan', 'slug' => 'panduan', 'icon' => 'bi-journal-text', 'urutan' => 7, 'deskripsi' => 'Panduan teknis pelaksanaan kegiatan tertentu di lingkungan penjaminan mutu.'],
+            ['nama' => 'SK & Surat', 'slug' => 'sk-surat', 'icon' => 'bi-envelope-paper', 'urutan' => 8, 'deskripsi' => 'Surat Keputusan dan surat resmi lain terkait penjaminan mutu.'],
         ];
 
         foreach ($types as $type) {

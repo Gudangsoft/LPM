@@ -49,14 +49,16 @@ class DokumenController extends Controller implements HasMiddleware
             $query->where('judul', 'like', "%{$request->search}%");
         }
 
+        $activeJenis = null;
         if ($request->has('jenis') && $request->jenis) {
             $query->where('jenis_dokumen_id', $request->jenis);
+            $activeJenis = JenisDokumen::find($request->jenis);
         }
 
-        $dokumens = $query->paginate(20);
+        $dokumens = $query->paginate(20)->withQueryString();
         $jenisDokumen = JenisDokumen::active()->ordered()->get();
 
-        return view('admin.dokumen.index', compact('dokumens', 'jenisDokumen'));
+        return view('admin.dokumen.index', compact('dokumens', 'jenisDokumen', 'activeJenis'));
     }
 
     public function create()

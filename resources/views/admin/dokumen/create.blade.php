@@ -42,7 +42,7 @@
                             <select class="form-select @error('jenis_dokumen_id') is-invalid @enderror" id="jenis_dokumen_id" name="jenis_dokumen_id">
                                 <option value="">-- {{ __('admin.select_document_type') }} --</option>
                                 @foreach($jenisDokumen as $jenis)
-                                <option value="{{ $jenis->id }}" {{ old('jenis_dokumen_id') == $jenis->id ? 'selected' : '' }}>
+                                <option value="{{ $jenis->id }}" {{ old('jenis_dokumen_id', request('jenis')) == $jenis->id ? 'selected' : '' }}>
                                     {{ $jenis->nama }}
                                 </option>
                                 @endforeach

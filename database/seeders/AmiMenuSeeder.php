@@ -9,12 +9,14 @@ use Illuminate\Database\Seeder;
  * Builds the "PENJAMINAN MUTU" part of the admin sidebar and normalises the
  * order of every top-level admin menu item.
  *
- *   SPMI          – siklus PPEPP lengkap (kebijakan/dokumen sisi P-1/P-2/E-non-AMI,
- *                   P-3/P-4 berupa tautan pintas ke halaman yang sama dengan grup AMI
- *                   supaya penomoran P-1..P-4 tidak bolong):
- *                     P-1 Penetapan, P-2 Pelaksanaan, E-Evaluasi (Non-AMI),
+ *   SPMI          – siklus PPEPP (kebijakan/dokumen sisi P-1/P-2; P-3/P-4 berupa tautan
+ *                   pintas ke halaman yang sama dengan grup AMI supaya penomoran
+ *                   P-1..P-4 tidak bolong):
+ *                     P-1 Penetapan, P-2 Pelaksanaan,
  *                     P-3 Pengendalian (-> Tindak Lanjut, Verifikasi RTL, Monitoring),
- *                     P-4 Peningkatan (-> RTM, dst.)
+ *                     P-4 Peningkatan (-> RTM, dst.),
+ *                     E-Evaluasi (Non-AMI) - ditaruh terakhir, bukan di posisi PPEPP
+ *                     baku, karena isinya masih semua placeholder
  *   AMI           – seluruh operasional audit, rata satu tingkat (menu kerja utama): Dashboard,
  *                   Periode, Auditor, Jadwal, Penugasan, Evaluasi Diri, Lembar Kerja, Temuan,
  *                   Tindak Lanjut, Verifikasi RTL, Monitoring, Dokumen/Bukti, RTM, Audit Trail
@@ -103,11 +105,11 @@ class AmiMenuSeeder extends Seeder
         $spmi = self::node(null, 3, ['nama' => 'SPMI', 'icon' => 'bi-diagram-3']);
 
         $p1 = self::node($spmi, 1, ['nama' => 'P-1 Penetapan', 'icon' => 'bi-1-circle']);
-        self::cs($p1, 1, 'Kebijakan SPMI', 'kebijakan-spmi', 'bi-shield-check');
-        self::cs($p1, 2, 'Manual SPMI', 'manual-spmi', 'bi-book');
+        self::dok($p1, 1, 'Kebijakan SPMI', 'kebijakan-spmi', 'bi-shield-check');
+        self::dok($p1, 2, 'Manual SPMI', 'manual-spmi', 'bi-book');
         self::node($p1, 3, ['nama' => 'Standar Mutu', 'route' => 'admin.ami.standar-mutu.index', 'route_pattern' => 'admin.ami.standar-mutu.*', 'icon' => 'bi-list-check', 'permission' => 'standar-mutu.view']);
         self::node($p1, 4, ['nama' => 'Instrumen Audit', 'route' => 'admin.ami.instrumen.index', 'route_pattern' => 'admin.ami.instrumen.*', 'icon' => 'bi-ui-checks-grid', 'permission' => 'standar-mutu.view']);
-        self::cs($p1, 5, 'Formulir SPMI', 'formulir-spmi', 'bi-ui-checks');
+        self::dok($p1, 5, 'Formulir SPMI', 'formulir', 'bi-ui-checks');
         self::node($p1, 6, ['nama' => 'Program Studi', 'route' => 'admin.prodi.index', 'route_pattern' => 'admin.prodi.*', 'icon' => 'bi-mortarboard', 'permission' => 'prodi.view']);
         self::node($p1, 7, ['nama' => 'Buku Panduan', 'route' => 'admin.panduan.index', 'route_pattern' => 'admin.panduan.*', 'icon' => 'bi-journal-bookmark', 'permission' => 'panduan.view']);
 
@@ -116,24 +118,26 @@ class AmiMenuSeeder extends Seeder
         self::cs($p2, 2, 'Sasaran Mutu', 'sasaran-mutu', 'bi-bullseye');
         self::cs($p2, 3, 'Pengendalian Dokumen', 'pengendalian-dokumen', 'bi-folder-check');
 
-        $ev = self::node($spmi, 3, ['nama' => 'E-Evaluasi (Non-AMI)', 'icon' => 'bi-clipboard-check']);
+        // Pengendalian itu sendiri hidup di grup AMI (operasional); di sini hanya
+        // tautan pintas ke halaman yang sama, supaya siklus PPEPP di bawah SPMI lengkap.
+        $p3 = self::node($spmi, 3, ['nama' => 'P-3 Pengendalian', 'icon' => 'bi-3-circle']);
+        self::node($p3, 1, ['nama' => 'Tindak Lanjut', 'route' => 'admin.ami.tindak-lanjut.index', 'route_pattern' => 'admin.ami.tindak-lanjut.*', 'icon' => 'bi-clipboard-check', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 2, ['nama' => 'Verifikasi RTL', 'route' => 'admin.ami.verifikasi-rtl.index', 'route_pattern' => 'admin.ami.verifikasi-rtl.*', 'icon' => 'bi-check2-square', 'permission' => 'tindak-lanjut.view']);
+        self::node($p3, 3, ['nama' => 'Monitoring', 'route' => 'admin.ami.monitoring', 'route_pattern' => 'admin.ami.monitoring', 'icon' => 'bi-activity', 'permission' => 'tindak-lanjut.view']);
+
+        $p4 = self::node($spmi, 4, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
+        self::node($p4, 1, ['nama' => 'Rapat Tinjauan Manajemen', 'route' => 'admin.ami.rtm.index', 'route_pattern' => 'admin.ami.rtm.*', 'icon' => 'bi-people', 'permission' => 'rtm.view']);
+        self::cs($p4, 2, 'Rencana Peningkatan Mutu', 'rencana-peningkatan-mutu', 'bi-graph-up');
+        self::cs($p4, 3, 'Benchmarking', 'benchmarking', 'bi-bar-chart-steps');
+
+        // Ditaruh terakhir (bukan di posisi PPEPP baku P-2/P-3) karena seluruh isinya
+        // masih placeholder - biar tidak memutus alur P-1..P-4 yang sudah berfungsi.
+        $ev = self::node($spmi, 5, ['nama' => 'E-Evaluasi (Non-AMI)', 'icon' => 'bi-clipboard-check']);
         self::cs($ev, 1, 'Survey Kepuasan', 'survey-kepuasan', 'bi-emoji-smile');
         self::cs($ev, 2, 'Monev', 'monev', 'bi-binoculars');
         self::cs($ev, 3, 'Evaluasi Pembelajaran', 'evaluasi-pembelajaran', 'bi-easel');
         self::cs($ev, 4, 'Capaian Pembelajaran', 'capaian-pembelajaran', 'bi-graph-up-arrow');
         self::cs($ev, 5, 'Review RPS', 'review-rps', 'bi-file-earmark-text');
-
-        // Pengendalian itu sendiri hidup di grup AMI (operasional); di sini hanya
-        // tautan pintas ke halaman yang sama, supaya siklus PPEPP di bawah SPMI lengkap.
-        $p3 = self::node($spmi, 4, ['nama' => 'P-3 Pengendalian', 'icon' => 'bi-3-circle']);
-        self::node($p3, 1, ['nama' => 'Tindak Lanjut', 'route' => 'admin.ami.tindak-lanjut.index', 'route_pattern' => 'admin.ami.tindak-lanjut.*', 'icon' => 'bi-clipboard-check', 'permission' => 'tindak-lanjut.view']);
-        self::node($p3, 2, ['nama' => 'Verifikasi RTL', 'route' => 'admin.ami.verifikasi-rtl.index', 'route_pattern' => 'admin.ami.verifikasi-rtl.*', 'icon' => 'bi-check2-square', 'permission' => 'tindak-lanjut.view']);
-        self::node($p3, 3, ['nama' => 'Monitoring', 'route' => 'admin.ami.monitoring', 'route_pattern' => 'admin.ami.monitoring', 'icon' => 'bi-activity', 'permission' => 'tindak-lanjut.view']);
-
-        $p4 = self::node($spmi, 5, ['nama' => 'P-4 Peningkatan', 'icon' => 'bi-4-circle']);
-        self::node($p4, 1, ['nama' => 'Rapat Tinjauan Manajemen', 'route' => 'admin.ami.rtm.index', 'route_pattern' => 'admin.ami.rtm.*', 'icon' => 'bi-people', 'permission' => 'rtm.view']);
-        self::cs($p4, 2, 'Rencana Peningkatan Mutu', 'rencana-peningkatan-mutu', 'bi-graph-up');
-        self::cs($p4, 3, 'Benchmarking', 'benchmarking', 'bi-bar-chart-steps');
 
         // ---- AMI: seluruh operasional audit, rata di satu tingkat -------------
         $ami = self::node(null, 4, ['nama' => 'AMI', 'icon' => 'bi-search']);
@@ -200,6 +204,29 @@ class AmiMenuSeeder extends Seeder
             'nama' => $nama,
             'url' => '/admin/coming-soon/' . $slug,
             'icon' => $icon,
+        ]);
+    }
+
+    /**
+     * Leaf that opens the real Dokumen module pre-filtered to one jenis_dokumen
+     * (e.g. Kebijakan SPMI, Manual SPMI, Formulir) - reuses the existing document
+     * repository (upload, versioning, draft/submit/approve workflow) instead of
+     * a one-off feature per document type. Falls back to a "coming soon"
+     * placeholder if that jenis_dokumen row doesn't exist yet.
+     */
+    private static function dok(int $parentId, int $urutan, string $nama, string $jenisSlug, string $icon): int
+    {
+        $jenis = \App\Models\JenisDokumen::where('slug', $jenisSlug)->first();
+
+        if (! $jenis) {
+            return self::cs($parentId, $urutan, $nama, $jenisSlug, $icon);
+        }
+
+        return self::node($parentId, $urutan, [
+            'nama' => $nama,
+            'url' => '/admin/dokumen?jenis=' . $jenis->id,
+            'icon' => $icon,
+            'permission' => 'dokumen.view',
         ]);
     }
 

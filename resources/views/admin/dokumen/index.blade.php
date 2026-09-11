@@ -1,22 +1,30 @@
 @extends('layouts.admin')
 
-@section('title', __('admin.documents'))
+@section('title', $activeJenis->nama ?? __('admin.documents'))
 
 @section('content')
     <div class="page-header">
-        <h1 class="page-title">{{ __('admin.documents') }}</h1>
+        <h1 class="page-title">{{ $activeJenis->nama ?? __('admin.documents') }}</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                @if($activeJenis)
+                <li class="breadcrumb-item"><a href="{{ route('admin.dokumen.index') }}">{{ __('admin.documents') }}</a></li>
+                <li class="breadcrumb-item active">{{ $activeJenis->nama }}</li>
+                @else
                 <li class="breadcrumb-item active">{{ __('admin.documents') }}</li>
+                @endif
             </ol>
         </nav>
+        @if($activeJenis?->deskripsi)
+        <p class="text-muted mb-0 mt-2">{{ $activeJenis->deskripsi }}</p>
+        @endif
     </div>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span>{{ __('admin.document_list') }}</span>
-            <a href="{{ route('admin.dokumen.create') }}" class="btn btn-primary btn-sm">
+            <span>{{ $activeJenis->nama ?? __('admin.document_list') }}</span>
+            <a href="{{ route('admin.dokumen.create', request()->only('jenis')) }}" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-lg me-1"></i>{{ __('admin.add_new') }}
             </a>
         </div>
