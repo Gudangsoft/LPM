@@ -111,7 +111,9 @@ class AmiMenuSeeder extends Seeder
         self::node($p1, 4, ['nama' => 'Instrumen Audit', 'route' => 'admin.ami.instrumen.index', 'route_pattern' => 'admin.ami.instrumen.*', 'icon' => 'bi-ui-checks-grid', 'permission' => 'standar-mutu.view']);
         self::dok($p1, 5, 'Formulir SPMI', 'formulir', 'bi-ui-checks');
         self::node($p1, 6, ['nama' => 'Program Studi', 'route' => 'admin.prodi.index', 'route_pattern' => 'admin.prodi.*', 'icon' => 'bi-mortarboard', 'permission' => 'prodi.view']);
-        self::node($p1, 7, ['nama' => 'Buku Panduan', 'route' => 'admin.panduan.index', 'route_pattern' => 'admin.panduan.*', 'icon' => 'bi-journal-bookmark', 'permission' => 'panduan.view']);
+        // Buku Panduan sengaja tidak ada di sini - itu panduan pemakaian aplikasi
+        // (lintas modul), bukan dokumen kebijakan SPMI. Aksesnya lewat ikon
+        // bantuan (?) di header, bukan sidebar SPMI.
 
         $p2 = self::node($spmi, 2, ['nama' => 'P-2 Pelaksanaan', 'icon' => 'bi-2-circle']);
         self::node($p2, 1, ['nama' => 'DKPS', 'route' => 'admin.dkps.index', 'route_pattern' => 'admin.dkps.*', 'icon' => 'bi-clipboard-data', 'permission' => 'dkps.view']);

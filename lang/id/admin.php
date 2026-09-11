@@ -29,6 +29,7 @@ return [
     'view_all' => 'Lihat Semua',
     'visitor_statistics' => 'Statistik Pengunjung',
     'needs_attention' => 'Perlu Perhatian',
+    'help' => 'Bantuan',
     'notifications' => 'Notifikasi',
     'no_notifications' => 'Tidak ada notifikasi',
     'view_all_notifications' => 'Lihat Semua Notifikasi',

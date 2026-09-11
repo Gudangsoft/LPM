@@ -28,6 +28,7 @@ return [
     'recent_activities' => 'Recent Activities',
     'view_all' => 'View All',
     'needs_attention' => 'Needs Attention',
+    'help' => 'Help',
     'notifications' => 'Notifications',
     'no_notifications' => 'No notifications',
     'view_all_notifications' => 'View All Notifications',

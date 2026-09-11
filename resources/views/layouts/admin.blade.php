@@ -890,6 +890,10 @@
                     <i class="bi bi-box-arrow-up-right me-1"></i>{{ __('admin.view_site') }}
                 </a>
 
+                <a href="{{ route('admin.panduan.index') }}" class="toggle-sidebar" title="{{ __('admin.help') }}">
+                    <i class="bi bi-question-circle"></i>
+                </a>
+
                 <div class="dropdown notification-dropdown">
                     <a href="#" class="toggle-sidebar position-relative" data-bs-toggle="dropdown" title="{{ __('admin.notifications') }}">
                         <i class="bi bi-bell"></i>
