@@ -66,7 +66,7 @@
                         </form>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body panduan-konten">
                     {!! $item->konten !!}
                 </div>
             </div>
@@ -79,3 +79,16 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+<style>
+    .panduan-konten img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        margin: .5rem 0;
+    }
+</style>
+@endpush

@@ -1,2 +1,7 @@
 *
 !.gitignore
+
+# Curated Buku Panduan screenshots ship with the app (unlike user uploads
+# elsewhere in this folder, which stay ignored).
+!panduan/
+!panduan/**

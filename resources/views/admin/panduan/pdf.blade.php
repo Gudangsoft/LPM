@@ -18,6 +18,7 @@
     .bab .isi table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
     .bab .isi table, .bab .isi th, .bab .isi td { border: 1px solid #ccc; }
     .bab .isi th, .bab .isi td { padding: 4px 6px; text-align: left; }
+    .bab .isi img { max-width: 100%; height: auto; }
     .badge { display: inline-block; padding: 1px 6px; border-radius: 3px; color: #fff; font-size: 10px; }
     .bg-secondary { background: #6c757d; }
     .bg-info { background: #0dcaf0; color: #000; }

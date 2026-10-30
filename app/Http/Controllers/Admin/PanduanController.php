@@ -89,11 +89,28 @@ class PanduanController extends Controller implements HasMiddleware
 
     public function exportPdf()
     {
-        $chapters = Panduan::active()->ordered()->get()->groupBy('kategori');
+        $chapters = Panduan::active()->ordered()->get()->groupBy('kategori')
+            ->map(fn ($bab) => $bab->map($this->resolveImagesForPdf(...)));
 
         $pdf = Pdf::loadView('admin.panduan.pdf', compact('chapters'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('buku-panduan-lpm.pdf');
+    }
+
+    /**
+     * Chapters may embed screenshots via the public "/storage/..." URL
+     * (served through the public/storage symlink). DomPDF resolves local
+     * <img> paths against its chroot by realpath, and a realpath through a
+     * symlink lands outside that chroot - so it silently refuses to load
+     * them. Rewrite to the real absolute filesystem path (no symlink hop)
+     * just for this PDF render; the stored content and the web view keep
+     * the portable public URL.
+     */
+    private function resolveImagesForPdf(Panduan $panduan): Panduan
+    {
+        $panduan->konten = str_replace('src="/storage/', 'src="/storage/app/public/', $panduan->konten);
+
+        return $panduan;
     }
 }
