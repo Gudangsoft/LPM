@@ -98,13 +98,23 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="file_sk" class="form-label">File SK (PDF)</label>
-                    <input type="file" class="form-control @error('file_sk') is-invalid @enderror" id="file_sk" name="file_sk" accept=".pdf">
-                    @error('file_sk')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <div class="form-text">Maksimal 5MB</div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="file_sk" class="form-label">File SK (PDF / Gambar)</label>
+                        <input type="file" class="form-control @error('file_sk') is-invalid @enderror" id="file_sk" name="file_sk" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                        @error('file_sk')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">PDF, JPG, PNG, atau WEBP. Maksimal 5MB</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="link_sk" class="form-label">atau Link SK</label>
+                        <input type="url" class="form-control @error('link_sk') is-invalid @enderror" id="link_sk" name="link_sk" value="{{ old('link_sk') }}" placeholder="https://drive.google.com/...">
+                        @error('link_sk')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Tautan Google Drive atau situs LAM/BAN-PT. Bila file juga diunggah, file yang ditampilkan.</div>
+                    </div>
                 </div>
 
                 <div class="mb-3">

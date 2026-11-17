@@ -21,6 +21,7 @@ class Akreditasi extends Model
         'tanggal_sk',
         'tanggal_kadaluarsa',
         'file_sk',
+        'link_sk',
         'status',
         'catatan',
     ];
@@ -29,6 +30,35 @@ class Akreditasi extends Model
         'tanggal_sk' => 'date',
         'tanggal_kadaluarsa' => 'date',
     ];
+
+    /** URL dokumen SK: file yang diunggah, atau tautan bila tidak ada file. */
+    public function getSkUrlAttribute(): ?string
+    {
+        if ($this->file_sk) {
+            return \Illuminate\Support\Facades\Storage::url($this->file_sk);
+        }
+
+        return $this->link_sk ?: null;
+    }
+
+    /** Jenis dokumen SK untuk memilih ikon: pdf | image | link | null. */
+    public function getSkTypeAttribute(): ?string
+    {
+        if ($this->file_sk) {
+            return preg_match('/\.(jpe?g|png|webp|gif)$/i', $this->file_sk) ? 'image' : 'pdf';
+        }
+
+        return $this->link_sk ? 'link' : null;
+    }
+
+    public function getSkIconAttribute(): string
+    {
+        return match ($this->sk_type) {
+            'image' => 'bi-file-image',
+            'link' => 'bi-link-45deg',
+            default => 'bi-file-pdf',
+        };
+    }
 
     /**
      * Get the prodi

@@ -99,20 +99,34 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="file_sk" class="form-label">File SK (PDF)</label>
-                    @if($akreditasi->file_sk)
-                    <div class="mb-2">
-                        <a href="{{ Storage::url($akreditasi->file_sk) }}" target="_blank" class="btn btn-sm btn-outline-danger">
-                            <i class="bi bi-file-pdf me-1"></i>Lihat File
-                        </a>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="file_sk" class="form-label">File SK (PDF / Gambar)</label>
+                        @if($akreditasi->file_sk)
+                        <div class="mb-2 d-flex flex-wrap align-items-center gap-3">
+                            <a href="{{ Storage::url($akreditasi->file_sk) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-danger">
+                                <i class="bi {{ $akreditasi->sk_type === 'image' ? 'bi-file-image' : 'bi-file-pdf' }} me-1"></i>Lihat File
+                            </a>
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" name="hapus_file_sk" value="1" id="hapus_file_sk">
+                                <label class="form-check-label small" for="hapus_file_sk">Hapus file ini</label>
+                            </div>
+                        </div>
+                        @endif
+                        <input type="file" class="form-control @error('file_sk') is-invalid @enderror" id="file_sk" name="file_sk" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                        @error('file_sk')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">PDF, JPG, PNG, atau WEBP, maks. 5MB. Kosongkan jika tidak ingin mengubah file.</div>
                     </div>
-                    @endif
-                    <input type="file" class="form-control @error('file_sk') is-invalid @enderror" id="file_sk" name="file_sk" accept=".pdf">
-                    @error('file_sk')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <div class="form-text">Kosongkan jika tidak ingin mengubah file. Maksimal 5MB</div>
+                    <div class="col-md-6 mb-3">
+                        <label for="link_sk" class="form-label">atau Link SK</label>
+                        <input type="url" class="form-control @error('link_sk') is-invalid @enderror" id="link_sk" name="link_sk" value="{{ old('link_sk', $akreditasi->link_sk) }}" placeholder="https://drive.google.com/...">
+                        @error('link_sk')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Tautan Google Drive atau situs LAM/BAN-PT. Bila file juga ada, file yang ditampilkan.</div>
+                    </div>
                 </div>
 
                 <div class="mb-3">

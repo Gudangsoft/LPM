@@ -70,9 +70,9 @@
                             <td><span class="badge bg-primary fs-6">{{ $item->peringkat }}</span></td>
                             <td>
                                 {{ $item->nomor_sk }}
-                                @if($item->file_sk)
-                                <a href="{{ Storage::url($item->file_sk) }}" target="_blank" class="ms-1">
-                                    <i class="bi bi-file-pdf text-danger"></i>
+                                @if($item->sk_url)
+                                <a href="{{ $item->sk_url }}" target="_blank" rel="noopener" class="ms-1" title="Lihat SK">
+                                    <i class="bi {{ $item->sk_icon }} {{ $item->sk_type === 'link' ? 'text-primary' : 'text-danger' }}"></i>
                                 </a>
                                 @endif
                             </td>

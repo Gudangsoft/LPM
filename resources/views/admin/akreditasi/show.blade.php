@@ -67,15 +67,28 @@
                             <td class="text-muted">Status</td>
                             <td><span class="badge bg-{{ $akreditasi->status_color }}">{{ ucfirst(str_replace('_', ' ', $akreditasi->status)) }}</span></td>
                         </tr>
-                        @if($akreditasi->file_sk)
+                        @if($akreditasi->sk_url)
                         <tr>
-                            <td class="text-muted">File SK</td>
-                            <td>
-                                <a href="{{ Storage::url($akreditasi->file_sk) }}" target="_blank" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-file-pdf me-1"></i>Download SK
+                            <td class="text-muted">Dokumen SK</td>
+                            <td class="d-flex flex-wrap gap-2">
+                                @if($akreditasi->file_sk)
+                                <a href="{{ Storage::url($akreditasi->file_sk) }}" target="_blank" rel="noopener" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi {{ $akreditasi->sk_icon }} me-1"></i>{{ $akreditasi->sk_type === 'image' ? 'Lihat SK' : 'Download SK' }}
                                 </a>
+                                @endif
+                                @if($akreditasi->link_sk)
+                                <a href="{{ $akreditasi->link_sk }}" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-link-45deg me-1"></i>Buka Link SK
+                                </a>
+                                @endif
                             </td>
                         </tr>
+                        @if($akreditasi->sk_type === 'image')
+                        <tr>
+                            <td></td>
+                            <td><img src="{{ Storage::url($akreditasi->file_sk) }}" alt="SK {{ $akreditasi->nomor_sk }}" class="img-fluid border rounded" style="max-height: 400px;"></td>
+                        </tr>
+                        @endif
                         @endif
                         @if($akreditasi->catatan)
                         <tr>

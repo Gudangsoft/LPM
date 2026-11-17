@@ -67,9 +67,14 @@ class AkreditasiController extends Controller implements HasMiddleware
             'nomor_sk' => 'required|string|max:255',
             'tanggal_sk' => 'required|date',
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_sk',
-            'file_sk' => 'nullable|file|mimes:pdf|max:5120',
+            'file_sk' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:5120',
+            'link_sk' => 'nullable|url:http,https|max:1000',
             'status' => 'required|in:aktif,kadaluarsa,proses_perpanjangan',
             'catatan' => 'nullable|string',
+        ], [
+            'file_sk.mimes' => 'File SK harus berupa PDF atau gambar (JPG, PNG, WEBP).',
+            'file_sk.max' => 'Ukuran file SK maksimal 5MB.',
+            'link_sk.url' => 'Link SK harus berupa alamat web yang valid (diawali http:// atau https://).',
         ]);
 
         if ($request->hasFile('file_sk')) {
@@ -116,9 +121,14 @@ class AkreditasiController extends Controller implements HasMiddleware
             'nomor_sk' => 'required|string|max:255',
             'tanggal_sk' => 'required|date',
             'tanggal_kadaluarsa' => 'required|date|after:tanggal_sk',
-            'file_sk' => 'nullable|file|mimes:pdf|max:5120',
+            'file_sk' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp|max:5120',
+            'link_sk' => 'nullable|url:http,https|max:1000',
             'status' => 'required|in:aktif,kadaluarsa,proses_perpanjangan',
             'catatan' => 'nullable|string',
+        ], [
+            'file_sk.mimes' => 'File SK harus berupa PDF atau gambar (JPG, PNG, WEBP).',
+            'file_sk.max' => 'Ukuran file SK maksimal 5MB.',
+            'link_sk.url' => 'Link SK harus berupa alamat web yang valid (diawali http:// atau https://).',
         ]);
 
         if ($request->hasFile('file_sk')) {
@@ -126,6 +136,9 @@ class AkreditasiController extends Controller implements HasMiddleware
                 Storage::disk('public')->delete($akreditasi->file_sk);
             }
             $validated['file_sk'] = $request->file('file_sk')->store('akreditasi', 'public');
+        } elseif ($request->boolean('hapus_file_sk') && $akreditasi->file_sk) {
+            Storage::disk('public')->delete($akreditasi->file_sk);
+            $validated['file_sk'] = null;
         }
 
         $akreditasi->update($validated);
