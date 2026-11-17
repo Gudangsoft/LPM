@@ -2,7 +2,14 @@
     $jabatanLabel = ['tenaga_pengajar' => 'Tenaga Pengajar', 'asisten_ahli' => 'Asisten Ahli', 'lektor' => 'Lektor', 'lektor_kepala' => 'Lektor Kepala', 'guru_besar' => 'Guru Besar'];
 @endphp
 
-<div class="d-flex justify-content-end mb-3">
+<div class="d-flex flex-wrap justify-content-end gap-2 mb-3">
+    <form action="{{ route('admin.dkps.dosen.ambil-master', $submission) }}" method="POST" class="d-inline"
+          onsubmit="return confirm('Salin semua dosen aktif prodi ini dari menu Data Dosen ke Tabel 6? Dosen yang sudah ada di tabel akan dilewati.')">
+        @csrf
+        <button type="submit" class="btn btn-sm btn-outline-primary" title="Salin dosen aktif dari menu Data Dosen">
+            <i class="bi bi-person-down me-1"></i>Ambil dari Data Dosen
+        </button>
+    </form>
     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDosenModal">
         <i class="bi bi-plus-lg me-1"></i>Tambah Dosen Tetap
     </button>

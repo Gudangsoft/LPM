@@ -26,8 +26,9 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Dosen Pengampu <span class="text-danger">*</span></label>
-        <input type="text" name="dosen_pengampu" class="form-control @error('dosen_pengampu') is-invalid @enderror" value="{{ old('dosen_pengampu', $rpsReview->dosen_pengampu ?? '') }}" required>
+        <input type="text" name="dosen_pengampu" list="dosenList" autocomplete="off" class="form-control @error('dosen_pengampu') is-invalid @enderror" value="{{ old('dosen_pengampu', $rpsReview->dosen_pengampu ?? '') }}" required>
         @error('dosen_pengampu')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        @include('admin.dosen._datalist')
     </div>
 
     <div class="col-md-4">

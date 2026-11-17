@@ -30,6 +30,7 @@ class AmiMenuSeeder extends Seeder
     /** Real leaf routes that belong to this section (used to clean up the old flat menu). */
     private const LEAF_ROUTES = [
         'admin.prodi.index',
+        'admin.dosen.index',
         'admin.akreditasi.index',
         'admin.akreditasi.dashboard',
         'admin.ami.periode.index',
@@ -110,6 +111,7 @@ class AmiMenuSeeder extends Seeder
         self::node($p1, 4, ['nama' => 'Instrumen Audit', 'route' => 'admin.ami.instrumen.index', 'route_pattern' => 'admin.ami.instrumen.*', 'icon' => 'bi-ui-checks-grid', 'permission' => 'standar-mutu.view']);
         self::dok($p1, 5, 'Formulir SPMI', 'formulir', 'bi-ui-checks');
         self::node($p1, 6, ['nama' => 'Program Studi', 'route' => 'admin.prodi.index', 'route_pattern' => 'admin.prodi.*', 'icon' => 'bi-mortarboard', 'permission' => 'prodi.view']);
+        self::node($p1, 7, ['nama' => 'Data Dosen', 'route' => 'admin.dosen.index', 'route_pattern' => 'admin.dosen.*', 'icon' => 'bi-person-badge', 'permission' => 'dosen.view']);
         // Buku Panduan sengaja tidak ada di sini - itu panduan pemakaian aplikasi
         // (lintas modul), bukan dokumen kebijakan SPMI. Aksesnya lewat ikon
         // bantuan (?) di header, bukan sidebar SPMI.

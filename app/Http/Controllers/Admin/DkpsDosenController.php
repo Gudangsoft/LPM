@@ -8,6 +8,7 @@ use App\Models\DkpsPengembanganKompetensi;
 use App\Models\DkpsRekognisiDtps;
 use App\Models\DkpsSubmission;
 use App\Models\DkpsTenagaKependidikanSummary;
+use App\Models\Dosen;
 use App\Models\DosenTetap;
 use App\Models\TenagaKependidikan;
 use Illuminate\Http\Request;
@@ -25,6 +26,51 @@ class DkpsDosenController extends Controller implements HasMiddleware
     }
 
     // ---- Dosen Tetap roster (Table 6) ----
+
+    /**
+     * Salin dosen aktif dari Data Dosen (prodi yang sama) ke Tabel 6.
+     * Dosen yang sudah ada di tabel (NIDN sama, atau nama sama bila NIDN kosong) dilewati.
+     */
+    public function ambilDariMaster(DkpsSubmission $dkp)
+    {
+        $existing = DosenTetap::where('dkps_submission_id', $dkp->id)->get(['nama', 'nidn_nidk']);
+        $existingNidn = $existing->pluck('nidn_nidk')->filter()->map(fn ($v) => trim($v))->all();
+        $existingNama = $existing->pluck('nama')->map(fn ($v) => mb_strtolower(trim($v)))->all();
+        $urutan = (int) DosenTetap::where('dkps_submission_id', $dkp->id)->max('urutan');
+
+        $added = 0;
+        $skipped = 0;
+        foreach (Dosen::where('prodi_id', $dkp->prodi_id)->where('is_active', true)->orderBy('nama')->get() as $d) {
+            $dupe = $d->nidn_nidk
+                ? in_array($d->nidn_nidk, $existingNidn, true)
+                : in_array(mb_strtolower(trim($d->nama)), $existingNama, true);
+            if ($dupe) {
+                $skipped++;
+
+                continue;
+            }
+
+            DosenTetap::create([
+                'dkps_submission_id' => $dkp->id,
+                'nama' => $d->nama,
+                'nidn_nidk' => $d->nidn_nidk,
+                'nuptk' => $d->nuptk,
+                'pendidikan_magister_bidang' => $d->pendidikan_magister_bidang,
+                'pendidikan_doktor_bidang' => $d->pendidikan_doktor_bidang,
+                'bidang_keahlian' => $d->bidang_keahlian,
+                'jabatan_akademik' => $d->jabatan_akademik,
+                'no_sertifikat_pendidik' => $d->no_sertifikat_pendidik,
+                'urutan' => ++$urutan,
+            ]);
+            $added++;
+        }
+
+        if ($added === 0 && $skipped === 0) {
+            return back()->with('error', 'Belum ada dosen aktif untuk prodi ini di menu Data Dosen.');
+        }
+
+        return back()->with('success', "{$added} dosen ditambahkan dari Data Dosen".($skipped ? ", {$skipped} dilewati karena sudah ada di tabel." : '.'));
+    }
 
     public function storeDosen(Request $request, DkpsSubmission $dkp)
     {

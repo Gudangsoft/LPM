@@ -202,6 +202,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('prodi/import', [\App\Http\Controllers\Admin\ProdiExcelController::class, 'import'])->name('prodi.import');
     Route::resource('prodi', ProdiController::class);
 
+    // Data Dosen (data induk per prodi)
+    Route::get('dosen/export', [\App\Http\Controllers\Admin\DosenExcelController::class, 'export'])->name('dosen.export');
+    Route::get('dosen/template', [\App\Http\Controllers\Admin\DosenExcelController::class, 'template'])->name('dosen.template');
+    Route::post('dosen/import', [\App\Http\Controllers\Admin\DosenExcelController::class, 'import'])->name('dosen.import');
+    Route::resource('dosen', \App\Http\Controllers\Admin\DosenController::class)->except(['show'])->parameters(['dosen' => 'dosen']);
+
     Route::get('akreditasi/dashboard', [AkreditasiController::class, 'dashboard'])->name('akreditasi.dashboard');
     Route::resource('akreditasi', AkreditasiController::class);
 
@@ -365,6 +371,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::put('kepuasan-mahasiswa', [DkpsMahasiswaController::class, 'updateKepuasan'])->name('kepuasan-mahasiswa.update');
 
         // Dosen Tetap (Tabel 6)
+        Route::post('dosen/ambil-master', [DkpsDosenController::class, 'ambilDariMaster'])->name('dosen.ambil-master');
         Route::post('dosen', [DkpsDosenController::class, 'storeDosen'])->name('dosen.store');
         Route::put('dosen/{dosen}', [DkpsDosenController::class, 'updateDosen'])->name('dosen.update');
         Route::delete('dosen/{dosen}', [DkpsDosenController::class, 'destroyDosen'])->name('dosen.destroy');
