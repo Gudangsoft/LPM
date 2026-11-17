@@ -44,7 +44,7 @@ class AkreditasiController extends Controller implements HasMiddleware
         
         $akreditasi = $query->paginate(15);
         $statusOptions = ['aktif', 'kadaluarsa', 'proses_perpanjangan'];
-        $lembagaOptions = ['BAN-PT', 'LAM-PTKes', 'LAM-PTIK', 'LAM-Teknik', 'Internasional'];
+        $lembagaOptions = Akreditasi::lembagaOptions();
         
         return view('admin.akreditasi.index', compact('akreditasi', 'statusOptions', 'lembagaOptions'));
     }
@@ -52,14 +52,28 @@ class AkreditasiController extends Controller implements HasMiddleware
     public function create()
     {
         $prodis = Prodi::active()->orderBy('nama')->get();
-        $lembagaOptions = ['BAN-PT', 'LAM-PTKes', 'LAM-PTIK', 'LAM-Teknik', 'Internasional'];
-        $peringkatOptions = ['A', 'B', 'C', 'Unggul', 'Baik Sekali', 'Baik'];
+        $lembagaOptions = Akreditasi::lembagaOptions();
+        $peringkatOptions = Akreditasi::peringkatOptions();
         
         return view('admin.akreditasi.create', compact('prodis', 'lembagaOptions', 'peringkatOptions'));
     }
 
+    /**
+     * Opsi "+ Tambah ... lain" pada dropdown Lembaga/Peringkat mengirim "__lainnya";
+     * pakai isian teks "{field}_lain" sebagai nilainya.
+     */
+    private function applyLainnya(Request $request): void
+    {
+        foreach (['lembaga', 'peringkat'] as $field) {
+            if ($request->input($field) === '__lainnya') {
+                $request->merge([$field => trim((string) $request->input("{$field}_lain"))]);
+            }
+        }
+    }
+
     public function store(Request $request)
     {
+        $this->applyLainnya($request);
         $validated = $request->validate([
             'prodi_id' => 'required|exists:prodi,id',
             'lembaga' => 'required|string|max:100',
@@ -72,6 +86,8 @@ class AkreditasiController extends Controller implements HasMiddleware
             'status' => 'required|in:aktif,kadaluarsa,proses_perpanjangan',
             'catatan' => 'nullable|string',
         ], [
+            'lembaga.required' => 'Pilih lembaga akreditasi, atau ketik nama lembaga lain.',
+            'peringkat.required' => 'Pilih peringkat, atau ketik peringkat lain.',
             'file_sk.mimes' => 'File SK harus berupa PDF atau gambar (JPG, PNG, WEBP).',
             'file_sk.max' => 'Ukuran file SK maksimal 5MB.',
             'link_sk.url' => 'Link SK harus berupa alamat web yang valid (diawali http:// atau https://).',
@@ -106,14 +122,15 @@ class AkreditasiController extends Controller implements HasMiddleware
     public function edit(Akreditasi $akreditasi)
     {
         $prodis = Prodi::active()->orderBy('nama')->get();
-        $lembagaOptions = ['BAN-PT', 'LAM-PTKes', 'LAM-PTIK', 'LAM-Teknik', 'Internasional'];
-        $peringkatOptions = ['A', 'B', 'C', 'Unggul', 'Baik Sekali', 'Baik'];
+        $lembagaOptions = Akreditasi::lembagaOptions();
+        $peringkatOptions = Akreditasi::peringkatOptions();
         
         return view('admin.akreditasi.edit', compact('akreditasi', 'prodis', 'lembagaOptions', 'peringkatOptions'));
     }
 
     public function update(Request $request, Akreditasi $akreditasi)
     {
+        $this->applyLainnya($request);
         $validated = $request->validate([
             'prodi_id' => 'required|exists:prodi,id',
             'lembaga' => 'required|string|max:100',
@@ -126,6 +143,8 @@ class AkreditasiController extends Controller implements HasMiddleware
             'status' => 'required|in:aktif,kadaluarsa,proses_perpanjangan',
             'catatan' => 'nullable|string',
         ], [
+            'lembaga.required' => 'Pilih lembaga akreditasi, atau ketik nama lembaga lain.',
+            'peringkat.required' => 'Pilih peringkat, atau ketik peringkat lain.',
             'file_sk.mimes' => 'File SK harus berupa PDF atau gambar (JPG, PNG, WEBP).',
             'file_sk.max' => 'Ukuran file SK maksimal 5MB.',
             'link_sk.url' => 'Link SK harus berupa alamat web yang valid (diawali http:// atau https://).',

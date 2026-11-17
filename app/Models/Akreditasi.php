@@ -31,6 +31,39 @@ class Akreditasi extends Model
         'tanggal_kadaluarsa' => 'date',
     ];
 
+    /** Lembaga akreditasi bawaan (BAN-PT & LAM yang berlaku). */
+    public const LEMBAGA = [
+        'BAN-PT', 'LAM-PTKes', 'LAM INFOKOM', 'LAM Teknik', 'LAMEMBA', 'LAMDIK',
+        'LAMSAMA', 'LAMSPAK', 'Internasional',
+    ];
+
+    public const PERINGKAT = ['Unggul', 'Baik Sekali', 'Baik', 'Terakreditasi Sementara', 'A', 'B', 'C'];
+
+    /** Daftar bawaan + yang pernah diketik sendiri (tersimpan di data), tanpa duplikat. */
+    public static function lembagaOptions(): array
+    {
+        return self::mergeOptions(self::LEMBAGA, 'lembaga');
+    }
+
+    public static function peringkatOptions(): array
+    {
+        return self::mergeOptions(self::PERINGKAT, 'peringkat');
+    }
+
+    private static function mergeOptions(array $defaults, string $column): array
+    {
+        $norm = fn ($s) => preg_replace('/[^a-z0-9]/', '', strtolower($s));
+        $options = [];
+        foreach (array_merge($defaults, static::query()->distinct()->orderBy($column)->pluck($column)->all()) as $opt) {
+            $opt = trim((string) $opt);
+            if ($opt !== '' && ! isset($options[$norm($opt)])) {
+                $options[$norm($opt)] = $opt;
+            }
+        }
+
+        return array_values($options);
+    }
+
     /** URL dokumen SK: file yang diunggah, atau tautan bila tidak ada file. */
     public function getSkUrlAttribute(): ?string
     {

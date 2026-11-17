@@ -62,8 +62,6 @@ class AkreditasiExcelController extends Controller implements HasMiddleware
         'kadaluarsa' => 'Kadaluarsa',
     ];
 
-    private const LEMBAGA_CONTOH = ['BAN-PT', 'LAM-PTKes', 'LAM-PTIK', 'LAM-Teknik', 'LAM INFOKOM', 'LAMDIK', 'LAMEMBA', 'Internasional'];
-
     private const PERINGKAT_CONTOH = ['Unggul', 'Baik Sekali', 'Baik', 'A', 'B', 'C'];
 
     public static function middleware(): array
@@ -122,7 +120,7 @@ class AkreditasiExcelController extends Controller implements HasMiddleware
             [''],
             ['Kode Prodi', 'WAJIB. Kode program studi (lihat daftar di bawah). Boleh juga nama prodi, mis. "S1 Teknik Informatika".'],
             ['Nama Program Studi', 'Hanya keterangan, tidak dibaca saat import.'],
-            ['Lembaga', 'WAJIB. Mis. '.implode(', ', self::LEMBAGA_CONTOH).'.'],
+            ['Lembaga', 'WAJIB. Mis. '.implode(', ', Akreditasi::LEMBAGA).'. Boleh lembaga lain.'],
             ['Peringkat', 'WAJIB. Mis. '.implode(', ', self::PERINGKAT_CONTOH).'.'],
             ['Nomor SK', 'WAJIB. Prodi + Nomor SK yang sudah ada akan DIPERBARUI, selain itu DITAMBAHKAN.'],
             ['Tanggal SK', 'WAJIB. Format tanggal Excel, atau teks YYYY-MM-DD / DD-MM-YYYY.'],
@@ -423,7 +421,7 @@ class AkreditasiExcelController extends Controller implements HasMiddleware
 
         $col = fn (string $f) => Coordinate::stringFromColumnIndex(array_search($f, array_keys(self::COLUMNS), true) + 1);
         $this->addListValidation($sheet, $col('status').'2:'.$col('status').'1000', array_values(self::STATUS), false);
-        $this->addListValidation($sheet, $col('lembaga').'2:'.$col('lembaga').'1000', self::LEMBAGA_CONTOH, true);
+        $this->addListValidation($sheet, $col('lembaga').'2:'.$col('lembaga').'1000', Akreditasi::lembagaOptions(), true);
         $this->addListValidation($sheet, $col('peringkat').'2:'.$col('peringkat').'1000', self::PERINGKAT_CONTOH, true);
 
         return $spreadsheet;
@@ -432,6 +430,12 @@ class AkreditasiExcelController extends Controller implements HasMiddleware
     /** $saranSaja: dropdown sebagai saran, isian lain tetap boleh (Lembaga/Peringkat bisa beragam). */
     private function addListValidation(Worksheet $sheet, string $range, array $options, bool $saranSaja): void
     {
+        // Excel menolak daftar dropdown > 255 karakter (file jadi rusak); lewati saja bila terlalu panjang.
+        $options = array_map(fn ($o) => str_replace(['"', ','], ['', ' '], $o), $options);
+        if (mb_strlen(implode(',', $options)) > 250) {
+            return;
+        }
+
         $v = new DataValidation();
         $v->setType(DataValidation::TYPE_LIST)
             ->setErrorStyle($saranSaja ? DataValidation::STYLE_INFORMATION : DataValidation::STYLE_STOP)

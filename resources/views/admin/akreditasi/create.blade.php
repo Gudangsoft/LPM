@@ -34,31 +34,13 @@
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="lembaga" class="form-label">Lembaga Akreditasi <span class="text-danger">*</span></label>
-                        <select class="form-select @error('lembaga') is-invalid @enderror" id="lembaga" name="lembaga" required>
-                            <option value="">Pilih Lembaga</option>
-                            @foreach($lembagaOptions as $l)
-                            <option value="{{ $l }}" {{ old('lembaga') == $l ? 'selected' : '' }}>{{ $l }}</option>
-                            @endforeach
-                        </select>
-                        @error('lembaga')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @include('admin.akreditasi._select_lainnya', ['name' => 'lembaga', 'label' => 'Lembaga Akreditasi', 'noun' => 'lembaga', 'options' => $lembagaOptions, 'value' => null])
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="peringkat" class="form-label">Peringkat <span class="text-danger">*</span></label>
-                        <select class="form-select @error('peringkat') is-invalid @enderror" id="peringkat" name="peringkat" required>
-                            <option value="">Pilih Peringkat</option>
-                            @foreach($peringkatOptions as $p)
-                            <option value="{{ $p }}" {{ old('peringkat') == $p ? 'selected' : '' }}>{{ $p }}</option>
-                            @endforeach
-                        </select>
-                        @error('peringkat')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @include('admin.akreditasi._select_lainnya', ['name' => 'peringkat', 'label' => 'Peringkat', 'noun' => 'peringkat', 'options' => $peringkatOptions, 'value' => null])
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
