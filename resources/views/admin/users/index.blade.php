@@ -51,7 +51,7 @@
                             <th>{{ __('admin.role') }}</th>
                             <th>{{ __('admin.status') }}</th>
                             <th>{{ __('admin.registered_at') }}</th>
-                            <th width="150">{{ __('admin.actions') }}</th>
+                            <th class="text-nowrap" style="width: 1%;">{{ __('admin.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,7 +84,8 @@
                                 @endif
                             </td>
                             <td>{{ $user->created_at->format('d M Y') }}</td>
-                            <td>
+                            <td class="text-nowrap">
+                                <div class="d-inline-flex flex-nowrap align-items-center gap-1">
                                 @if($user->id !== auth()->id())
                                 <form action="{{ route('admin.users.impersonate', $user) }}" method="POST" target="_blank" class="d-inline">
                                     @csrf
@@ -105,6 +106,7 @@
                                     </button>
                                 </form>
                                 @endif
+                                </div>
                             </td>
                         </tr>
                         @empty

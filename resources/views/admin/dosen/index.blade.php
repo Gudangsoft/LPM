@@ -137,7 +137,7 @@
                             <th>Golongan / Jabatan</th>
                             <th>Status</th>
                             <th>Akun</th>
-                            @if($canManage)<th width="110">{{ __('admin.actions') }}</th>@endif
+                            @if($canManage)<th class="text-nowrap" style="width: 1%;">{{ __('admin.actions') }}</th>@endif
                         </tr>
                     </thead>
                     <tbody>
@@ -188,7 +188,7 @@
                                 @endif
                             </td>
                             @if($canManage)
-                            <td>
+                            <td class="text-nowrap">
                                 <a href="{{ route('admin.dosen.edit', $d) }}" class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil"></i></a>
                                 <form action="{{ route('admin.dosen.destroy', $d) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('admin.confirm_delete') }}')">
                                     @csrf @method('DELETE')
