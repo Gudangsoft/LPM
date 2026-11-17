@@ -26,7 +26,11 @@ class Dosen extends Model
         'kode_dosen',
         'nama',
         'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'agama',
         'nidn_nidk',
+        'nip',
         'nuptk',
         'email',
         'no_hp',
@@ -44,7 +48,10 @@ class Dosen extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'tanggal_lahir' => 'date',
     ];
+
+    public const AGAMA = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
 
     public function prodi(): BelongsTo
     {

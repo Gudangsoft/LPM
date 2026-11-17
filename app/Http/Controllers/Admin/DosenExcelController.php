@@ -33,11 +33,15 @@ class DosenExcelController extends Controller implements HasMiddleware
     private const COLUMNS = [
         'kode_dosen' => 'Kode Dosen',
         'nidn_nidk' => 'NIDN/NIDK',
+        'nip' => 'NIP',
         'nuptk' => 'NUPTK',
         'nama' => 'Nama Dosen',
-        'jenis_kelamin' => 'Jenis Kelamin',
-        'no_hp' => 'No. HP',
         'email' => 'Email',
+        'tempat_lahir' => 'Tempat Lahir',
+        'tanggal_lahir' => 'Tanggal Lahir',
+        'no_hp' => 'No. HP',
+        'jenis_kelamin' => 'Jenis Kelamin',
+        'agama' => 'Agama',
         'alamat' => 'Alamat',
         'homebase' => 'Homebase',
         'pendidikan_terakhir' => 'Pendidikan Terakhir',
@@ -58,10 +62,15 @@ class DosenExcelController extends Controller implements HasMiddleware
     private const ALIASES = [
         'kode_dosen' => ['kodedosen', 'kode', 'iddosen'],
         'nidn_nidk' => ['nidnnidk', 'nidn', 'nidk', 'nidnnidknup', 'nup'],
+        'nip' => ['nip', 'nipy', 'nipnipy', 'nik', 'nomorindukpegawai'],
         'nuptk' => ['nuptk'],
         'nama' => ['namadosen', 'nama', 'namalengkap', 'namagelar', 'namadengangelar'],
+        'tempat_lahir' => ['tmplahir', 'tempatlahir', 'tmptlahir'],
+        'tanggal_lahir' => ['tgllahir', 'tanggallahir', 'tgllhr'],
+        'agama' => ['agama'],
         'jenis_kelamin' => ['jeniskelamin', 'jnskel', 'jk', 'kelamin', 'gender', 'lp'],
-        'no_hp' => ['nohp', 'hp', 'nohandphone', 'handphone', 'telepon', 'telp', 'notelp', 'notelepon', 'nohptelp', 'kontak', 'wa', 'nowa'],
+        'no_hp' => ['nohp', 'hp', 'nohandphone', 'handphone', 'kontak', 'wa', 'nowa', 'nohptelp'],
+        '_telp' => ['telp', 'telepon', 'notelp', 'notelepon', 'telprumah'],
         'email' => ['email', 'surel', 'alamatemail'],
         'alamat' => ['alamat', 'alamatrumah', 'alamatlengkap', 'domisili'],
         'homebase' => ['homebase', 'homebasekodeprodi', 'kodeprodi', 'prodi', 'programstudi', 'namaprodi', 'prodihomebase'],
@@ -72,7 +81,7 @@ class DosenExcelController extends Controller implements HasMiddleware
         'bidang_keahlian' => ['bidangkeahlian', 'keahlian', 'bidangilmu', 'kepakaran'],
         'golongan' => ['golongan', 'gol', 'pangkatgolongan', 'golonganpangkat', 'golpangkat', 'pangkat'],
         'jabatan_akademik' => ['jabatanakademik', 'jabatanfungsional', 'jabfung', 'jabatan', 'jafung'],
-        'no_sertifikat_pendidik' => ['nosertifikatpendidik', 'sertifikatpendidik', 'serdos', 'nosertifikasidosen', 'sertifikasidosen', 'noserdos'],
+        'no_sertifikat_pendidik' => ['nosertifikatpendidik', 'sertifikatpendidik', 'serdos', 'nosertifikasidosen', 'sertifikasidosen', 'noserdos', 'sertifikasi', 'nosertifikasi'],
         'aktif' => ['aktif', 'status', 'statusaktif', 'statusdosen'],
         '_kode_nidn' => ['kodenidn'],
         '_nama_kontak' => ['namakontak'],
@@ -94,14 +103,12 @@ class DosenExcelController extends Controller implements HasMiddleware
             ->visibleTo(auth()->user())
             ->when($request->filled('prodi_id'), fn ($q) => $q->where('prodi_id', $request->prodi_id))
             ->orderBy('prodi_id')->orderBy('nama')->get()
-            ->map(fn (Dosen $d) => [
-                $d->kode_dosen, $d->nidn_nidk, $d->nuptk, $d->nama, $d->jenis_kelamin,
-                $d->no_hp, $d->email, $d->alamat, $d->prodi?->kode,
-                $d->pendidikan_terakhir, $d->lulusan,
-                $d->pendidikan_magister_bidang, $d->pendidikan_doktor_bidang, $d->bidang_keahlian,
-                $d->golongan, Dosen::JABATAN[$d->jabatan_akademik] ?? null, $d->no_sertifikat_pendidik,
-                $d->is_active ? 'Ya' : 'Tidak',
-            ])->all();
+            ->map(fn (Dosen $d) => $this->orderedRow(array_merge($d->only(array_keys(self::COLUMNS)), [
+                'tanggal_lahir' => $d->tanggal_lahir?->format('Y-m-d'),
+                'homebase' => $d->prodi?->kode,
+                'jabatan_akademik' => Dosen::JABATAN[$d->jabatan_akademik] ?? null,
+                'aktif' => $d->is_active ? 'Ya' : 'Tidak',
+            ])))->all();
 
         return $this->download($this->buildSpreadsheet($rows), 'data-dosen-'.now()->format('Ymd-His').'.xlsx');
     }
@@ -109,11 +116,15 @@ class DosenExcelController extends Controller implements HasMiddleware
     public function template()
     {
         $kodeContoh = $this->allowedProdis()->first()?->kode ?? 'TI';
-        $spreadsheet = $this->buildSpreadsheet([[
-            'D001', '0612345678', '', 'Dr. Nama Dosen, M.Kom.', 'L', '081234567890', 'dosen@unukase.ac.id',
-            'Jl. Contoh No. 1, Kebumen', $kodeContoh, 'S3', 'Universitas Gadjah Mada',
-            'Ilmu Komputer', 'Ilmu Komputer', 'Rekayasa Perangkat Lunak', 'III/c', 'Lektor', '', 'Ya',
-        ]]);
+        $spreadsheet = $this->buildSpreadsheet([$this->orderedRow([
+            'kode_dosen' => 'D001', 'nidn_nidk' => '0612345678', 'nama' => 'Dr. Nama Dosen, M.Kom.',
+            'email' => 'dosen@unukase.ac.id', 'tempat_lahir' => 'Kebumen', 'tanggal_lahir' => '1985-08-17',
+            'no_hp' => '081234567890', 'jenis_kelamin' => 'L', 'agama' => 'Islam',
+            'alamat' => 'Jl. Contoh No. 1, Kebumen', 'homebase' => $kodeContoh, 'pendidikan_terakhir' => 'S3',
+            'lulusan' => 'Universitas Gadjah Mada', 'pendidikan_magister_bidang' => 'Ilmu Komputer',
+            'pendidikan_doktor_bidang' => 'Ilmu Komputer', 'bidang_keahlian' => 'Rekayasa Perangkat Lunak',
+            'golongan' => 'III/c', 'jabatan_akademik' => 'Lektor', 'aktif' => 'Ya',
+        ])]);
 
         $info = $spreadsheet->createSheet();
         $info->setTitle('Petunjuk');
@@ -127,6 +138,7 @@ class DosenExcelController extends Controller implements HasMiddleware
             ['Pendidikan Terakhir', implode(' / ', Dosen::PENDIDIKAN)],
             ['Jabatan Akademik', implode(' / ', Dosen::JABATAN)],
             ['Golongan', 'Bebas, misalnya III/b.'],
+            ['Tanggal Lahir', 'Format tanggal Excel, atau teks YYYY-MM-DD / DD-MM-YYYY.'],
             ['Aktif', 'Ya / Tidak (atau status SIAKAD: Aktif, Cuti, Pensiun, Keluar, ...). Dikosongkan = Ya.'],
             [''],
             ['IMPORT DARI SIAKAD', 'File ekspor SIAKAD bisa langsung diunggah. Kolom dibaca berdasarkan judul kolom (urutan bebas),'],
@@ -135,10 +147,10 @@ class DosenExcelController extends Controller implements HasMiddleware
             [''],
             ['Kode Prodi', 'Nama Program Studi'],
         ]);
-        $info->fromArray($this->allowedProdis()->map(fn ($p) => [$p->kode, "{$p->jenjang} {$p->nama}"])->all(), null, 'A17');
+        $info->fromArray($this->allowedProdis()->map(fn ($p) => [$p->kode, "{$p->jenjang} {$p->nama}"])->all(), null, 'A18');
         $info->getStyle('A1')->getFont()->setBold(true)->setSize(13);
-        $info->getStyle('A3:A12')->getFont()->setBold(true);
-        $info->getStyle('A16:B16')->getFont()->setBold(true);
+        $info->getStyle('A3:A13')->getFont()->setBold(true);
+        $info->getStyle('A17:B17')->getFont()->setBold(true);
         $info->getColumnDimension('A')->setWidth(22);
         $info->getColumnDimension('B')->setWidth(110);
         $info->getStyle('A:A')->getNumberFormat()->setFormatCode('@');
@@ -198,20 +210,32 @@ class DosenExcelController extends Controller implements HasMiddleware
 
         $prodiLookup = $this->prodiLookup();
         $allowedProdiIds = $this->allowedProdis()->pluck('id')->all();
-        $jabatanByLabel = collect(Dosen::JABATAN)->mapWithKeys(fn ($label, $key) => [$this->norm($label) => $key, $this->norm($key) => $key]);
+        $dateOrder = $this->guessDateOrder($data, $headerRow, $map);
+        $body = array_slice($data, $headerRow + 1, null, true);
+
+        // Kolom Homebase ada tetapi kosong semua (umum pada ekspor SIAKAD) -> minta Homebase default.
+        $homebaseCol = array_search('homebase', $map, true);
+        if (! $defaultProdi) {
+            $anyHomebase = $homebaseCol === false ? false : collect($body)->contains(fn ($r) => $this->cleanCell($r[$homebaseCol] ?? '') !== '');
+            if (! $anyHomebase) {
+                return back()->with('error', 'Kolom Homebase di file kosong. Pilih "Homebase default" (program studi) di jendela import, lalu unggah ulang.');
+            }
+        }
 
         $errors = [];
+        $warnings = [];
         $rows = [];
         $seen = [];
 
-        foreach (array_slice($data, $headerRow + 1, null, true) as $idx => $raw) {
+        foreach ($body as $idx => $raw) {
             $line = $idx + 1;
             $v = $this->extractRow($raw, $map);
             if (implode('', array_diff_key($v, ['_present' => 1])) === '') {
                 continue;
             }
 
-            $e = [];
+            $e = [];   // kesalahan yang membatalkan import
+            $w = [];   // isian tidak dikenal: dikosongkan, import tetap jalan
 
             if ($v['homebase'] === '' && $defaultProdi) {
                 $v['homebase'] = $defaultProdi->kode;
@@ -219,7 +243,7 @@ class DosenExcelController extends Controller implements HasMiddleware
             }
             $prodi = $this->matchProdi($v['homebase'], $prodiLookup);
             if ($v['homebase'] === '') {
-                $e[] = 'Homebase wajib diisi';
+                $e[] = 'Homebase kosong (pilih "Homebase default" saat import)';
             } elseif (! $prodi) {
                 $e[] = "Homebase \"{$v['homebase']}\" tidak dikenal atau bukan prodi Anda";
             }
@@ -227,34 +251,38 @@ class DosenExcelController extends Controller implements HasMiddleware
                 $e[] = 'Nama Dosen wajib diisi';
             }
 
-            $limits = ['nama' => 255, 'kode_dosen' => 30, 'nidn_nidk' => 50, 'nuptk' => 50, 'email' => 255, 'no_hp' => 30, 'alamat' => 1000,
-                'lulusan' => 255, 'pendidikan_magister_bidang' => 255, 'pendidikan_doktor_bidang' => 255, 'bidang_keahlian' => 255,
-                'golongan' => 30, 'no_sertifikat_pendidik' => 100];
+            // Teks terlalu panjang dipotong, bukan ditolak.
+            $limits = ['nama' => 255, 'kode_dosen' => 30, 'nidn_nidk' => 50, 'nip' => 30, 'nuptk' => 50, 'email' => 255, 'no_hp' => 30,
+                'tempat_lahir' => 100, 'agama' => 30, 'alamat' => 1000, 'lulusan' => 255, 'pendidikan_magister_bidang' => 255,
+                'pendidikan_doktor_bidang' => 255, 'bidang_keahlian' => 255, 'golongan' => 30, 'no_sertifikat_pendidik' => 100];
             foreach ($limits as $f => $max) {
                 if (mb_strlen($v[$f]) > $max) {
-                    $e[] = self::COLUMNS[$f]." maksimal {$max} karakter";
+                    $v[$f] = mb_substr($v[$f], 0, $max);
                 }
             }
-            if ($v['email'] !== '' && ! filter_var($v['email'], FILTER_VALIDATE_EMAIL)) {
-                $e[] = "Email \"{$v['email']}\" tidak valid";
-            }
 
+            if ($v['email'] !== '' && ! filter_var($v['email'], FILTER_VALIDATE_EMAIL)) {
+                $w[] = "email \"{$v['email']}\" tidak valid";
+                $v['email'] = '';
+            }
             $jk = $this->normalizeGender($v['jenis_kelamin']);
             if ($v['jenis_kelamin'] !== '' && $jk === null) {
-                $e[] = 'Jenis Kelamin harus L atau P';
+                $w[] = "jenis kelamin \"{$v['jenis_kelamin']}\"";
             }
-
             $pendidikan = $this->normalizePendidikan($v['pendidikan_terakhir'] !== '' ? $v['pendidikan_terakhir'] : $v['lulusan']);
             if ($v['pendidikan_terakhir'] !== '' && $pendidikan === null) {
-                $e[] = 'Pendidikan Terakhir harus salah satu dari '.implode('/', Dosen::PENDIDIKAN);
+                $w[] = "pendidikan \"{$v['pendidikan_terakhir']}\"";
             }
-
-            $jabatanKey = null;
-            if ($v['jabatan_akademik'] !== '') {
-                $jabatanKey = $jabatanByLabel[$this->norm($v['jabatan_akademik'])] ?? null;
-                if (! $jabatanKey) {
-                    $e[] = 'Jabatan Akademik harus salah satu dari: '.implode(', ', Dosen::JABATAN);
-                }
+            $jabatanKey = $this->normalizeJabatan($v['jabatan_akademik']);
+            if ($v['jabatan_akademik'] !== '' && $jabatanKey === null && ! preg_match('/^(belum|tidak|tanpa)/i', $v['jabatan_akademik'])) {
+                $w[] = "jabatan \"{$v['jabatan_akademik']}\"";
+            }
+            $tglLahir = $this->parseDate($v['tanggal_lahir'], $dateOrder);
+            if ($v['tanggal_lahir'] !== '' && $tglLahir === null) {
+                $w[] = "tanggal lahir \"{$v['tanggal_lahir']}\"";
+            }
+            if ($w) {
+                $warnings[] = "Baris {$line} ({$v['nama']}): ".implode(', ', $w).' tidak dikenali, dikosongkan';
             }
 
             // Status SIAKAD bisa beragam (Aktif, Tidak Aktif, Cuti, Pensiun, Keluar, ...).
@@ -289,7 +317,11 @@ class DosenExcelController extends Controller implements HasMiddleware
                 'kode_dosen' => $v['kode_dosen'] ?: null,
                 'nama' => $v['nama'],
                 'jenis_kelamin' => $jk,
+                'tempat_lahir' => $v['tempat_lahir'] ?: null,
+                'tanggal_lahir' => $tglLahir,
+                'agama' => $v['agama'] ?: null,
                 'nidn_nidk' => $v['nidn_nidk'] ?: null,
+                'nip' => $v['nip'] ?: null,
                 'nuptk' => $v['nuptk'] ?: null,
                 'email' => $v['email'] ?: null,
                 'no_hp' => $v['no_hp'] ?: null,
@@ -335,8 +367,12 @@ class DosenExcelController extends Controller implements HasMiddleware
                 }
 
                 if ($dosen) {
-                    // Kolom yang tidak ada di file tidak menimpa data lama.
-                    $dosen->update(array_intersect_key($row, array_flip($present)));
+                    // Kolom yang tidak ada di file, atau sel kosong, tidak menimpa data lama.
+                    $changes = array_filter(
+                        array_intersect_key($row, array_flip($present)),
+                        fn ($val) => $val !== null && $val !== ''
+                    );
+                    $dosen->update($changes);
                     $updated++;
                 } else {
                     Dosen::create($row);
@@ -345,8 +381,11 @@ class DosenExcelController extends Controller implements HasMiddleware
             }
         });
 
-        return redirect()->route('admin.dosen.index')
-            ->with('success', "Import selesai: {$created} dosen ditambahkan, {$updated} dosen diperbarui.");
+        $redirect = redirect()->route('admin.dosen.index')
+            ->with('success', "Import selesai: {$created} dosen ditambahkan, {$updated} dosen diperbarui."
+                .($warnings ? ' Ada '.count($warnings).' isian yang tidak dikenali dan dikosongkan (lihat daftar).' : ''));
+
+        return $warnings ? $redirect->with('import_warnings', array_slice($warnings, 0, 100)) : $redirect;
     }
 
     // ---- pembacaan file -------------------------------------------------
@@ -402,8 +441,15 @@ class DosenExcelController extends Controller implements HasMiddleware
         $v = array_fill_keys(array_merge(array_keys(self::COLUMNS)), '');
         $present = [];
 
+        $telp = '';
+
         foreach ($map as $col => $field) {
-            $val = trim(preg_replace('/[ \t]+/', ' ', (string) ($raw[$col] ?? '')));
+            $val = $this->cleanCell($raw[$col] ?? '');
+            if ($field === '_telp') {
+                $telp = $val;
+
+                continue;
+            }
             if (! str_starts_with($field, '_')) {
                 $v[$field] = $val;
                 $present[] = $field;
@@ -442,11 +488,26 @@ class DosenExcelController extends Controller implements HasMiddleware
             }
         }
 
-        // NIDN/NUPTK dari Excel bisa terbaca sebagai angka berformat "6.12E+9"/"612345678.0".
-        foreach (['nidn_nidk', 'nuptk'] as $f) {
+        // Nomor yang terbaca sebagai angka oleh Excel: "612345678.0" -> "612345678".
+        foreach (['kode_dosen', 'nidn_nidk', 'nip', 'nuptk', 'no_hp'] as $f) {
             if (preg_match('/^\d+\.0+$/', $v[$f])) {
                 $v[$f] = explode('.', $v[$f])[0];
             }
+        }
+
+        // HP kosong -> pakai Telp. Nomor HP yang kehilangan angka 0 di depan (812...) dipulihkan.
+        if ($v['no_hp'] === '' && $telp !== '') {
+            $v['no_hp'] = $telp;
+            $present[] = 'no_hp';
+        }
+        $v['no_hp'] = preg_replace('/[\s\-().]/', '', $v['no_hp']);
+        if (preg_match('/^8\d{8,12}$/', $v['no_hp'])) {
+            $v['no_hp'] = '0'.$v['no_hp'];
+        }
+
+        // Kolom "Sertifikasi" SIAKAD bisa berisi Belum/Tidak -> bukan nomor sertifikat.
+        if (preg_match('/^(belum|tidak|tdk|no|n|t|0|-)$/i', $v['no_sertifikat_pendidik'])) {
+            $v['no_sertifikat_pendidik'] = '';
         }
 
         $present = array_values(array_unique(array_map(fn ($f) => $f === 'aktif' ? 'is_active' : $f, $present)));
@@ -457,6 +518,104 @@ class DosenExcelController extends Controller implements HasMiddleware
         $v['_present'] = array_values(array_diff($present, ['homebase']));
 
         return $v;
+    }
+
+    /**
+     * Bersihkan isi sel: buang tanda petik pembuka (ekspor SIAKAD menulis '77000260),
+     * rapikan spasi (baris baru dipertahankan untuk kolom gabungan), dan anggap
+     * isian placeholder ("-", "Tidak diisi", "NULL") sebagai kosong.
+     */
+    private function cleanCell(mixed $value): string
+    {
+        $s = (string) $value;
+        $s = preg_replace('/[ \t\x{00A0}]+/u', ' ', $s);
+        $s = preg_replace("/^\\s*'+/", '', $s);
+        $s = preg_replace("/(\r\n|\n|\r)\\s*'+/", '$1', $s);
+        $s = trim($s);
+
+        return preg_match('/^(-+|tidak ?diisi|belum ?diisi|null|n\/a|0000-00-00)$/i', $s) ? '' : $s;
+    }
+
+    /** Lektor, "Lektor (200)", "LEKTOR KEPALA", "lektor_kepala" -> key; "Belum ada"/"Tidak ada" -> null. */
+    private function normalizeJabatan(string $s): ?string
+    {
+        if ($s === '' || preg_match('/^(belum|tidak|tanpa)/i', $s)) {
+            return null;
+        }
+        $n = $this->norm($s);
+        $best = null;
+        foreach (Dosen::JABATAN as $key => $label) {
+            $l = $this->norm($label);
+            if (($n === $l || $n === $this->norm($key) || str_contains($n, $l)) && (! $best || mb_strlen($l) > mb_strlen($this->norm(Dosen::JABATAN[$best])))) {
+                $best = $key; // "Lektor Kepala" menang atas "Lektor"
+            }
+        }
+        if (! $best && in_array($n, ['aa', 'tp', 'lk', 'gb', 'l'], true)) {
+            $best = ['aa' => 'asisten_ahli', 'tp' => 'tenaga_pengajar', 'lk' => 'lektor_kepala', 'gb' => 'guru_besar', 'l' => 'lektor'][$n];
+        }
+        if (! $best && str_contains($n, 'profesor')) {
+            $best = 'guru_besar';
+        }
+
+        return $best;
+    }
+
+    /**
+     * Tebak urutan tanggal ("d/m" atau "m/d") dari seluruh isi kolom Tanggal Lahir:
+     * bila ada angka pertama > 12 berarti d/m, bila angka kedua > 12 berarti m/d.
+     */
+    private function guessDateOrder(array $data, int $headerRow, array $map): string
+    {
+        $col = array_search('tanggal_lahir', $map, true);
+        if ($col === false) {
+            return 'dm';
+        }
+        foreach (array_slice($data, $headerRow + 1) as $row) {
+            if (preg_match('#^\s*\'?(\d{1,2})[/.\-](\d{1,2})[/.\-]\d{2,4}#', (string) ($row[$col] ?? ''), $m)) {
+                if ((int) $m[1] > 12) {
+                    return 'dm';
+                }
+                if ((int) $m[2] > 12) {
+                    return 'md';
+                }
+            }
+        }
+
+        return 'dm';
+    }
+
+    /** Tanggal dari serial Excel, "YYYY-MM-DD", atau "d/m/Y" / "m/d/Y" (sesuai $order). */
+    private function parseDate(string $s, string $order): ?string
+    {
+        if ($s === '') {
+            return null;
+        }
+        try {
+            if (is_numeric($s) && (float) $s > 1000 && (float) $s < 80000) {
+                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $s)->format('Y-m-d');
+            }
+            if (preg_match('/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/', $s, $m)) {
+                [$y, $mo, $d] = [(int) $m[1], (int) $m[2], (int) $m[3]];
+            } elseif (preg_match('/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/', $s, $m)) {
+                [$a, $b, $y] = [(int) $m[1], (int) $m[2], (int) $m[3]];
+                $y = $y < 100 ? ($y > (int) date('y') ? 1900 + $y : 2000 + $y) : $y;
+                [$d, $mo] = $order === 'md' ? [$b, $a] : [$a, $b];
+            } else {
+                $ts = strtotime($s);
+
+                return $ts ? date('Y-m-d', $ts) : null;
+            }
+
+            return checkdate($mo, $d, $y) ? sprintf('%04d-%02d-%02d', $y, $mo, $d) : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /** Susun nilai bernama sesuai urutan COLUMNS untuk ditulis ke Excel. */
+    private function orderedRow(array $values): array
+    {
+        return array_map(fn ($field) => $values[$field] ?? '', array_keys(self::COLUMNS));
     }
 
     private function normalizeGender(string $s): ?string

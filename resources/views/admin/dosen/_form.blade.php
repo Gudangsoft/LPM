@@ -27,6 +27,27 @@
         </select>
         @error('jenis_kelamin')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
+    <div class="col-md-3">
+        <label class="form-label">NIP</label>
+        <input type="text" name="nip" class="form-control @error('nip') is-invalid @enderror" value="{{ old('nip', $dosen->nip ?? '') }}" inputmode="numeric">
+        @error('nip')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tempat Lahir</label>
+        <input type="text" name="tempat_lahir" class="form-control @error('tempat_lahir') is-invalid @enderror" value="{{ old('tempat_lahir', $dosen->tempat_lahir ?? '') }}">
+        @error('tempat_lahir')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tanggal Lahir</label>
+        <input type="date" name="tanggal_lahir" class="form-control @error('tanggal_lahir') is-invalid @enderror" value="{{ old('tanggal_lahir', optional($dosen->tanggal_lahir ?? null)->format('Y-m-d')) }}">
+        @error('tanggal_lahir')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Agama</label>
+        <input type="text" name="agama" list="agamaList" class="form-control @error('agama') is-invalid @enderror" value="{{ old('agama', $dosen->agama ?? '') }}">
+        <datalist id="agamaList">@foreach(\App\Models\Dosen::AGAMA as $ag)<option value="{{ $ag }}">@endforeach</datalist>
+        @error('agama')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
     <div class="col-md-8">
         <label class="form-label">Nama Dosen (dengan gelar) <span class="text-danger">*</span></label>
         <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama', $dosen->nama ?? '') }}" required>

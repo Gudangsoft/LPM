@@ -36,6 +36,17 @@
         dan muncul sebagai pilihan Dosen Pengampu di Evaluasi Pembelajaran dan Review RPS.
     </p>
 
+    @if(session('import_warnings'))
+    <div class="alert alert-warning">
+        <div class="fw-semibold mb-1"><i class="bi bi-info-circle me-1"></i>Isian yang tidak dikenali (data tetap diimpor, isian ini dikosongkan):</div>
+        <ul class="mb-0 small" style="max-height: 200px; overflow-y: auto;">
+            @foreach(session('import_warnings') as $warn)
+            <li>{{ $warn }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     @if(session('import_errors'))
     <div class="alert alert-danger">
         <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Kesalahan pada file import:</div>
