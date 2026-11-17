@@ -101,17 +101,6 @@ return [
             'section' => 'admin.system',
         ],
         [
-            'route' => 'admin.kontak.index',
-            'icon' => 'bi-envelope',
-            'label' => 'admin.messages',
-            'route_pattern' => 'admin.kontak.*',
-            'badge' => [
-                'model' => \App\Models\Kontak::class,
-                'method' => 'unread',
-                'class' => 'bg-danger',
-            ],
-        ],
-        [
             'route' => 'admin.users.index',
             'icon' => 'bi-people',
             'label' => 'admin.users',

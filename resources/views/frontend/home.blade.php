@@ -52,10 +52,6 @@
                                                     <i class="bi bi-arrow-right-circle-fill"></i>
                                                 </a>
                                                 @endif
-                                                <a href="{{ route('kontak.index') }}" class="hero-btn-secondary">
-                                                    <i class="bi bi-envelope-fill"></i>
-                                                    {{ __('buttons.contact_us') }}
-                                                </a>
                                             </div>
                                         </div>
                                     </div>

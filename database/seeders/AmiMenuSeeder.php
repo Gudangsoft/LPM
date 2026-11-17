@@ -70,7 +70,6 @@ class AmiMenuSeeder extends Seeder
         ['section' => 'Sistem'],
         ['route' => 'admin.menu-web.index'],
         ['route' => 'admin.users.index'],
-        ['route' => 'admin.kontak.index'],
         ['route' => 'admin.pengaturan.index'],
         ['route' => 'admin.database.index'],
     ];

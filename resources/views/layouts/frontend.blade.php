@@ -879,7 +879,6 @@
                         <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('menu.home') }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ request()->routeIs('berita.*') ? 'active' : '' }}" href="{{ route('berita.index') }}">{{ __('menu.news') }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ request()->routeIs('dokumen.*') ? 'active' : '' }}" href="{{ route('dokumen.index') }}">{{ __('menu.documents') }}</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->routeIs('kontak.*') ? 'active' : '' }}" href="{{ route('kontak.index') }}">{{ __('menu.contact') }}</a></li>
                     @endforelse
                 </ul>
             </div>
@@ -922,7 +921,6 @@
                         <li><a href="{{ route('profil') }}"><i class="bi bi-chevron-right me-2"></i>{{ __('menu.profile') }}</a></li>
                         <li><a href="{{ route('berita.index') }}"><i class="bi bi-chevron-right me-2"></i>{{ __('menu.news') }}</a></li>
                         <li><a href="{{ route('dokumen.index') }}"><i class="bi bi-chevron-right me-2"></i>{{ __('menu.documents') }}</a></li>
-                        <li><a href="{{ route('kontak.index') }}"><i class="bi bi-chevron-right me-2"></i>{{ __('menu.contact') }}</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-4 mb-4 mb-md-0">

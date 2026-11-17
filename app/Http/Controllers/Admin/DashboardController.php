@@ -8,7 +8,6 @@ use App\Models\Auditor;
 use App\Models\Berita;
 use App\Models\Dokumen;
 use App\Models\Galeri;
-use App\Models\Kontak;
 use App\Models\TemuanAmi;
 use App\Models\TindakLanjut;
 use App\Models\Visitor;
@@ -27,7 +26,6 @@ class DashboardController extends Controller
         $stats = [];
         $visitorStats = collect();
         $latestBerita = collect();
-        $latestKontak = collect();
 
         // Site-content stats/activity are only meaningful to admins who manage
         // that content - auditor/kaprodi/viewer only care about the AMI panel below.
@@ -37,7 +35,6 @@ class DashboardController extends Controller
                 'dokumen' => Dokumen::count(),
                 'galeri' => Galeri::count(),
                 'users' => User::count(),
-                'kontak_unread' => Kontak::unread()->count(),
                 'visitors_today' => Visitor::getTodayCount(),
                 'visitors_month' => Visitor::getMonthCount(),
                 'visitors_total' => Visitor::getTotalCount(),
@@ -53,7 +50,6 @@ class DashboardController extends Controller
                 ->get();
 
             $latestBerita = Berita::latest()->take(5)->get();
-            $latestKontak = Kontak::latest()->take(5)->get();
         }
 
         // AMI/Akreditasi "needs attention" panel - visible to every role that
@@ -98,7 +94,6 @@ class DashboardController extends Controller
             'stats',
             'visitorStats',
             'latestBerita',
-            'latestKontak',
             'amiStats',
             'akreditasiExpiringList',
             'temuanOverdueList',

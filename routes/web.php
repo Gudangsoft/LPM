@@ -7,7 +7,6 @@ use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\HalamanController;
-use App\Http\Controllers\KontakController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -22,7 +21,6 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\PengumumanController as AdminPengumumanController;
 use App\Http\Controllers\Admin\AgendaController as AdminAgendaController;
-use App\Http\Controllers\Admin\KontakController as AdminKontakController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\FrontendMenuController;
 use App\Http\Controllers\Admin\DatabaseController;
@@ -118,10 +116,6 @@ Route::get('/pengumuman/{slug}', [PengumumanController::class, 'show'])->name('p
 Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda.index');
 Route::get('/agenda/{slug}', [AgendaController::class, 'show'])->name('agenda.show');
 
-// Kontak
-Route::get('/kontak', [KontakController::class, 'index'])->name('kontak.index');
-Route::post('/kontak', [KontakController::class, 'store'])->name('kontak.store');
-
 // Halaman Dinamis
 Route::get('/halaman/{slug}', [HalamanController::class, 'show'])->name('halaman.show');
 
@@ -174,12 +168,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
         // Agenda
         Route::resource('agenda', AdminAgendaController::class)->except(['show'])->parameters(['agenda' => 'agenda']);
-
-        // Kontak
-        Route::get('kontak', [AdminKontakController::class, 'index'])->name('kontak.index');
-        Route::get('kontak/{kontak}', [AdminKontakController::class, 'show'])->name('kontak.show');
-        Route::post('kontak/{kontak}/reply', [AdminKontakController::class, 'reply'])->name('kontak.reply');
-        Route::delete('kontak/{kontak}', [AdminKontakController::class, 'destroy'])->name('kontak.destroy');
 
         // Pengaturan
         Route::get('pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

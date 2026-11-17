@@ -94,7 +94,7 @@
 
     <!-- Visitor Stats -->
     <div class="row mb-4">
-        <div class="col-md-4 mb-4">
+        <div class="col-md-6 mb-4">
             <div class="stat-card bg-cyan">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -107,7 +107,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
+        <div class="col-md-6 mb-4">
             <div class="stat-card bg-purple">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -116,19 +116,6 @@
                     </div>
                     <div class="stat-icon">
                         <i class="bi bi-graph-up"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="stat-card bg-red">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="stat-value">{{ $stats['kontak_unread'] }}</div>
-                        <div class="stat-label">{{ __('admin.unread_messages') }}</div>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="bi bi-envelope"></i>
                     </div>
                 </div>
             </div>
@@ -281,7 +268,7 @@
     @if(auth()->user()->isAdmin())
     <div class="row">
         <!-- Latest News -->
-        <div class="col-lg-6 mb-4">
+        <div class="col-12 mb-4">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span><i class="bi bi-newspaper me-2"></i>{{ __('admin.latest_news') }}</span>
@@ -317,44 +304,6 @@
             </div>
         </div>
 
-        <!-- Latest Messages -->
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-envelope me-2"></i>{{ __('admin.latest_messages') }}</span>
-                    <a href="{{ route('admin.kontak.index') }}" class="btn btn-sm btn-outline-primary">{{ __('admin.view_all') }}</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <tbody>
-                                @forelse($latestKontak as $kontak)
-                                <tr>
-                                    <td>
-                                        <div class="fw-semibold">{{ $kontak->nama }}</div>
-                                        <small class="text-muted">{{ Str::limit($kontak->subjek, 30) }}</small>
-                                    </td>
-                                    <td class="text-end">
-                                        @if($kontak->status == 'unread')
-                                        <span class="badge bg-danger">{{ __('admin.unread') }}</span>
-                                        @elseif($kontak->status == 'read')
-                                        <span class="badge bg-warning">{{ __('admin.read') }}</span>
-                                        @else
-                                        <span class="badge bg-success">{{ __('admin.replied') }}</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="2" class="text-center text-muted py-4">{{ __('admin.no_data') }}</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Visitor Chart -->

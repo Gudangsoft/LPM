@@ -8,7 +8,6 @@ use App\Models\Dokumen;
 use App\Models\Galeri;
 use App\Models\JenisDokumen;
 use App\Models\KategoriBerita;
-use App\Models\Kontak;
 use App\Models\Pengumuman;
 use App\Models\Slider;
 use App\Models\StrukturOrganisasi;
@@ -53,9 +52,6 @@ class DummyDataSeeder extends Seeder
 
         // Seed Struktur Organisasi
         $this->seedStrukturOrganisasi();
-
-        // Seed Kontak
-        $this->seedKontak();
 
         // Seed Visitors
         $this->seedVisitors();
@@ -539,49 +535,6 @@ class DummyDataSeeder extends Seeder
                     'is_active' => true,
                 ])
             );
-        }
-    }
-
-    private function seedKontak(): void
-    {
-        $contacts = [
-            [
-                'nama' => 'Budi Santoso',
-                'email' => 'budi.santoso@gmail.com',
-                'telepon' => '081234567890',
-                'subjek' => 'Pertanyaan tentang Audit Internal',
-                'pesan' => 'Selamat pagi, saya ingin bertanya mengenai jadwal pelaksanaan audit internal untuk fakultas kami. Mohon informasinya. Terima kasih.',
-                'status' => 'unread',
-            ],
-            [
-                'nama' => 'Dewi Anggraini',
-                'email' => 'dewi.anggraini@yahoo.com',
-                'telepon' => '082345678901',
-                'subjek' => 'Permintaan Dokumen SPMI',
-                'pesan' => 'Dengan hormat, saya mahasiswa S2 yang sedang melakukan penelitian tentang SPMI. Apakah saya bisa mendapatkan dokumen kebijakan SPMI untuk bahan penelitian? Terima kasih.',
-                'status' => 'read',
-            ],
-            [
-                'nama' => 'Ahmad Fauzi',
-                'email' => 'ahmad.fauzi@mail.com',
-                'telepon' => '083456789012',
-                'subjek' => 'Pendaftaran Pelatihan Auditor',
-                'pesan' => 'Halo, saya dosen dari Fakultas Teknik ingin mendaftar pelatihan auditor internal. Mohon informasi persyaratan dan prosedur pendaftarannya.',
-                'status' => 'replied',
-                'balasan' => 'Terima kasih atas pertanyaannya. Pendaftaran pelatihan auditor dapat dilakukan melalui link berikut... Persyaratan: minimal dosen tetap dengan pengalaman minimal 2 tahun.',
-            ],
-            [
-                'nama' => 'Sari Wulandari',
-                'email' => 'sari.wulandari@email.com',
-                'telepon' => '084567890123',
-                'subjek' => 'Konsultasi Akreditasi Prodi',
-                'pesan' => 'Selamat siang, program studi kami akan mengajukan akreditasi tahun ini. Apakah LPM menyediakan layanan pendampingan penyusunan borang?',
-                'status' => 'unread',
-            ],
-        ];
-
-        foreach ($contacts as $contact) {
-            Kontak::create($contact);
         }
     }
 

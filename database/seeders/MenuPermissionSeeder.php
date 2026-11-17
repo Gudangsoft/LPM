@@ -112,12 +112,11 @@ class MenuPermissionSeeder extends Seeder
             ]);
         }
 
-        // Move the generic "Sistem" section (Pesan Kontak/Pengguna/Menu/Pengaturan/
+        // Move the generic "Sistem" section (Pengguna/Menu/Pengaturan/
         // Database) to sort after the Prodi/Akreditasi/AMI sections instead of
         // between them - those are the day-to-day sections for most roles.
         $sistemOrder = [
             'Sistem' => 100,
-            'Pesan Kontak' => 101,
             'Pengguna' => 102,
             'Menu' => 103,
             'Pengaturan' => 104,

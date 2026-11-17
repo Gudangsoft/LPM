@@ -127,17 +127,6 @@ class MenuSeeder extends Seeder
                 'urutan' => 14,
             ],
             [
-                'nama' => 'Pesan Kontak',
-                'icon' => 'bi-envelope',
-                'route' => 'admin.kontak.index',
-                'route_pattern' => 'admin.kontak.*',
-                'tipe' => 'link',
-                'urutan' => 15,
-                'badge_model' => '\App\Models\Kontak',
-                'badge_method' => 'unread',
-                'badge_class' => 'bg-danger',
-            ],
-            [
                 'nama' => 'Pengguna',
                 'icon' => 'bi-people',
                 'route' => 'admin.users.index',
