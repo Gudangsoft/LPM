@@ -13,15 +13,64 @@
                 </ol>
             </nav>
         </div>
-        <div>
-            <a href="{{ route('admin.akreditasi.dashboard') }}" class="btn btn-outline-primary me-2">
+        @php $canCreateAkreditasi = auth()->user()->hasPermission('akreditasi.create'); @endphp
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.akreditasi.dashboard') }}" class="btn btn-outline-primary">
                 <i class="bi bi-graph-up me-1"></i>Dashboard
             </a>
+            <a href="{{ route('admin.akreditasi.export', request()->only('status', 'lembaga')) }}" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
+            </a>
+            @if($canCreateAkreditasi)
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importAkreditasiModal">
+                <i class="bi bi-upload me-1"></i>Import Excel
+            </button>
             <a href="{{ route('admin.akreditasi.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-lg me-1"></i>Tambah Akreditasi
             </a>
+            @endif
         </div>
     </div>
+
+    @if(session('import_errors'))
+    <div class="alert alert-danger">
+        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Kesalahan pada file import:</div>
+        <ul class="mb-0 small" style="max-height: 220px; overflow-y: auto;">
+            @foreach(session('import_errors') as $err)
+            <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    @if($canCreateAkreditasi)
+    <div class="modal fade" id="importAkreditasiModal" tabindex="-1" aria-labelledby="importAkreditasiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('admin.akreditasi.import') }}" method="POST" enctype="multipart/form-data" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importAkreditasiModalLabel">Import Data Akreditasi dari Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <ol class="small ps-3">
+                        <li>Unduh <a href="{{ route('admin.akreditasi.template') }}">template import</a> (atau gunakan hasil Export Excel). Daftar Kode Prodi ada di sheet "Petunjuk".</li>
+                        <li>Wajib: Kode Prodi, Lembaga, Peringkat, Nomor SK, Tanggal SK, Tanggal Kadaluarsa.</li>
+                        <li>Prodi + Nomor SK yang sudah ada akan <strong>diperbarui</strong>, sisanya <strong>ditambahkan</strong>.</li>
+                        <li>File SK (PDF/gambar) diunggah lewat tombol Edit; di Excel cukup isi <strong>Link SK</strong> bila ada.</li>
+                    </ol>
+                    <label for="importAkreditasiFile" class="form-label">File Excel (.xlsx, .xls, .csv; maks. 10 MB)</label>
+                    <input type="file" class="form-control" id="importAkreditasiFile" name="file" accept=".xlsx,.xls,.csv,.ods" required>
+                    @error('file')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-upload me-1"></i>Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
 
     <div class="card">
         <div class="card-header">

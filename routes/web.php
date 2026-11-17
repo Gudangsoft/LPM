@@ -210,6 +210,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::resource('dosen', \App\Http\Controllers\Admin\DosenController::class)->except(['show'])->parameters(['dosen' => 'dosen']);
 
     Route::get('akreditasi/dashboard', [AkreditasiController::class, 'dashboard'])->name('akreditasi.dashboard');
+    Route::get('akreditasi/export', [\App\Http\Controllers\Admin\AkreditasiExcelController::class, 'export'])->name('akreditasi.export');
+    Route::get('akreditasi/template', [\App\Http\Controllers\Admin\AkreditasiExcelController::class, 'template'])->name('akreditasi.template');
+    Route::post('akreditasi/import', [\App\Http\Controllers\Admin\AkreditasiExcelController::class, 'import'])->name('akreditasi.import');
     Route::resource('akreditasi', AkreditasiController::class);
 
     Route::prefix('ami')->name('ami.')->group(function () {
