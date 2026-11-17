@@ -165,12 +165,20 @@
                     <ol class="small ps-3">
                         <li>Unduh <a href="{{ route('admin.dosen.template') }}">template import</a> (atau gunakan hasil Export Excel).</li>
                         <li>Bisa juga langsung memakai file ekspor dari SIAKAD. Kolom dibaca berdasarkan <strong>judul kolom</strong>, urutan bebas, kolom lain diabaikan.</li>
-                        <li>Wajib ada kolom <strong>Nama</strong> dan <strong>Homebase</strong> (kode atau nama prodi).</li>
+                        <li>Wajib ada kolom <strong>Nama</strong>. Kolom <strong>Homebase</strong> (kode/nama prodi) boleh tidak ada bila Homebase default di bawah dipilih.</li>
                         <li>Dosen yang sudah terdaftar (dicocokkan lewat NIDN, lalu Kode Dosen) akan <strong>diperbarui</strong>, sisanya <strong>ditambahkan</strong>.</li>
                     </ol>
-                    <label for="importDosenFile" class="form-label">File Excel (.xlsx, .xls, .csv; maks. 5 MB)</label>
-                    <input type="file" class="form-control" id="importDosenFile" name="file" accept=".xlsx,.xls,.csv" required>
+                    <label for="importDosenFile" class="form-label">File Excel (.xlsx, .xls, .csv, .ods; maks. 10 MB)</label>
+                    <input type="file" class="form-control mb-3" id="importDosenFile" name="file" accept=".xlsx,.xls,.csv,.ods,.htm,.html" required>
                     @error('file')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    <label for="importProdiDefault" class="form-label">Homebase default <span class="text-muted small">(opsional)</span></label>
+                    <select name="prodi_default" id="importProdiDefault" class="form-select">
+                        <option value="">-- Ikuti kolom Homebase di file --</option>
+                        @foreach($prodis as $p)
+                        <option value="{{ $p->id }}">{{ $p->jenjang }} {{ $p->nama }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-text">Dipakai untuk baris yang kolom Homebase-nya kosong / tidak ada di file (misal ekspor SIAKAD per prodi).</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>

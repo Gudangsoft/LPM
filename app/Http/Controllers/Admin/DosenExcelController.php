@@ -149,25 +149,51 @@ class DosenExcelController extends Controller implements HasMiddleware
 
     public function import(Request $request)
     {
+        // Sengaja tidak memakai aturan "mimes": banyak SIAKAD mengekspor ".xls" yang isinya
+        // tabel HTML (mime text/html), sehingga akan tertolak. Isi file diperiksa saat dibaca.
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+            'file' => 'required|file|max:10240',
         ], [
             'file.required' => 'Pilih file Excel terlebih dahulu.',
-            'file.mimes' => 'Format file harus .xlsx, .xls, atau .csv.',
+            'file.max' => 'Ukuran file maksimal 10 MB.',
         ]);
 
-        try {
-            $sheet = IOFactory::load($request->file('file')->getRealPath())->getSheet(0);
-        } catch (\Throwable $e) {
-            return back()->with('error', 'File tidak dapat dibaca. Pastikan file Excel tidak rusak.');
+        $defaultProdi = $request->filled('prodi_default')
+            ? $this->allowedProdis()->firstWhere('id', (int) $request->prodi_default)
+            : null;
+        if ($request->filled('prodi_default') && ! $defaultProdi) {
+            return back()->with('error', 'Homebase default tidak valid.');
         }
 
-        $data = $sheet->toArray(null, true, true, false);
+        $file = $request->file('file');
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (! in_array($ext, ['xlsx', 'xls', 'csv', 'ods', 'htm', 'html', 'txt'], true)) {
+            return back()->with('error', 'Format file harus Excel (.xlsx/.xls), .csv, atau .ods.');
+        }
 
-        // Cari baris judul di 10 baris pertama (ekspor SIAKAD kadang diawali judul laporan).
-        [$headerRow, $map] = $this->detectHeader($data);
+        $spreadsheet = $this->loadSpreadsheet($file->getRealPath(), $ext);
+        if (! $spreadsheet) {
+            return back()->with('error', 'File tidak dapat dibaca. Bila file berasal dari SIAKAD, coba buka di Excel lalu "Save As" ke format .xlsx, kemudian unggah ulang.');
+        }
+
+        // Cari sheet & baris judul (ekspor SIAKAD kadang diawali judul laporan / ada di sheet lain).
+        $data = [];
+        $map = null;
+        $headerRow = 0;
+        $firstHeaders = [];
+        foreach ($spreadsheet->getAllSheets() as $sheet) {
+            $sheetData = $sheet->toArray(null, true, true, false);
+            [$headerRow, $map] = $this->detectHeader($sheetData, $defaultProdi !== null);
+            if ($map !== null) {
+                $data = $sheetData;
+                break;
+            }
+            $firstHeaders = $firstHeaders ?: $this->firstNonEmptyRow($sheetData);
+        }
         if ($map === null) {
-            return back()->with('error', 'Kolom "Nama" dan "Homebase/Prodi" tidak ditemukan di file. Gunakan file dari tombol "Template Import" atau ekspor SIAKAD.');
+            return back()
+                ->with('error', 'Kolom "Nama" dan "Homebase/Prodi" tidak ditemukan di file. Bila file memang tidak punya kolom Homebase, pilih "Homebase default" saat import. Bila masih gagal, kirimkan daftar judul kolom di bawah ke pengelola sistem.')
+                ->with('import_errors', ['Judul kolom yang terbaca: '.($firstHeaders ? implode(' | ', $firstHeaders) : '(kosong)')]);
         }
 
         $prodiLookup = $this->prodiLookup();
@@ -187,7 +213,11 @@ class DosenExcelController extends Controller implements HasMiddleware
 
             $e = [];
 
-            $prodi = $prodiLookup[$this->norm($v['homebase'])] ?? null;
+            if ($v['homebase'] === '' && $defaultProdi) {
+                $v['homebase'] = $defaultProdi->kode;
+                $v['_present'][] = 'prodi_id';
+            }
+            $prodi = $this->matchProdi($v['homebase'], $prodiLookup);
             if ($v['homebase'] === '') {
                 $e[] = 'Homebase wajib diisi';
             } elseif (! $prodi) {
@@ -327,7 +357,7 @@ class DosenExcelController extends Controller implements HasMiddleware
     }
 
     /** @return array{0:int,1:?array<int,string>} index baris judul & peta kolom->field */
-    private function detectHeader(array $data): array
+    private function detectHeader(array $data, bool $homebaseOptional = false): array
     {
         $lookup = [];
         foreach (self::ALIASES as $field => $aliases) {
@@ -337,7 +367,7 @@ class DosenExcelController extends Controller implements HasMiddleware
         }
         // "Alamat & Email" -> "alamatemail", yang juga alias kolom email biasa. Bedakan lewat
         // judul aslinya: bila ada "&"/"/"/"dan", anggap kolom gabungan.
-        foreach (array_slice($data, 0, 10, true) as $i => $row) {
+        foreach (array_slice($data, 0, 20, true) as $i => $row) {
             $map = [];
             foreach ($row as $col => $title) {
                 $raw = strtolower(trim((string) $title));
@@ -358,7 +388,7 @@ class DosenExcelController extends Controller implements HasMiddleware
                 }
             }
             $hasNama = array_intersect(['nama', '_nama_kontak'], $map);
-            if ($hasNama && in_array('homebase', $map, true)) {
+            if ($hasNama && ($homebaseOptional || in_array('homebase', $map, true))) {
                 return [$i, $map];
             }
         }
@@ -464,6 +494,85 @@ class DosenExcelController extends Controller implements HasMiddleware
 
         return Prodi::when(! $user->isAdmin() && $user->isKaprodi(), fn ($q) => $q->where('kaprodi_id', $user->id))
             ->orderBy('kode')->get();
+    }
+
+    /**
+     * Cocokkan homebase: persis (kode / nama / "jenjang nama"), lalu longgar —
+     * nama prodi terkandung di teks homebase, misal "Teknik Informatika (S1)" atau
+     * "Prodi S1 Teknik Informatika - Fakultas Teknik". Nama terpanjang yang menang.
+     */
+    private function matchProdi(string $homebase, array $lookup): ?Prodi
+    {
+        $n = $this->norm($homebase);
+        if ($n === '') {
+            return null;
+        }
+        if (isset($lookup[$n])) {
+            return $lookup[$n];
+        }
+
+        $best = null;
+        foreach ($this->allowedProdis() as $p) {
+            $nama = $this->norm($p->nama);
+            if ($nama !== '' && str_contains($n, $nama) && (! $best || mb_strlen($nama) > mb_strlen($this->norm($best->nama)))) {
+                // Bila teks menyebut jenjang lain (mis. "S2 ..." vs prodi S1), jangan dicocokkan.
+                if (preg_match('/\b(d3|d4|s1|s2|s3)\b/i', $homebase, $m) && strcasecmp($m[1], $p->jenjang) !== 0) {
+                    continue;
+                }
+                $best = $p;
+            }
+        }
+
+        return $best;
+    }
+
+    /** Baca file dengan pembaca yang sesuai isinya (xlsx/xls/ods/csv/HTML ber-ekstensi .xls). */
+    private function loadSpreadsheet(string $path, string $ext): ?Spreadsheet
+    {
+        $candidates = [];
+        try {
+            $candidates[] = IOFactory::identify($path);
+        } catch (\Throwable $e) {
+            // lanjut ke tebakan berikut
+        }
+        $candidates = array_merge($candidates, match ($ext) {
+            'csv', 'txt' => ['Csv'],
+            'htm', 'html' => ['Html'],
+            default => ['Xlsx', 'Xls', 'Ods', 'Html', 'Csv'],
+        });
+
+        foreach (array_unique($candidates) as $type) {
+            try {
+                $reader = IOFactory::createReader($type);
+                if ($reader instanceof \PhpOffice\PhpSpreadsheet\Reader\Csv) {
+                    $reader->setInputEncoding(\PhpOffice\PhpSpreadsheet\Reader\Csv::GUESS_ENCODING);
+                }
+                if (! $reader->canRead($path)) {
+                    continue;
+                }
+                $reader->setReadDataOnly(true);
+                $book = $reader->load($path);
+                if ($book->getSheetCount() > 0) {
+                    return $book;
+                }
+            } catch (\Throwable $e) {
+                continue;
+            }
+        }
+
+        return null;
+    }
+
+    private function firstNonEmptyRow(array $data): array
+    {
+        foreach (array_slice($data, 0, 20) as $row) {
+            $vals = array_values(array_filter(array_map(fn ($v) => trim((string) $v), $row), fn ($v) => $v !== ''));
+            if (count($vals) >= 2) {
+                return $vals;
+            }
+        }
+
+        return [];
     }
 
     /** Homebase bisa ditulis sebagai kode, nama, atau "jenjang nama" prodi. */
