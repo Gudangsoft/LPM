@@ -23,6 +23,7 @@ class Dosen extends Model
 
     protected $fillable = [
         'prodi_id',
+        'user_id',
         'kode_dosen',
         'nama',
         'jenis_kelamin',
@@ -56,6 +57,12 @@ class Dosen extends Model
     public function prodi(): BelongsTo
     {
         return $this->belongsTo(Prodi::class);
+    }
+
+    /** Akun login dosen ini (bila sudah dibuatkan). */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /** Hanya dosen pada prodi yang dikepalai user (kaprodi). */

@@ -24,7 +24,7 @@ class DosenController extends Controller implements HasMiddleware
     {
         $user = auth()->user();
 
-        $query = Dosen::with('prodi')
+        $query = Dosen::with(['prodi', 'user.roles'])
             ->visibleTo($user)
             ->when($request->filled('prodi_id'), fn ($q) => $q->where('prodi_id', $request->prodi_id))
             ->when($request->filled('jabatan'), fn ($q) => $q->where('jabatan_akademik', $request->jabatan))
@@ -39,8 +39,12 @@ class DosenController extends Controller implements HasMiddleware
 
         $dosen = $query->paginate(20)->withQueryString();
         $prodis = $this->prodiOptions();
+        $roles = $user->isAdmin() ? \App\Models\Role::orderBy('name')->get() : collect();
+        $tanpaAkun = $user->isAdmin()
+            ? Dosen::whereNull('user_id')->when($request->filled('prodi_id'), fn ($q) => $q->where('prodi_id', $request->prodi_id))->count()
+            : 0;
 
-        return view('admin.dosen.index', compact('dosen', 'prodis'));
+        return view('admin.dosen.index', compact('dosen', 'prodis', 'roles', 'tanpaAkun'));
     }
 
     public function create()
