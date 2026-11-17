@@ -13,10 +13,59 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('admin.prodi.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i>Tambah Prodi
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.prodi.export') }}" class="btn btn-success">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
+            </a>
+            @if(auth()->user()->hasPermission('prodi.create'))
+            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importProdiModal">
+                <i class="bi bi-upload me-1"></i>Import Excel
+            </button>
+            <a href="{{ route('admin.prodi.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Prodi
+            </a>
+            @endif
+        </div>
     </div>
+
+    @if(session('import_errors'))
+    <div class="alert alert-danger">
+        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Kesalahan pada file import:</div>
+        <ul class="mb-0 small">
+            @foreach(session('import_errors') as $err)
+            <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    @if(auth()->user()->hasPermission('prodi.create'))
+    <div class="modal fade" id="importProdiModal" tabindex="-1" aria-labelledby="importProdiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('admin.prodi.import') }}" method="POST" enctype="multipart/form-data" class="modal-content">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importProdiModalLabel">Import Program Studi dari Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <ol class="small ps-3">
+                        <li>Unduh <a href="{{ route('admin.prodi.template') }}">template import</a> (atau gunakan hasil Export Excel).</li>
+                        <li>Isi data mulai baris ke-2. Kode yang sudah ada akan <strong>diperbarui</strong>, kode baru akan <strong>ditambahkan</strong>.</li>
+                        <li>Kolom Email Kaprodi diisi email akun yang sudah terdaftar di menu Pengguna (boleh dikosongkan).</li>
+                    </ol>
+                    <label for="importProdiFile" class="form-label">File Excel (.xlsx, .xls, .csv; maks. 5 MB)</label>
+                    <input type="file" class="form-control" id="importProdiFile" name="file" accept=".xlsx,.xls,.csv" required>
+                    @error('file')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-upload me-1"></i>Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
 
     <div class="card">
         <div class="card-header">

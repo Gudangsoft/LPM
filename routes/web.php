@@ -197,6 +197,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     // Program Studi / Akreditasi / AMI - permission-gated per-action via each controller's
     // own HasMiddleware::middleware(), NOT wrapped in the 'admin' middleware above, so
     // auditor/kaprodi/viewer roles can reach the actions their permissions allow.
+    Route::get('prodi/export', [\App\Http\Controllers\Admin\ProdiExcelController::class, 'export'])->name('prodi.export');
+    Route::get('prodi/template', [\App\Http\Controllers\Admin\ProdiExcelController::class, 'template'])->name('prodi.template');
+    Route::post('prodi/import', [\App\Http\Controllers\Admin\ProdiExcelController::class, 'import'])->name('prodi.import');
     Route::resource('prodi', ProdiController::class);
 
     Route::get('akreditasi/dashboard', [AkreditasiController::class, 'dashboard'])->name('akreditasi.dashboard');
