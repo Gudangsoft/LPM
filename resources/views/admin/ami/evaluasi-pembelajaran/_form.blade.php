@@ -33,6 +33,12 @@
         <input type="text" name="tahun_akademik" class="form-control @error('tahun_akademik') is-invalid @enderror" value="{{ old('tahun_akademik', $evaluasiPembelajaran->tahun_akademik ?? '') }}" placeholder="2025/2026" required>
         @error('tahun_akademik')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
+    <div class="col-12">
+        <label class="form-label">Link Laporan CPL</label>
+        <input type="url" name="link_laporan_cpl" class="form-control @error('link_laporan_cpl') is-invalid @enderror" value="{{ old('link_laporan_cpl', $evaluasiPembelajaran->link_laporan_cpl ?? '') }}" placeholder="https://drive.google.com/...">
+        <div class="form-text">Tempelkan tautan (URL) Dokumen Evaluasi CPL.</div>
+        @error('link_laporan_cpl')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
 </div>
 
 <div class="d-flex gap-2 mt-3">

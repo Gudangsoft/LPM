@@ -18,6 +18,7 @@ class EvaluasiPembelajaran extends Model
         'dosen_pengampu',
         'tahun_akademik',
         'semester',
+        'link_laporan_cpl',
         'kesesuaian_rps',
         'kendala',
         'rekomendasi',

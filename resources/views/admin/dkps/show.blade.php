@@ -80,6 +80,14 @@
                 <div class="col-md-3"><strong>Nama Pengusul</strong><br>{{ $submission->nama_pengusul ?? '-' }}</div>
                 <div class="col-md-3"><strong>{{ __('admin.status') }}</strong><br><span class="badge bg-{{ $submission->status_color }}">{{ ucfirst($submission->status) }}</span></div>
             </div>
+            <hr>
+            <div><strong>Link Bukti</strong><br>
+                @if($submission->link_bukti)
+                <a href="{{ $submission->link_bukti }}" target="_blank" rel="noopener noreferrer" class="text-break"><i class="bi bi-link-45deg me-1"></i>{{ $submission->link_bukti }}</a>
+                @else
+                <span class="text-muted">Belum diisi. Tambahkan melalui tombol "Edit Info".</span>
+                @endif
+            </div>
             @if($submission->akreditasi)
             <hr>
             <div class="small text-muted">

@@ -84,6 +84,7 @@
                             <th>Dosen Pengampu</th>
                             <th width="140">Semester / TA</th>
                             <th width="140">Kesesuaian RPS</th>
+                            <th width="120">Laporan CPL</th>
                             <th width="130">Status</th>
                             <th width="170">{{ __('admin.actions') }}</th>
                         </tr>
@@ -95,6 +96,13 @@
                             <td>{{ $e->dosen_pengampu }}</td>
                             <td><small>{{ ucfirst($e->semester) }} {{ $e->tahun_akademik }}</small></td>
                             <td><small>{{ $e->kesesuaian_rps_label }}</small></td>
+                            <td>
+                                @if($e->link_laporan_cpl)
+                                <a href="{{ $e->link_laporan_cpl }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary"><i class="bi bi-link-45deg me-1"></i>Buka</a>
+                                @else
+                                <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td><span class="badge bg-{{ $e->status_color }}">{{ $e->status === 'dievaluasi' ? 'Dievaluasi' : 'Belum' }}</span></td>
                             <td>
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#evalModal{{ $e->id }}">
@@ -108,7 +116,7 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="6" class="text-center text-muted py-4">Belum ada data evaluasi pembelajaran.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-4">Belum ada data evaluasi pembelajaran.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

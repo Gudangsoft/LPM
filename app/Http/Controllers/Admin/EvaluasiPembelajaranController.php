@@ -128,6 +128,7 @@ class EvaluasiPembelajaranController extends Controller implements HasMiddleware
             'dosen_pengampu' => 'required|string|max:255',
             'tahun_akademik' => 'required|string|max:20',
             'semester' => 'required|in:ganjil,genap',
+            'link_laporan_cpl' => 'nullable|url:http,https|max:1000',
         ]);
     }
 

@@ -17,6 +17,7 @@ class DkpsSubmission extends Model
         'tahun_ts_akhir',
         'nama_pengusul',
         'tanggal_pengusulan',
+        'link_bukti',
         'status',
     ];
 

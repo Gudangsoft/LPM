@@ -72,6 +72,7 @@ class DkpsController extends Controller implements HasMiddleware
             'tahun_ts_akhir' => 'required|integer|min:2000|max:2100',
             'nama_pengusul' => 'nullable|string|max:255',
             'tanggal_pengusulan' => 'nullable|date',
+            'link_bukti' => 'nullable|url:http,https|max:1000',
         ]);
 
         $user = auth()->user();
@@ -212,6 +213,7 @@ class DkpsController extends Controller implements HasMiddleware
             'tahun_ts_akhir' => 'required|integer|min:2000|max:2100',
             'nama_pengusul' => 'nullable|string|max:255',
             'tanggal_pengusulan' => 'nullable|date',
+            'link_bukti' => 'nullable|url:http,https|max:1000',
             'status' => 'required|in:draft,final',
         ]);
 

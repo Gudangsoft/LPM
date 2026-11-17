@@ -83,6 +83,15 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="link_bukti" class="form-label">Link Bukti</label>
+                            <input type="url" class="form-control @error('link_bukti') is-invalid @enderror" id="link_bukti" name="link_bukti" value="{{ old('link_bukti', $submission->link_bukti) }}" placeholder="https://drive.google.com/... atau tautan SISTER">
+                            <div class="form-text">Tempelkan tautan (URL) Google Drive/SISTER berisi dokumen bukti DKPS.</div>
+                            @error('link_bukti')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-lg me-1"></i>{{ __('admin.save') }}
