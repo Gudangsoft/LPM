@@ -140,12 +140,17 @@ class UserController extends Controller
         // Preserve the original admin id across the session migration that Auth::login triggers.
         $impersonatorId = $admin->id;
 
-        Log::info('Impersonation started', [
-            'admin_id' => $admin->id,
-            'admin_email' => $admin->email,
-            'target_id' => $user->id,
-            'target_email' => $user->email,
-        ]);
+        // Gagal menulis log (mis. storage/logs milik root) tidak boleh menggagalkan fitur ini.
+        try {
+            Log::info('Impersonation started', [
+                'admin_id' => $admin->id,
+                'admin_email' => $admin->email,
+                'target_id' => $user->id,
+                'target_email' => $user->email,
+            ]);
+        } catch (\Throwable $e) {
+            // abaikan: report() juga menulis ke log yang sama
+        }
 
         Auth::login($user);
         $request->session()->put('impersonator_id', $impersonatorId);
