@@ -17,15 +17,26 @@ class Dosen extends Model
         'guru_besar' => 'Guru Besar',
     ];
 
+    public const JENIS_KELAMIN = ['L' => 'Laki-laki', 'P' => 'Perempuan'];
+
+    public const PENDIDIKAN = ['S1', 'S2', 'S3', 'Sp-1', 'Sp-2', 'Profesi'];
+
     protected $fillable = [
         'prodi_id',
+        'kode_dosen',
         'nama',
+        'jenis_kelamin',
         'nidn_nidk',
         'nuptk',
         'email',
+        'no_hp',
+        'alamat',
+        'pendidikan_terakhir',
+        'lulusan',
         'pendidikan_magister_bidang',
         'pendidikan_doktor_bidang',
         'bidang_keahlian',
+        'golongan',
         'jabatan_akademik',
         'no_sertifikat_pendidik',
         'is_active',

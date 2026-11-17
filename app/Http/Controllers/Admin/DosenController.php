@@ -32,6 +32,7 @@ class DosenController extends Controller implements HasMiddleware
             ->when($request->filled('search'), fn ($q) => $q->where(function ($qq) use ($request) {
                 $qq->where('nama', 'like', "%{$request->search}%")
                     ->orWhere('nidn_nidk', 'like', "%{$request->search}%")
+                    ->orWhere('kode_dosen', 'like', "%{$request->search}%")
                     ->orWhere('bidang_keahlian', 'like', "%{$request->search}%");
             }))
             ->orderBy('nama');
@@ -92,13 +93,20 @@ class DosenController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'prodi_id' => 'required|exists:prodi,id',
+            'kode_dosen' => 'nullable|string|max:30',
             'nama' => 'required|string|max:255',
+            'jenis_kelamin' => ['nullable', Rule::in(array_keys(Dosen::JENIS_KELAMIN))],
             'nidn_nidk' => ['nullable', 'string', 'max:50', Rule::unique('dosen', 'nidn_nidk')->ignore($dosen?->id)],
             'nuptk' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
+            'no_hp' => 'nullable|string|max:30',
+            'alamat' => 'nullable|string|max:1000',
+            'pendidikan_terakhir' => ['nullable', Rule::in(Dosen::PENDIDIKAN)],
+            'lulusan' => 'nullable|string|max:255',
             'pendidikan_magister_bidang' => 'nullable|string|max:255',
             'pendidikan_doktor_bidang' => 'nullable|string|max:255',
             'bidang_keahlian' => 'nullable|string|max:255',
+            'golongan' => 'nullable|string|max:30',
             'jabatan_akademik' => ['nullable', Rule::in(array_keys(Dosen::JABATAN))],
             'no_sertifikat_pendidik' => 'nullable|string|max:100',
         ], [

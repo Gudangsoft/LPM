@@ -78,7 +78,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small mb-1">Cari</label>
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Nama / NIDN / bidang keahlian...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Nama / kode / NIDN / keahlian...">
                 </div>
                 <div class="col-md-2">
                     <button class="btn btn-sm btn-outline-primary w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
@@ -93,11 +93,13 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Nama Dosen</th>
-                            <th>NIDN/NIDK</th>
-                            <th>Bidang Keahlian</th>
-                            <th>Jabatan Akademik</th>
-                            <th>Serdos</th>
+                            <th>Kode / NIDN</th>
+                            <th>Nama & Kontak</th>
+                            <th>Alamat & Email</th>
+                            <th>Jns. Kel</th>
+                            <th>Homebase</th>
+                            <th>Lulusan</th>
+                            <th>Golongan / Jabatan</th>
                             <th>Status</th>
                             @if($canManage)<th width="110">{{ __('admin.actions') }}</th>@endif
                         </tr>
@@ -105,16 +107,27 @@
                     <tbody>
                         @forelse($dosen as $d)
                         <tr>
-                            <td>{{ $d->nama }}<div class="small text-muted">{{ optional($d->prodi)->jenjang }} {{ optional($d->prodi)->nama }}</div></td>
-                            <td>{{ $d->nidn_nidk ?? '-' }}</td>
-                            <td><small>{{ $d->bidang_keahlian ?? '-' }}</small></td>
-                            <td><small>{{ $d->jabatan_label }}</small></td>
                             <td>
-                                @if($d->no_sertifikat_pendidik)
-                                <span class="badge bg-success" title="{{ $d->no_sertifikat_pendidik }}">Ada</span>
-                                @else
-                                <span class="text-muted">-</span>
-                                @endif
+                                <div class="fw-semibold">{{ $d->kode_dosen ?? '-' }}</div>
+                                <small class="text-muted">{{ $d->nidn_nidk ?? '-' }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ $d->nama }}</div>
+                                @if($d->no_hp)<small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ $d->no_hp }}</small>@endif
+                            </td>
+                            <td style="max-width: 220px;">
+                                <small class="d-block text-truncate" title="{{ $d->alamat }}">{{ $d->alamat ?? '-' }}</small>
+                                @if($d->email)<small class="text-muted text-break">{{ $d->email }}</small>@endif
+                            </td>
+                            <td>{{ $d->jenis_kelamin ?? '-' }}</td>
+                            <td><small>{{ optional($d->prodi)->jenjang }} {{ optional($d->prodi)->nama }}</small></td>
+                            <td>
+                                <small class="fw-semibold">{{ $d->pendidikan_terakhir ?? '-' }}</small>
+                                @if($d->lulusan)<div class="small text-muted">{{ $d->lulusan }}</div>@endif
+                            </td>
+                            <td>
+                                <small class="fw-semibold">{{ $d->golongan ?? '-' }}</small>
+                                <div class="small text-muted">{{ $d->jabatan_label }}</div>
                             </td>
                             <td><span class="badge bg-{{ $d->is_active ? 'success' : 'secondary' }}">{{ $d->is_active ? 'Aktif' : 'Tidak Aktif' }}</span></td>
                             @if($canManage)
@@ -128,7 +141,7 @@
                             @endif
                         </tr>
                         @empty
-                        <tr><td colspan="{{ $canManage ? 7 : 6 }}" class="text-center text-muted py-4">Belum ada data dosen.</td></tr>
+                        <tr><td colspan="{{ $canManage ? 9 : 8 }}" class="text-center text-muted py-4">Belum ada data dosen.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -151,8 +164,9 @@
                 <div class="modal-body">
                     <ol class="small ps-3">
                         <li>Unduh <a href="{{ route('admin.dosen.template') }}">template import</a> (atau gunakan hasil Export Excel).</li>
-                        <li>Isi data mulai baris ke-2. Daftar Kode Prodi ada di sheet "Petunjuk".</li>
-                        <li>Dosen dengan NIDN/NIDK yang sudah terdaftar akan <strong>diperbarui</strong>, sisanya <strong>ditambahkan</strong>.</li>
+                        <li>Bisa juga langsung memakai file ekspor dari SIAKAD. Kolom dibaca berdasarkan <strong>judul kolom</strong>, urutan bebas, kolom lain diabaikan.</li>
+                        <li>Wajib ada kolom <strong>Nama</strong> dan <strong>Homebase</strong> (kode atau nama prodi).</li>
+                        <li>Dosen yang sudah terdaftar (dicocokkan lewat NIDN, lalu Kode Dosen) akan <strong>diperbarui</strong>, sisanya <strong>ditambahkan</strong>.</li>
                     </ol>
                     <label for="importDosenFile" class="form-label">File Excel (.xlsx, .xls, .csv; maks. 5 MB)</label>
                     <input type="file" class="form-control" id="importDosenFile" name="file" accept=".xlsx,.xls,.csv" required>
