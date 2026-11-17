@@ -26,13 +26,13 @@
     <div class="card">
         <div class="card-header">
             <form action="{{ route('admin.statistik.index') }}" method="GET" class="d-flex gap-2 flex-wrap">
-                <select name="kategori" class="form-select" style="max-width: 180px;">
+                <select name="kategori" class="form-select w-auto" style="min-width: 180px;">
                     <option value="">Semua Kategori</option>
                     @foreach($kategoriOptions as $key => $label)
                     <option value="{{ $key }}" {{ request('kategori') == $key ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <select name="tahun" class="form-select" style="max-width: 120px;">
+                <select name="tahun" class="form-select w-auto" style="min-width: 120px;">
                     <option value="">Semua Tahun</option>
                     @foreach($years as $year)
                     <option value="{{ $year }}" {{ request('tahun') == $year ? 'selected' : '' }}>{{ $year }}</option>

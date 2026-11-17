@@ -23,7 +23,7 @@
         <div class="card-header">
             <form action="{{ route('admin.ami.auditor.index') }}" method="GET" class="d-flex gap-2">
                 <input type="text" name="search" class="form-control" style="max-width: 300px;" placeholder="Cari nama auditor..." value="{{ request('search') }}">
-                <select name="status" class="form-select" style="max-width: 150px;">
+                <select name="status" class="form-select w-auto" style="min-width: 150px;">
                     <option value="">Semua Status</option>
                     <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>

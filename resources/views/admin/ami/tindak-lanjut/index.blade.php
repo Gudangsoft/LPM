@@ -68,7 +68,7 @@
                     <option value="{{ $p->id }}" {{ request('prodi_id') == $p->id ? 'selected' : '' }}>{{ $p->jenjang }} - {{ $p->nama }}</option>
                     @endforeach
                 </select>
-                <select name="status" class="form-select" style="max-width: 150px;">
+                <select name="status" class="form-select w-auto" style="min-width: 150px;">
                     <option value="">Semua Status</option>
                     @foreach($statusOptions as $status)
                     <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>

@@ -27,13 +27,13 @@
         <div class="card-header">
             <form action="{{ route('admin.akreditasi.index') }}" method="GET" class="d-flex gap-2 flex-wrap">
                 <input type="text" name="search" class="form-control" style="max-width: 250px;" placeholder="Cari prodi..." value="{{ request('search') }}">
-                <select name="status" class="form-select" style="max-width: 180px;">
+                <select name="status" class="form-select w-auto" style="min-width: 180px;">
                     <option value="">Semua Status</option>
                     @foreach($statusOptions as $s)
                     <option value="{{ $s }}" {{ request('status') == $s ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                     @endforeach
                 </select>
-                <select name="lembaga" class="form-select" style="max-width: 150px;">
+                <select name="lembaga" class="form-select w-auto" style="min-width: 150px;">
                     <option value="">Semua Lembaga</option>
                     @foreach($lembagaOptions as $l)
                     <option value="{{ $l }}" {{ request('lembaga') == $l ? 'selected' : '' }}>{{ $l }}</option>

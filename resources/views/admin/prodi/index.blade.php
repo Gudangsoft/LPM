@@ -71,7 +71,7 @@
         <div class="card-header">
             <form action="{{ route('admin.prodi.index') }}" method="GET" class="d-flex gap-2">
                 <input type="text" name="search" class="form-control" style="max-width: 300px;" placeholder="Cari nama atau kode prodi..." value="{{ request('search') }}">
-                <select name="jenjang" class="form-select" style="max-width: 150px;">
+                <select name="jenjang" class="form-select w-auto" style="min-width: 170px;">
                     <option value="">Semua Jenjang</option>
                     @foreach(['D3', 'D4', 'S1', 'S2', 'S3'] as $j)
                     <option value="{{ $j }}" {{ request('jenjang') == $j ? 'selected' : '' }}>{{ $j }}</option>

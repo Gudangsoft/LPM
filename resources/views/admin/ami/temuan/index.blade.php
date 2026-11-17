@@ -69,14 +69,14 @@
                     <option value="{{ $p->id }}" {{ request('prodi_id') == $p->id ? 'selected' : '' }}>{{ $p->jenjang }} - {{ $p->nama }}</option>
                     @endforeach
                 </select>
-                <select name="kategori" class="form-select" style="max-width: 130px;">
+                <select name="kategori" class="form-select w-auto" style="min-width: 130px;">
                     <option value="">Kategori</option>
                     <option value="mayor" {{ request('kategori') == 'mayor' ? 'selected' : '' }}>Mayor</option>
                     <option value="minor" {{ request('kategori') == 'minor' ? 'selected' : '' }}>Minor</option>
                     <option value="observasi" {{ request('kategori') == 'observasi' ? 'selected' : '' }}>Observasi</option>
                     <option value="rekomendasi" {{ request('kategori') == 'rekomendasi' ? 'selected' : '' }}>Rekomendasi</option>
                 </select>
-                <select name="status" class="form-select" style="max-width: 150px;">
+                <select name="status" class="form-select w-auto" style="min-width: 150px;">
                     <option value="">Status</option>
                     <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
                     <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
