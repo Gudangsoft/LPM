@@ -260,6 +260,16 @@
                         API SIAKAD saat ini tidak mengisi HomeBase dosen. Dosen yang belum ada di SPMI hanya bisa masuk bila prodinya dipilih di sini
                         (semua dosen baru masuk ke prodi tersebut; pindahkan per dosen lewat Edit bila perlu).
                     </div>
+
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" name="isi_email" value="1" id="siakadIsiEmail" checked>
+                        <label class="form-check-label" for="siakadIsiEmail">Isi email yang masih kosong dengan pola SIAKAD</label>
+                    </div>
+                    <div class="input-group input-group-sm mt-1">
+                        <span class="input-group-text">KodeDosen@</span>
+                        <input type="text" name="email_domain" class="form-control" value="unukase.ac.id" aria-label="Domain email">
+                    </div>
+                    <div class="form-text">API SIAKAD tidak mengirim email. Email yang sudah diisi di SPMI tidak diubah.</div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>

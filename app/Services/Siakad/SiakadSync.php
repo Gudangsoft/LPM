@@ -99,7 +99,7 @@ class SiakadSync
      *
      * @return array{status:string,message:string,created:int,updated:int,skipped:int,errors:array,warnings:array,total:int}
      */
-    public function syncDosen(?Prodi $defaultProdi = null): array
+    public function syncDosen(?Prodi $defaultProdi = null, ?string $emailDomain = null): array
     {
         $rows = $this->client->fetchAll('get_dosen');
         if (! $rows) {
@@ -135,17 +135,25 @@ class SiakadSync
 
         // HomeBase kosong (API SIAKAD kampus tidak mengisinya): pakai prodi dosen yang sudah
         // tercatat di SPMI, dicocokkan lewat NIDN lalu Kode Dosen.
-        $existing = Dosen::with('prodi:id,kode,kode_siakad')->get(['id', 'prodi_id', 'nidn_nidk', 'kode_dosen']);
+        $existing = Dosen::with('prodi:id,kode,kode_siakad')->get(['id', 'prodi_id', 'nidn_nidk', 'kode_dosen', 'email']);
         $byNidn = $existing->filter(fn ($d) => $d->nidn_nidk)->keyBy(fn ($d) => $this->cleanId($d->nidn_nidk));
         $byKode = $existing->filter(fn ($d) => $d->kode_dosen)->keyBy(fn ($d) => strtolower($this->cleanId($d->kode_dosen)));
-        $rows = array_map(function ($r) use ($byNidn, $byKode) {
-            if ($r['HomeBase'] === '') {
-                $nidn = $this->cleanId($this->pick($r, ['NIDN', 'NIDK', 'NIDN_NIDK']));
-                $kode = strtolower($this->cleanId($this->pick($r, ['KodeDosen', 'Kode'])));
-                $d = ($nidn !== '' ? $byNidn->get($nidn) : null) ?? ($kode !== '' ? $byKode->get($kode) : null);
-                if ($d?->prodi) {
-                    $r['HomeBase'] = $d->prodi->kode;
-                }
+        $emailDomain = $emailDomain ? ltrim(strtolower(trim($emailDomain)), '@') : null;
+        $rows = array_map(function ($r) use ($byNidn, $byKode, $emailDomain) {
+            $nidn = $this->cleanId($this->pick($r, ['NIDN', 'NIDK', 'NIDN_NIDK']));
+            $kodeAsli = $this->cleanId($this->pick($r, ['KodeDosen', 'Kode']));
+            $kode = strtolower($kodeAsli);
+            $d = ($nidn !== '' ? $byNidn->get($nidn) : null) ?? ($kode !== '' ? $byKode->get($kode) : null);
+
+            if ($r['HomeBase'] === '' && $d?->prodi) {
+                $r['HomeBase'] = $d->prodi->kode;
+            }
+
+            // API tidak mengirim Email; SIAKAD memakai pola {KodeDosen}@domain. Hanya mengisi
+            // email yang masih kosong di SPMI, tidak menimpa email yang sudah diisi.
+            if ($emailDomain && $this->pick($r, ['Email', 'E-mail', 'Surel']) === '' && ! $d?->email
+                && preg_match('/^[A-Za-z0-9._-]+$/', $kodeAsli)) {
+                $r['Email'] = strtolower($kodeAsli).'@'.$emailDomain;
             }
 
             return $r;

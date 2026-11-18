@@ -33,10 +33,14 @@ class SiakadController extends Controller
     public function syncDosen(Request $request, SiakadSync $sync)
     {
         @set_time_limit(600);
-        $request->validate(['prodi_id' => 'nullable|exists:prodi,id']);
+        $request->validate([
+            'prodi_id' => 'nullable|exists:prodi,id',
+            'email_domain' => ['nullable', 'string', 'max:100', 'regex:/^@?[a-z0-9-]+(\.[a-z0-9-]+)+$/i'],
+        ], ['email_domain.regex' => 'Domain email tidak valid (contoh: unukase.ac.id).']);
         $defaultProdi = $request->filled('prodi_id') ? Prodi::find($request->prodi_id) : null;
+        $emailDomain = $request->boolean('isi_email') ? ($request->input('email_domain') ?: 'unukase.ac.id') : null;
         try {
-            $r = $sync->syncDosen($defaultProdi);
+            $r = $sync->syncDosen($defaultProdi, $emailDomain);
         } catch (\Throwable $e) {
             return back()->with('error', $this->pesanGagal($e));
         }
