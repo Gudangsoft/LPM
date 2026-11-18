@@ -111,8 +111,21 @@ class SiakadSync
             'NamaProgdi', 'NamaProdi', 'nama_prodi', 'Progdi', 'Prodi', 'ProgramStudi', 'NamaProgramStudi'];
         $hbNorm = array_map(fn ($k) => $this->norm($k), $hbKeys);
         $kolomAsli = array_keys($rows[0]);
+        $hbRaw = array_map(fn ($r) => $r['HomeBase'] ?? null, $rows);
         $rows = array_map(function ($r) use ($hbKeys, $hbNorm) {
             $hb = $this->pick($r, $hbKeys);
+            // HomeBase berupa objek/daftar, mis. {"KodeProgdi": "...", "NamaProgdi": "..."}
+            if ($hb === '') {
+                foreach ($r as $k => $v) {
+                    if (is_array($v) && in_array($this->norm((string) $k), $hbNorm, true)) {
+                        $inner = array_is_list($v) ? ($v[0] ?? []) : $v;
+                        $hb = is_array($inner) ? $this->pick($inner, array_merge($hbKeys, ['Kode', 'Nama'])) : (is_scalar($inner) ? trim((string) $inner) : '');
+                        if ($hb !== '') {
+                            break;
+                        }
+                    }
+                }
+            }
             $r = array_filter($r, fn ($k) => ! in_array($this->norm((string) $k), $hbNorm, true), ARRAY_FILTER_USE_KEY);
             $r['HomeBase'] = $hb;
 
@@ -122,7 +135,11 @@ class SiakadSync
         if (! collect($rows)->contains(fn ($r) => $r['HomeBase'] !== '')) {
             return ['status' => 'error', 'created' => 0, 'updated' => 0, 'skipped' => 0, 'warnings' => [], 'total' => count($rows),
                 'message' => 'Data dosen dari SIAKAD tidak memuat kolom HomeBase/prodi yang terisi, jadi dosen tidak bisa dipetakan ke program studi.',
-                'errors' => ['Kolom yang dikirim SIAKAD: '.implode(', ', $kolomAsli).'. Kirim daftar ini ke pengembang.']];
+                'errors' => [
+                    'Kolom yang dikirim SIAKAD: '.implode(', ', $kolomAsli).'.',
+                    'Isi kolom HomeBase pada '.count($rows).' dosen: '.$this->describeValues($hbRaw).'.',
+                    'Kirim pesan ini ke pengembang, atau hubungi pengelola SIAKAD agar kolom HomeBase pada data API dosen diisi kode/nama prodi.',
+                ]];
         }
 
         $headers = [];
@@ -182,6 +199,24 @@ class SiakadSync
         }
 
         return '';
+    }
+
+    /** Ringkasan jenis isi (tanpa membocorkan data), mis. "120 kosong, 3 null". */
+    private function describeValues(array $values): string
+    {
+        $jenis = [];
+        foreach ($values as $v) {
+            $label = match (true) {
+                $v === null => 'null/tidak ada',
+                is_array($v) => 'objek/daftar ('.implode(',', array_keys($v)).')',
+                is_bool($v) => 'boolean',
+                trim((string) $v) === '' => 'kosong',
+                default => 'terisi',
+            };
+            $jenis[$label] = ($jenis[$label] ?? 0) + 1;
+        }
+
+        return collect($jenis)->map(fn ($n, $l) => "{$n} {$l}")->join(', ');
     }
 
     private function norm(string $s): string

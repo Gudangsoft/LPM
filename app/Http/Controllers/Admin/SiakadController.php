@@ -40,7 +40,9 @@ class SiakadController extends Controller
         if ($r['status'] !== 'ok') {
             $redirect = back()->with('error', 'Sinkron dosen gagal: '.$r['message']);
 
-            return $r['errors'] ? $redirect->with('import_errors', array_slice($r['errors'], 0, 100)) : $redirect;
+            return $r['errors']
+                ? $redirect->with('import_errors', array_slice($r['errors'], 0, 100))->with('import_errors_title', 'Detail dari SIAKAD:')
+                : $redirect;
         }
 
         $p = $r['prodi'] ?? null;
