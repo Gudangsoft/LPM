@@ -73,7 +73,7 @@ class DosenExcelController extends Controller implements HasMiddleware
         '_telp' => ['telp', 'telepon', 'notelp', 'notelepon', 'telprumah'],
         'email' => ['email', 'surel', 'alamatemail'],
         'alamat' => ['alamat', 'alamatrumah', 'alamatlengkap', 'domisili'],
-        'homebase' => ['homebase', 'homebasekodeprodi', 'kodeprodi', 'prodi', 'programstudi', 'namaprodi', 'prodihomebase'],
+        'homebase' => ['homebase', 'homebasekodeprodi', 'kodeprodi', 'prodi', 'programstudi', 'namaprodi', 'prodihomebase', 'kodeprogdi', 'namaprogdi', 'progdi', 'homebaseprogdi'],
         'pendidikan_terakhir' => ['pendidikanterakhir', 'pendidikan', 'jenjangpendidikan', 'pendidikantertinggi'],
         'lulusan' => ['lulusan', 'lulusanperguruantinggi', 'perguruantinggi', 'almamater', 'asalpt', 'asalperguruantinggi', 'universitas'],
         'pendidikan_magister_bidang' => ['pendidikans2bidang', 'pendidikanmagisters2bidang', 'pendidikanmagister', 'bidangs2', 'magister', 's2'],

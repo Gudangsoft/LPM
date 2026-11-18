@@ -105,6 +105,26 @@ class SiakadSync
             return ['status' => 'error', 'message' => 'SIAKAD tidak mengembalikan data dosen.', 'created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => [], 'warnings' => [], 'total' => 0];
         }
 
+        // HomeBase bisa bernama lain di API (KodeProgdi, NamaProgdi, ...). Satukan jadi satu
+        // kolom "HomeBase": kode prodi diutamakan, lalu nama prodi.
+        $hbKeys = ['HomeBase', 'Home_Base', 'KodeHomeBase', 'KodeProgdi', 'KodeProdi', 'kode_prodi', 'KodeProgramStudi',
+            'NamaProgdi', 'NamaProdi', 'nama_prodi', 'Progdi', 'Prodi', 'ProgramStudi', 'NamaProgramStudi'];
+        $hbNorm = array_map(fn ($k) => $this->norm($k), $hbKeys);
+        $kolomAsli = array_keys($rows[0]);
+        $rows = array_map(function ($r) use ($hbKeys, $hbNorm) {
+            $hb = $this->pick($r, $hbKeys);
+            $r = array_filter($r, fn ($k) => ! in_array($this->norm((string) $k), $hbNorm, true), ARRAY_FILTER_USE_KEY);
+            $r['HomeBase'] = $hb;
+
+            return $r;
+        }, $rows);
+
+        if (! collect($rows)->contains(fn ($r) => $r['HomeBase'] !== '')) {
+            return ['status' => 'error', 'created' => 0, 'updated' => 0, 'skipped' => 0, 'warnings' => [], 'total' => count($rows),
+                'message' => 'Data dosen dari SIAKAD tidak memuat kolom HomeBase/prodi yang terisi, jadi dosen tidak bisa dipetakan ke program studi.',
+                'errors' => ['Kolom yang dikirim SIAKAD: '.implode(', ', $kolomAsli).'. Kirim daftar ini ke pengembang.']];
+        }
+
         $headers = [];
         foreach ($rows as $r) {
             foreach (array_keys($r) as $k) {
