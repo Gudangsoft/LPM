@@ -36,8 +36,16 @@ class SiakadTest extends Command
             $rows = $client->fetchAll($act, (string) $this->option('filter'), max(1, (int) $this->option('limit')));
         } catch (SiakadException $e) {
             $this->error($e->getMessage());
+            if ($e->siakadCode === '05') {
+                $this->warn('Semua format Filter/Limit sudah dicoba dan ditolak. Tanyakan ke pengelola SIAKAD contoh Filter & Limit yang benar untuk "'.$act.'".');
+            }
 
             return self::FAILURE;
+        }
+
+        if ($client->variantUsed !== null) {
+            $v = $client::VARIANTS[$client->variantUsed];
+            $this->line('Format diterima: Filter="'.$v['filter'].'", Limit='.($v['base'] === null ? '(tanpa Limit)' : '"'.$v['base'].'-..."'));
         }
 
         if (! $rows) {

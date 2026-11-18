@@ -2,6 +2,7 @@
 
 namespace App\Services\Siakad;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -45,6 +46,24 @@ class SiakadClient
     }
 
     /**
+     * Format parameter yang dicoba berurutan bila SIAKAD membalas kode 05
+     * ("Invalid parameter or filter format"). Dokumentasi menulis "Filter : -" dan
+     * "Limit : 10-1000" tanpa penjelasan, jadi format yang diterima dicari lalu diingat.
+     * filter = nilai Filter saat tanpa filter; base = angka awal Limit (null = tanpa Limit).
+     */
+    public const VARIANTS = [
+        ['filter' => '-', 'base' => 0],
+        ['filter' => '-', 'base' => 1],
+        ['filter' => '', 'base' => 1],
+        ['filter' => '', 'base' => 0],
+        ['filter' => '-', 'base' => null],
+        ['filter' => '', 'base' => null],
+    ];
+
+    /** Format yang terakhir berhasil (indeks VARIANTS), untuk ditampilkan siakad:test. */
+    public ?int $variantUsed = null;
+
+    /**
      * Ambil semua baris untuk $act (get_fakultas, get_prodi, get_dosen, get_mahasiswa).
      * $filter contoh: "KodeFakultas='FEB'".
      *
@@ -56,16 +75,52 @@ class SiakadClient
      */
     public function fetchAll(string $act, string $filter = '', ?int $maxRows = null): array
     {
+        $remembered = Cache::get('siakad:param_variant');
+        $order = array_keys(self::VARIANTS);
+        if (is_int($remembered) && isset(self::VARIANTS[$remembered])) {
+            $order = array_values(array_unique(array_merge([$remembered], $order)));
+        }
+
+        $lastError = null;
+        foreach ($order as $i) {
+            try {
+                $rows = $this->fetchWithVariant($act, $filter, $maxRows, self::VARIANTS[$i]);
+            } catch (SiakadException $e) {
+                if ($e->siakadCode !== '05') {
+                    throw $e;
+                }
+                $lastError = $e;
+                continue;
+            }
+            $this->variantUsed = $i;
+            if ($remembered !== $i) {
+                Cache::forever('siakad:param_variant', $i);
+            }
+
+            return $rows;
+        }
+
+        throw $lastError;
+    }
+
+    private function fetchWithVariant(string $act, string $filter, ?int $maxRows, array $variant): array
+    {
         $pageSize = max(10, (int) config('services.siakad.page_size', 1000));
+        $filter = trim($filter) === '' ? $variant['filter'] : $filter;
         $rows = [];
         $seen = [];
 
         for ($page = 0, $offset = 0; $page < 50; $page++, $offset += $pageSize) {
-            $batch = $this->call($act, [
-                'Token' => $this->token(),
-                'Filter' => $filter,
-                'Limit' => $offset.'-'.($offset + $pageSize),
-            ]);
+            $params = ['Token' => $this->token(), 'Filter' => $filter];
+            if ($variant['base'] !== null) {
+                $start = $offset + $variant['base'];
+                $params['Limit'] = $start.'-'.($start + $pageSize - $variant['base']);
+            }
+            $batch = $this->call($act, $params);
+
+            if ($variant['base'] === null) {
+                return $maxRows ? array_slice($batch, 0, $maxRows) : $batch;
+            }
 
             $new = 0;
             foreach ($batch as $row) {
@@ -118,7 +173,9 @@ class SiakadClient
             if (preg_match('/^0 record|not ?found|tidak ada data|no data/i', (string) $msg)) {
                 return [];
             }
-            throw new SiakadException("SIAKAD menolak permintaan \"{$act}\": {$msg}".(! empty($json['error_code']) ? " (kode {$json['error_code']})" : ''));
+            $e = new SiakadException("SIAKAD menolak permintaan \"{$act}\": {$msg}".(! empty($json['error_code']) ? " (kode {$json['error_code']})" : ''));
+            $e->siakadCode = isset($json['error_code']) ? (string) $json['error_code'] : null;
+            throw $e;
         }
 
         $data = $json['data'] ?? [];
