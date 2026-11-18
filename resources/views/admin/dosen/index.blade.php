@@ -6,6 +6,7 @@
     @php
         $canManage = auth()->user()->hasPermission('dosen.manage');
         $isAdmin = auth()->user()->isAdmin();
+        $showCheck = $canManage || $isAdmin;
     @endphp
 
     <div class="page-header d-flex flex-wrap justify-content-between align-items-start gap-2">
@@ -127,12 +128,33 @@
     </div>
 
     <div class="card">
+        @if($canManage && $dosen->total())
+        <div class="card-header d-flex flex-wrap align-items-center gap-2 py-2">
+            <span class="small text-muted me-auto"><span id="bulkCount">0</span> dipilih dari {{ $dosen->total() }} dosen</span>
+            <button type="button" class="btn btn-sm btn-outline-danger" id="bulkDeleteSelected" disabled>
+                <i class="bi bi-trash me-1"></i>Hapus yang dicentang
+            </button>
+            @if($isAdmin)
+            <button type="button" class="btn btn-sm btn-danger" id="bulkDeleteFilter" data-total="{{ $dosen->total() }}"
+                    data-filtered="{{ request()->anyFilled(['prodi_id', 'jabatan', 'status', 'search']) ? 1 : 0 }}">
+                <i class="bi bi-trash3 me-1"></i>Hapus semua {{ request()->anyFilled(['prodi_id', 'jabatan', 'status', 'search']) ? 'hasil filter' : '' }} ({{ $dosen->total() }})
+            </button>
+            @endif
+        </div>
+        <form action="{{ route('admin.dosen.bulk-destroy') }}" method="POST" id="bulkDeleteForm" class="d-none">
+            @csrf
+            <input type="hidden" name="scope" value="selected">
+            @foreach(request()->only('prodi_id', 'jabatan', 'status', 'search') as $k => $v)
+            <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+            @endforeach
+        </form>
+        @endif
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            @if($isAdmin)
+                            @if($showCheck)
                             <th width="32"><input type="checkbox" class="form-check-input" id="checkAllDosen" title="Pilih semua di halaman ini"></th>
                             @endif
                             <th>Kode / NIDN</th>
@@ -150,11 +172,9 @@
                     <tbody>
                         @forelse($dosen as $d)
                         <tr>
-                            @if($isAdmin)
+                            @if($showCheck)
                             <td>
-                                @unless($d->user_id)
-                                <input type="checkbox" class="form-check-input dosen-check" name="dosen_ids[]" value="{{ $d->id }}" form="buatAkunForm" aria-label="Pilih {{ $d->nama }}">
-                                @endunless
+                                <input type="checkbox" class="form-check-input dosen-check" value="{{ $d->id }}" data-nama="{{ $d->nama }}" data-akun="{{ $d->user_id ? 1 : 0 }}" aria-label="Pilih {{ $d->nama }}">
                             </td>
                             @endif
                             <td>
@@ -205,7 +225,7 @@
                             @endif
                         </tr>
                         @empty
-                        <tr><td colspan="{{ 9 + ($canManage ? 1 : 0) + ($isAdmin ? 1 : 0) }}" class="text-center text-muted py-4">Belum ada data dosen.</td></tr>
+                        <tr><td colspan="{{ 9 + ($canManage ? 1 : 0) + ($showCheck ? 1 : 0) }}" class="text-center text-muted py-4">Belum ada data dosen.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -230,7 +250,7 @@
                     <label class="form-label fw-semibold">Dosen</label>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="scope" id="scopeSelected" value="selected" checked>
-                        <label class="form-check-label" for="scopeSelected">Yang dicentang di tabel (<span id="selectedCount">0</span> dosen)</label>
+                        <label class="form-check-label" for="scopeSelected">Yang dicentang di tabel (<span id="selectedCount">0</span> dosen belum punya akun)</label>
                     </div>
                     <div class="form-check mb-3">
                         <input class="form-check-input" type="radio" name="scope" id="scopeAll" value="all">
@@ -276,9 +296,16 @@
     <script>
     (function () {
         const checks = () => document.querySelectorAll('.dosen-check');
-        const count = () => { document.getElementById('selectedCount').textContent = [...checks()].filter(c => c.checked).length; };
-        document.getElementById('checkAllDosen')?.addEventListener('change', e => { checks().forEach(c => c.checked = e.target.checked); count(); });
-        document.addEventListener('change', e => { if (e.target.classList.contains('dosen-check')) count(); });
+        const count = () => { document.getElementById('selectedCount').textContent = [...checks()].filter(c => c.checked && c.dataset.akun === '0').length; };        document.addEventListener('change', e => { if (e.target.id === 'checkAllDosen' || e.target.classList.contains('dosen-check')) count(); });
+        // dosen yang dicentang (dan belum punya akun) dikirim bersama form Buatkan Akun
+        document.getElementById('buatAkunForm').addEventListener('submit', function () {
+            this.querySelectorAll('input[name="dosen_ids[]"]').forEach(i => i.remove());
+            [...checks()].filter(c => c.checked && c.dataset.akun === '0').forEach(c => {
+                const i = document.createElement('input');
+                i.type = 'hidden'; i.name = 'dosen_ids[]'; i.value = c.value;
+                this.appendChild(i);
+            });
+        });
         const pwInput = document.getElementById('pwCustomInput');
         document.querySelectorAll('input[name="password_mode"]').forEach(r => r.addEventListener('change', () => {
             pwInput.disabled = !document.getElementById('pwCustom').checked;
@@ -287,6 +314,66 @@
         document.getElementById('buatAkunModal').addEventListener('show.bs.modal', () => {
             count();
             if ([...checks()].every(c => !c.checked)) document.getElementById('scopeAll').checked = true;
+        });
+    })();
+    </script>
+    @endpush
+    @endif
+
+    @if($showCheck)
+    @push('scripts')
+    <script>
+    (function () {
+        const checks = () => [...document.querySelectorAll('.dosen-check')];
+        const checked = () => checks().filter(c => c.checked);
+        const checkAll = document.getElementById('checkAllDosen');
+        const btnSel = document.getElementById('bulkDeleteSelected');
+        const btnAll = document.getElementById('bulkDeleteFilter');
+        const form = document.getElementById('bulkDeleteForm');
+
+        const refresh = () => {
+            const n = checked().length;
+            const el = document.getElementById('bulkCount');
+            if (el) el.textContent = n;
+            if (btnSel) btnSel.disabled = n === 0;
+            if (checkAll) {
+                checkAll.checked = n > 0 && n === checks().length;
+                checkAll.indeterminate = n > 0 && n < checks().length;
+            }
+        };
+        checkAll?.addEventListener('change', e => { checks().forEach(c => c.checked = e.target.checked); refresh(); });
+        document.addEventListener('change', e => { if (e.target.classList.contains('dosen-check')) refresh(); });
+
+        const submit = (scope, ids) => {
+            form.querySelector('[name="scope"]').value = scope;
+            form.querySelectorAll('input[name="dosen_ids[]"]').forEach(i => i.remove());
+            ids.forEach(id => {
+                const i = document.createElement('input');
+                i.type = 'hidden'; i.name = 'dosen_ids[]'; i.value = id;
+                form.appendChild(i);
+            });
+            form.submit();
+        };
+
+        btnSel?.addEventListener('click', () => {
+            const sel = checked();
+            const nama = sel.slice(0, 5).map(c => '- ' + c.dataset.nama).join('\n') + (sel.length > 5 ? `\n- ... dan ${sel.length - 5} lainnya` : '');
+            if (confirm(`Hapus ${sel.length} data dosen berikut?\n\n${nama}\n\nAkun login dosen (bila ada) tidak ikut terhapus.`)) {
+                btnSel.disabled = true;
+                submit('selected', sel.map(c => c.value));
+            }
+        });
+
+        btnAll?.addEventListener('click', () => {
+            const total = btnAll.dataset.total;
+            const lingkup = btnAll.dataset.filtered === '1' ? 'yang sesuai filter saat ini' : 'SELURUH data dosen';
+            const jawab = prompt(`Hapus ${total} data dosen ${lingkup}?\nTindakan ini tidak bisa dibatalkan. Akun login dosen tidak ikut terhapus.\n\nKetik HAPUS untuk melanjutkan:`);
+            if (jawab !== null && jawab.trim().toUpperCase() === 'HAPUS') {
+                btnAll.disabled = true;
+                submit('filter', []);
+            } else if (jawab !== null) {
+                alert('Dibatalkan: teks yang diketik bukan HAPUS.');
+            }
         });
     })();
     </script>

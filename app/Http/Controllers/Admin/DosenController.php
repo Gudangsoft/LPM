@@ -16,7 +16,7 @@ class DosenController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('permission:dosen.view', only: ['index']),
-            new Middleware('permission:dosen.manage', only: ['create', 'store', 'edit', 'update', 'destroy']),
+            new Middleware('permission:dosen.manage', only: ['create', 'store', 'edit', 'update', 'destroy', 'bulkDestroy']),
         ];
     }
 
@@ -89,6 +89,46 @@ class DosenController extends Controller implements HasMiddleware
         $dosen->delete();
 
         return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil dihapus.');
+    }
+
+    /**
+     * Hapus massal: yang dicentang, atau (admin) semua hasil filter saat ini.
+     * Akun login dosen tidak ikut terhapus; kaprodi hanya bisa menghapus dosen prodinya.
+     */
+    public function bulkDestroy(Request $request)
+    {
+        $user = auth()->user();
+        $validated = $request->validate([
+            'scope' => 'required|in:selected,filter',
+            'dosen_ids' => 'required_if:scope,selected|array',
+            'dosen_ids.*' => 'integer',
+        ], [
+            'dosen_ids.required_if' => 'Centang dulu dosen yang akan dihapus.',
+        ]);
+
+        $query = Dosen::query()->visibleTo($user);
+        if ($validated['scope'] === 'selected') {
+            $query->whereIn('id', $validated['dosen_ids']);
+        } else {
+            abort_unless($user->isAdmin(), 403);
+            $query->when($request->filled('prodi_id'), fn ($q) => $q->where('prodi_id', $request->prodi_id))
+                ->when($request->filled('jabatan'), fn ($q) => $q->where('jabatan_akademik', $request->jabatan))
+                ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status === 'aktif'))
+                ->when($request->filled('search'), fn ($q) => $q->where(function ($qq) use ($request) {
+                    $qq->where('nama', 'like', "%{$request->search}%")
+                        ->orWhere('nidn_nidk', 'like', "%{$request->search}%")
+                        ->orWhere('kode_dosen', 'like', "%{$request->search}%")
+                        ->orWhere('bidang_keahlian', 'like', "%{$request->search}%");
+                }));
+        }
+
+        $jumlah = 0;
+        $query->select('id')->chunkById(500, function ($rows) use (&$jumlah) {
+            $jumlah += Dosen::whereIn('id', $rows->pluck('id'))->delete();
+        });
+
+        return redirect()->route('admin.dosen.index', $request->only('prodi_id', 'jabatan', 'status', 'search'))
+            ->with($jumlah ? 'success' : 'error', $jumlah ? "{$jumlah} data dosen berhasil dihapus." : 'Tidak ada data dosen yang dihapus.');
     }
 
     // ---------------------------------------------------------------------

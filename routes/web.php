@@ -206,6 +206,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('dosen/export', [\App\Http\Controllers\Admin\DosenExcelController::class, 'export'])->name('dosen.export');
     Route::get('dosen/template', [\App\Http\Controllers\Admin\DosenExcelController::class, 'template'])->name('dosen.template');
     Route::post('dosen/import', [\App\Http\Controllers\Admin\DosenExcelController::class, 'import'])->name('dosen.import');
+    Route::post('dosen/hapus-massal', [\App\Http\Controllers\Admin\DosenController::class, 'bulkDestroy'])->name('dosen.bulk-destroy');
     Route::post('dosen/buat-akun', [\App\Http\Controllers\Admin\DosenAkunController::class, 'store'])->name('dosen.buat-akun')->middleware('admin');
 
     // Tarik data dari API SIAKAD (khusus admin)

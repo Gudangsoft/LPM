@@ -45,15 +45,16 @@ class SiakadSync
 
         DB::transaction(function () use ($rows, $fakultas, &$created, &$updated, &$skipped) {
             foreach ($rows as $r) {
-                $kode = $this->pick($r, ['KodeProdi', 'Kode', 'KodeProgramStudi', 'kode_prodi', 'KodeProdiDikti', 'KodeDikti']);
-                $nama = $this->pick($r, ['NamaProdi', 'NamaProgramStudi', 'Nama', 'ProgramStudi', 'nama_prodi', 'Prodi']);
-                $jenjangRaw = $this->pick($r, ['Jenjang', 'JenjangProdi', 'JenjangStudi', 'Strata', 'KodeJenjang', 'jenjang', 'JenjangPendidikan']);
+                // SIAKAD memakai "Progdi" (KodeProgdi, NamaProgdi, nama_jenjang_pendidikan).
+                $kode = $this->pick($r, ['KodeProgdi', 'KodeProdi', 'Kode', 'KodeProgramStudi', 'kode_prodi', 'KodeProdiDikti', 'KodeDikti']);
+                $nama = $this->pick($r, ['NamaProgdi', 'NamaProdi', 'NamaProgramStudi', 'Nama', 'ProgramStudi', 'nama_prodi', 'Prodi', 'Progdi']);
+                $jenjangRaw = $this->pick($r, ['nama_jenjang_pendidikan', 'Jenjang', 'JenjangProdi', 'JenjangStudi', 'Strata', 'KodeJenjang', 'jenjang', 'JenjangPendidikan']);
                 $kodeFak = $this->pick($r, ['KodeFakultas', 'kode_fakultas', 'Fakultas']);
                 $namaFak = $this->pick($r, ['NamaFakultas', 'nama_fakultas']) ?: ($fakultas[strtolower($kodeFak)] ?? $kodeFak);
 
                 [$jenjang, $namaBersih] = $this->normalizeJenjang($jenjangRaw, $nama);
                 if ($kode === '' || $namaBersih === '') {
-                    $skipped[] = 'Data prodi tanpa kode/nama: '.json_encode($r, JSON_UNESCAPED_UNICODE);
+                    $skipped[] = 'Kode/nama prodi tidak terbaca (kolom dari SIAKAD: '.implode(', ', array_keys($r)).')';
 
                     continue;
                 }
@@ -130,7 +131,7 @@ class SiakadSync
 
             return preg_replace_callback('/Homebase "([^"]*)" tidak dikenal atau bukan prodi Anda/', function ($m) use ($prodiDilewati) {
                 $alasan = $prodiDilewati !== '' && stripos($prodiDilewati, $m[1]) !== false
-                    ? ' (prodi ini dilewati saat sinkron: jenjang tidak dikenali)'
+                    ? ' (prodi ini dilewati saat sinkron, lihat alasannya di atas)'
                     : '';
 
                 return "Prodi \"{$m[1]}\" belum ada di menu Program Studi SPMI{$alasan}. Tambahkan prodinya lalu tarik ulang";
