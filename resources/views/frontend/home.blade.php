@@ -79,23 +79,6 @@
             </div>
         </div>
 
-        <!-- Floating Stats -->
-        @php($heroStats = array_filter([
-            [$stats['prodi'] ?? 0, __('home.accredited_programs')],
-            [$stats['auditor'] ?? 0, __('home.certified_auditors')],
-            [$stats['tahun'] ?? 0, __('home.years_experience')],
-        ], fn ($s) => $s[0] > 0))
-        @if(count($heroStats))
-        <div class="hero-stats">
-            @foreach($heroStats as [$angka, $label])
-            <div class="hero-stat-card">
-                <div class="hero-stat-number">{{ $angka }}</div>
-                <div class="hero-stat-label">{{ $label }}</div>
-            </div>
-            @endforeach
-        </div>
-        @endif
-
         <!-- Scroll Indicator -->
         <div class="scroll-indicator">
             <span>Scroll</span>
