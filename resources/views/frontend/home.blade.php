@@ -63,13 +63,15 @@
                 @endforeach
             </div>
 
-            <!-- Navigation -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <!-- Navigation (hanya jika lebih dari 1 slide) -->
+            @if($sliders->count() > 1)
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Sebelumnya">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Berikutnya">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
             </button>
+            @endif
 
             <!-- Progress Bar -->
             <div class="hero-progress">
@@ -78,20 +80,21 @@
         </div>
 
         <!-- Floating Stats -->
+        @php($heroStats = array_filter([
+            [$stats['prodi'] ?? 0, __('home.accredited_programs')],
+            [$stats['auditor'] ?? 0, __('home.certified_auditors')],
+            [$stats['tahun'] ?? 0, __('home.years_experience')],
+        ], fn ($s) => $s[0] > 0))
+        @if(count($heroStats))
         <div class="hero-stats">
+            @foreach($heroStats as [$angka, $label])
             <div class="hero-stat-card">
-                <div class="hero-stat-number">{{ $stats['prodi'] ?? '25' }}+</div>
-                <div class="hero-stat-label">{{ __('home.accredited_programs') }}</div>
+                <div class="hero-stat-number">{{ $angka }}</div>
+                <div class="hero-stat-label">{{ $label }}</div>
             </div>
-            <div class="hero-stat-card">
-                <div class="hero-stat-number">{{ $stats['auditor'] ?? '50' }}+</div>
-                <div class="hero-stat-label">{{ __('home.certified_auditors') }}</div>
-            </div>
-            <div class="hero-stat-card">
-                <div class="hero-stat-number">{{ $stats['tahun'] ?? '10' }}+</div>
-                <div class="hero-stat-label">{{ __('home.years_experience') }}</div>
-            </div>
+            @endforeach
         </div>
+        @endif
 
         <!-- Scroll Indicator -->
         <div class="scroll-indicator">

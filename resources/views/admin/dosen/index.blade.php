@@ -32,6 +32,13 @@
             </a>
             @endif
             @if($isAdmin)
+            <form action="{{ route('admin.siakad.sync.dosen') }}" method="POST" class="d-inline"
+                  onsubmit="if (!confirm('Tarik data Dosen dari SIAKAD? Dosen baru ditambahkan, yang sudah ada diperbarui. Data yang kosong di SIAKAD tidak menghapus data di SPMI. Sebaiknya tarik Program Studi lebih dulu.')) return false; this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = '<span class=&quot;spinner-border spinner-border-sm me-1&quot;></span>Menarik data...'; return true;">
+                @csrf
+                <button type="submit" class="btn btn-outline-dark" title="Terakhir: {{ \Illuminate\Support\Facades\Cache::get('siakad:last_sync:dosen', 'belum pernah') }}">
+                    <i class="bi bi-cloud-download me-1"></i>Tarik dari SIAKAD
+                </button>
+            </form>
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#buatAkunModal">
                 <i class="bi bi-person-plus me-1"></i>Buatkan Akun
                 @if($tanpaAkun)<span class="badge bg-primary ms-1">{{ $tanpaAkun }}</span>@endif

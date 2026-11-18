@@ -188,24 +188,51 @@ class DosenExcelController extends Controller implements HasMiddleware
             return back()->with('error', 'File tidak dapat dibaca. Bila file berasal dari SIAKAD, coba buka di Excel lalu "Save As" ke format .xlsx, kemudian unggah ulang.');
         }
 
-        // Cari sheet & baris judul (ekspor SIAKAD kadang diawali judul laporan / ada di sheet lain).
+        // Pilih sheet pertama yang judul kolomnya dikenali (ekspor SIAKAD kadang punya beberapa sheet).
         $data = [];
-        $map = null;
-        $headerRow = 0;
         $firstHeaders = [];
         foreach ($spreadsheet->getAllSheets() as $sheet) {
             $sheetData = $sheet->toArray(null, true, true, false);
-            [$headerRow, $map] = $this->detectHeader($sheetData, $defaultProdi !== null);
-            if ($map !== null) {
+            if ($this->detectHeader($sheetData, $defaultProdi !== null)[1] !== null) {
                 $data = $sheetData;
                 break;
             }
             $firstHeaders = $firstHeaders ?: $this->firstNonEmptyRow($sheetData);
         }
-        if ($map === null) {
+        if (! $data) {
             return back()
                 ->with('error', 'Kolom "Nama" dan "Homebase/Prodi" tidak ditemukan di file. Bila file memang tidak punya kolom Homebase, pilih "Homebase default" saat import. Bila masih gagal, kirimkan daftar judul kolom di bawah ke pengelola sistem.')
                 ->with('import_errors', ['Judul kolom yang terbaca: '.($firstHeaders ? implode(' | ', $firstHeaders) : '(kosong)')]);
+        }
+
+        $result = $this->importData($data, $defaultProdi);
+        if ($result['status'] === 'error') {
+            $redirect = back()->with('error', $result['message']);
+
+            return $result['errors'] ? $redirect->with('import_errors', array_slice($result['errors'], 0, 100)) : $redirect;
+        }
+
+        $redirect = redirect()->route('admin.dosen.index')
+            ->with('success', "Import selesai: {$result['created']} dosen ditambahkan, {$result['updated']} dosen diperbarui."
+                .($result['warnings'] ? ' Ada '.count($result['warnings']).' isian yang tidak dikenali dan dikosongkan (lihat daftar).' : ''));
+
+        return $result['warnings'] ? $redirect->with('import_warnings', array_slice($result['warnings'], 0, 100)) : $redirect;
+    }
+
+    /**
+     * Inti import: $data = tabel (baris judul + baris data), dari Excel maupun API SIAKAD.
+     *
+     * @param  bool  $skipInvalid  false = satu baris salah membatalkan semua (upload Excel);
+     *                             true  = baris salah dilewati & dilaporkan (sinkron otomatis).
+     * @return array{status:string,message:string,created:int,updated:int,skipped:int,errors:array,warnings:array}
+     */
+    public function importData(array $data, ?Prodi $defaultProdi = null, bool $skipInvalid = false): array
+    {
+        $fail = fn (string $msg, array $errors = []) => ['status' => 'error', 'message' => $msg, 'created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => $errors, 'warnings' => []];
+
+        [$headerRow, $map] = $this->detectHeader($data, $defaultProdi !== null);
+        if ($map === null) {
+            return $fail('Kolom "Nama" dan "Homebase/Prodi" tidak ditemukan.', ['Judul kolom yang terbaca: '.implode(' | ', $this->firstNonEmptyRow($data))]);
         }
 
         $prodiLookup = $this->prodiLookup();
@@ -218,10 +245,9 @@ class DosenExcelController extends Controller implements HasMiddleware
         if (! $defaultProdi) {
             $anyHomebase = $homebaseCol === false ? false : collect($body)->contains(fn ($r) => $this->cleanCell($r[$homebaseCol] ?? '') !== '');
             if (! $anyHomebase) {
-                return back()->with('error', 'Kolom Homebase di file kosong. Pilih "Homebase default" (program studi) di jendela import, lalu unggah ulang.');
+                return $fail('Kolom Homebase kosong. Pilih "Homebase default" (program studi), lalu ulangi.');
             }
         }
-
         $errors = [];
         $warnings = [];
         $rows = [];
@@ -306,7 +332,7 @@ class DosenExcelController extends Controller implements HasMiddleware
             }
 
             if ($e) {
-                $errors[] = "Baris {$line}: ".implode('; ', $e);
+                $errors[] = "Baris {$line}".($v['nama'] !== '' ? " ({$v['nama']})" : '').': '.implode('; ', $e);
 
                 continue;
             }
@@ -339,13 +365,11 @@ class DosenExcelController extends Controller implements HasMiddleware
             ];
         }
 
-        if ($errors) {
-            return back()
-                ->with('error', 'Import dibatalkan, tidak ada data yang disimpan. Perbaiki kesalahan berikut lalu unggah ulang.')
-                ->with('import_errors', array_slice($errors, 0, 100));
+        if ($errors && ! $skipInvalid) {
+            return $fail('Import dibatalkan, tidak ada data yang disimpan. Perbaiki kesalahan berikut lalu unggah ulang.', $errors);
         }
         if (! $rows) {
-            return back()->with('error', 'File tidak berisi data dosen.');
+            return $fail($errors ? 'Tidak ada data yang valid.' : 'File tidak berisi data dosen.', $errors);
         }
 
         $created = 0;
@@ -381,11 +405,15 @@ class DosenExcelController extends Controller implements HasMiddleware
             }
         });
 
-        $redirect = redirect()->route('admin.dosen.index')
-            ->with('success', "Import selesai: {$created} dosen ditambahkan, {$updated} dosen diperbarui."
-                .($warnings ? ' Ada '.count($warnings).' isian yang tidak dikenali dan dikosongkan (lihat daftar).' : ''));
-
-        return $warnings ? $redirect->with('import_warnings', array_slice($warnings, 0, 100)) : $redirect;
+        return [
+            'status' => 'ok',
+            'message' => "{$created} dosen ditambahkan, {$updated} dosen diperbarui.",
+            'created' => $created,
+            'updated' => $updated,
+            'skipped' => count($errors),
+            'errors' => $errors,
+            'warnings' => $warnings,
+        ];
     }
 
     // ---- pembacaan file -------------------------------------------------
@@ -647,11 +675,12 @@ class DosenExcelController extends Controller implements HasMiddleware
         return null;
     }
 
+    /** Prodi yang boleh diisi: semua untuk admin / proses otomatis (tanpa login), prodi sendiri untuk kaprodi. */
     private function allowedProdis()
     {
         $user = auth()->user();
 
-        return Prodi::when(! $user->isAdmin() && $user->isKaprodi(), fn ($q) => $q->where('kaprodi_id', $user->id))
+        return Prodi::when($user && ! $user->isAdmin() && $user->isKaprodi(), fn ($q) => $q->where('kaprodi_id', $user->id))
             ->orderBy('kode')->get();
     }
 
@@ -739,8 +768,11 @@ class DosenExcelController extends Controller implements HasMiddleware
     {
         $lookup = [];
         foreach ($this->allowedProdis() as $p) {
-            foreach ([$p->kode, $p->nama, "{$p->jenjang} {$p->nama}", "{$p->nama} {$p->jenjang}", "{$p->jenjang} - {$p->nama}"] as $k) {
-                $lookup[$this->norm($k)] ??= $p;
+            // kode_siakad: kode prodi di SIAKAD (diisi saat sinkron prodi), dipakai kolom HomeBase SIAKAD.
+            foreach ([$p->kode_siakad, $p->kode, $p->nama, "{$p->jenjang} {$p->nama}", "{$p->nama} {$p->jenjang}", "{$p->jenjang} - {$p->nama}"] as $k) {
+                if ($k !== null && $this->norm($k) !== '') {
+                    $lookup[$this->norm($k)] ??= $p;
+                }
             }
         }
 

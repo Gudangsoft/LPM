@@ -28,6 +28,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // API SIAKAD (wslive/apidata). Kredensial hanya di .env server, jangan di-commit.
+    'siakad' => [
+        'url' => env('SIAKAD_API_URL', 'https://siakad.simpati.cloud/wslive/apidata'),
+        'username' => env('SIAKAD_API_USERNAME'),
+        'password' => env('SIAKAD_API_PASSWORD'),
+        'timeout' => (int) env('SIAKAD_API_TIMEOUT', 60),
+        'page_size' => (int) env('SIAKAD_API_PAGE_SIZE', 1000),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

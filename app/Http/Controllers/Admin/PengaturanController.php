@@ -77,6 +77,14 @@ class PengaturanController extends Controller
     {
         $settings = $request->input('settings', []);
 
+        // Statistik slider beranda: isian kosong = kembali otomatis dari data.
+        foreach (['hero_stat_prodi', 'hero_stat_auditor', 'hero_tahun_berdiri'] as $key) {
+            if (array_key_exists($key, $settings)) {
+                $value = trim((string) $settings[$key]);
+                $settings[$key] = ctype_digit($value) ? $value : '';
+            }
+        }
+
         foreach ($settings as $key => $value) {
             if ($value !== null) {
                 Pengaturan::set($key, $value, 'text', 'template');

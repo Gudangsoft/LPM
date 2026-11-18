@@ -25,6 +25,15 @@
                 <i class="bi bi-plus-lg me-1"></i>Tambah Prodi
             </a>
             @endif
+            @if(auth()->user()->isAdmin())
+            <form action="{{ route('admin.siakad.sync.prodi') }}" method="POST" class="d-inline"
+                  onsubmit="if (!confirm('Tarik data Program Studi dari SIAKAD? Prodi baru ditambahkan, yang sudah ada diperbarui (kaprodi & kode SPMI tidak diubah).')) return false; this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = '<span class=&quot;spinner-border spinner-border-sm me-1&quot;></span>Menarik data...'; return true;">
+                @csrf
+                <button type="submit" class="btn btn-outline-dark" title="Terakhir: {{ \Illuminate\Support\Facades\Cache::get('siakad:last_sync:prodi', 'belum pernah') }}">
+                    <i class="bi bi-cloud-download me-1"></i>Tarik dari SIAKAD
+                </button>
+            </form>
+            @endif
         </div>
     </div>
 

@@ -490,9 +490,12 @@
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 50%;
             top: 50%;
+            bottom: auto;
             transform: translateY(-50%);
             opacity: 1;
             transition: all 0.3s ease;
+            z-index: 5; /* di atas .hero-slide-content (z-index 2) agar bisa diklik */
+            cursor: pointer;
         }
 
         .hero-section .carousel-control-prev { left: 30px; }
@@ -506,6 +509,7 @@
 
         /* Progress Indicators */
         .hero-section .carousel-indicators {
+            z-index: 5;
             bottom: 40px;
             left: 5%;
             justify-content: flex-start;

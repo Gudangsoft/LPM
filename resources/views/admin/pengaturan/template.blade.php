@@ -193,6 +193,37 @@
                     </div>
                 </div>
 
+                @php($auto = \App\Http\Controllers\HomeController::autoStats())
+                <div class="card mb-4">
+                    <div class="card-header">Statistik di Slider Beranda</div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">
+                            Kosongkan isian agar angka <strong>otomatis dari data</strong> sistem. Isi angka bila ingin ditetapkan manual.
+                            Kartu dengan nilai 0 tidak ditampilkan.
+                        </p>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="hero_stat_prodi">Program Terakreditasi</label>
+                                <input type="number" min="0" class="form-control" id="hero_stat_prodi" name="settings[hero_stat_prodi]"
+                                       value="{{ $settings['hero_stat_prodi'] ?? '' }}" placeholder="Otomatis: {{ $auto['prodi'] }}">
+                                <div class="form-text">Otomatis: jumlah prodi dengan akreditasi aktif (menu Akreditasi).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="hero_stat_auditor">Auditor Bersertifikasi</label>
+                                <input type="number" min="0" class="form-control" id="hero_stat_auditor" name="settings[hero_stat_auditor]"
+                                       value="{{ $settings['hero_stat_auditor'] ?? '' }}" placeholder="Otomatis: {{ $auto['auditor'] }}">
+                                <div class="form-text">Otomatis: jumlah auditor berstatus aktif (menu Auditor).</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="hero_tahun_berdiri">Tahun Berdiri LPM</label>
+                                <input type="number" min="1950" max="{{ now()->year }}" class="form-control" id="hero_tahun_berdiri" name="settings[hero_tahun_berdiri]"
+                                       value="{{ $settings['hero_tahun_berdiri'] ?? '' }}" placeholder="2015">
+                                <div class="form-text">"Tahun Pengalaman" = tahun ini − tahun berdiri (sekarang {{ $auto['tahun'] }}).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-lg me-1"></i>{{ __('admin.save_settings') }}
