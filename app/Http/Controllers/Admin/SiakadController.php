@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Siakad\SiakadException;
 use App\Services\Siakad\SiakadSync;
+use App\Models\Prodi;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /** Tombol "Tarik dari SIAKAD" di halaman Program Studi & Data Dosen (khusus admin). */
@@ -28,11 +30,13 @@ class SiakadController extends Controller
             : $redirect;
     }
 
-    public function syncDosen(SiakadSync $sync)
+    public function syncDosen(Request $request, SiakadSync $sync)
     {
         @set_time_limit(600);
+        $request->validate(['prodi_id' => 'nullable|exists:prodi,id']);
+        $defaultProdi = $request->filled('prodi_id') ? Prodi::find($request->prodi_id) : null;
         try {
-            $r = $sync->syncDosen();
+            $r = $sync->syncDosen($defaultProdi);
         } catch (\Throwable $e) {
             return back()->with('error', $this->pesanGagal($e));
         }

@@ -33,13 +33,10 @@
             </a>
             @endif
             @if($isAdmin)
-            <form action="{{ route('admin.siakad.sync.dosen') }}" method="POST" class="d-inline"
-                  onsubmit="if (!confirm('Tarik data Dosen dari SIAKAD? Dosen baru ditambahkan, yang sudah ada diperbarui. Data yang kosong di SIAKAD tidak menghapus data di SPMI. Sebaiknya tarik Program Studi lebih dulu.')) return false; this.querySelector('button').disabled = true; this.querySelector('button').innerHTML = '<span class=&quot;spinner-border spinner-border-sm me-1&quot;></span>Menarik data...'; return true;">
-                @csrf
-                <button type="submit" class="btn btn-outline-dark" title="Terakhir: {{ \Illuminate\Support\Facades\Cache::get('siakad:last_sync:dosen', 'belum pernah') }}">
-                    <i class="bi bi-cloud-download me-1"></i>Tarik dari SIAKAD
-                </button>
-            </form>
+            <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#siakadDosenModal"
+                    title="Terakhir: {{ \Illuminate\Support\Facades\Cache::get('siakad:last_sync:dosen', 'belum pernah') }}">
+                <i class="bi bi-cloud-download me-1"></i>Tarik dari SIAKAD
+            </button>
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#buatAkunModal">
                 <i class="bi bi-person-plus me-1"></i>Buatkan Akun
                 @if($tanpaAkun)<span class="badge bg-primary ms-1">{{ $tanpaAkun }}</span>@endif
@@ -237,6 +234,41 @@
     </div>
 
     @if($isAdmin)
+    <div class="modal fade" id="siakadDosenModal" tabindex="-1" aria-labelledby="siakadDosenModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('admin.siakad.sync.dosen') }}" method="POST" class="modal-content"
+                  onsubmit="const b = this.querySelector('button[type=submit]'); b.disabled = true; b.innerHTML = '<span class=&quot;spinner-border spinner-border-sm me-1&quot;></span>Menarik data...';">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="siakadDosenModalLabel">Tarik Data Dosen dari SIAKAD</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="small ps-3 mb-3">
+                        <li>Program Studi ikut ditarik lebih dulu.</li>
+                        <li>Dosen yang sudah ada di SPMI (cocok NIDN/Kode Dosen) <strong>diperbarui</strong> dan tetap di prodinya.</li>
+                        <li>Data yang kosong di SIAKAD tidak menghapus data di SPMI.</li>
+                    </ul>
+                    <label for="siakadProdi" class="form-label fw-semibold">Prodi untuk dosen baru <span class="text-muted small fw-normal">(opsional)</span></label>
+                    <select name="prodi_id" id="siakadProdi" class="form-select">
+                        <option value="">-- Lewati dosen baru yang HomeBase-nya kosong --</option>
+                        @foreach($prodis as $p)
+                        <option value="{{ $p->id }}">{{ $p->jenjang }} {{ $p->nama }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-text">
+                        API SIAKAD saat ini tidak mengisi HomeBase dosen. Dosen yang belum ada di SPMI hanya bisa masuk bila prodinya dipilih di sini
+                        (semua dosen baru masuk ke prodi tersebut; pindahkan per dosen lewat Edit bila perlu).
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-dark"><i class="bi bi-cloud-download me-1"></i>Tarik Sekarang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="modal fade" id="buatAkunModal" tabindex="-1" aria-labelledby="buatAkunModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form action="{{ route('admin.dosen.buat-akun') }}" method="POST" id="buatAkunForm" class="modal-content">

@@ -3,6 +3,7 @@
 namespace App\Services\Siakad;
 
 use App\Http\Controllers\Admin\DosenExcelController;
+use App\Models\Dosen;
 use App\Models\Prodi;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -98,7 +99,7 @@ class SiakadSync
      *
      * @return array{status:string,message:string,created:int,updated:int,skipped:int,errors:array,warnings:array,total:int}
      */
-    public function syncDosen(): array
+    public function syncDosen(?Prodi $defaultProdi = null): array
     {
         $rows = $this->client->fetchAll('get_dosen');
         if (! $rows) {
@@ -132,13 +133,31 @@ class SiakadSync
             return $r;
         }, $rows);
 
-        if (! collect($rows)->contains(fn ($r) => $r['HomeBase'] !== '')) {
+        // HomeBase kosong (API SIAKAD kampus tidak mengisinya): pakai prodi dosen yang sudah
+        // tercatat di SPMI, dicocokkan lewat NIDN lalu Kode Dosen.
+        $existing = Dosen::with('prodi:id,kode,kode_siakad')->get(['id', 'prodi_id', 'nidn_nidk', 'kode_dosen']);
+        $byNidn = $existing->filter(fn ($d) => $d->nidn_nidk)->keyBy(fn ($d) => $this->cleanId($d->nidn_nidk));
+        $byKode = $existing->filter(fn ($d) => $d->kode_dosen)->keyBy(fn ($d) => strtolower($this->cleanId($d->kode_dosen)));
+        $rows = array_map(function ($r) use ($byNidn, $byKode) {
+            if ($r['HomeBase'] === '') {
+                $nidn = $this->cleanId($this->pick($r, ['NIDN', 'NIDK', 'NIDN_NIDK']));
+                $kode = strtolower($this->cleanId($this->pick($r, ['KodeDosen', 'Kode'])));
+                $d = ($nidn !== '' ? $byNidn->get($nidn) : null) ?? ($kode !== '' ? $byKode->get($kode) : null);
+                if ($d?->prodi) {
+                    $r['HomeBase'] = $d->prodi->kode;
+                }
+            }
+
+            return $r;
+        }, $rows);
+
+        if (! $defaultProdi && ! collect($rows)->contains(fn ($r) => $r['HomeBase'] !== '')) {
             return ['status' => 'error', 'created' => 0, 'updated' => 0, 'skipped' => 0, 'warnings' => [], 'total' => count($rows),
                 'message' => 'Data dosen dari SIAKAD tidak memuat kolom HomeBase/prodi yang terisi, jadi dosen tidak bisa dipetakan ke program studi.',
                 'errors' => [
                     'Kolom yang dikirim SIAKAD: '.implode(', ', $kolomAsli).'.',
                     'Isi kolom HomeBase pada '.count($rows).' dosen: '.$this->describeValues($hbRaw).'.',
-                    'Kirim pesan ini ke pengembang, atau hubungi pengelola SIAKAD agar kolom HomeBase pada data API dosen diisi kode/nama prodi.',
+                    'Pilih "Prodi untuk dosen baru" saat menekan Tarik dari SIAKAD, atau minta pengelola SIAKAD mengisi kolom HomeBase pada data API dosen.',
                 ]];
         }
 
@@ -157,15 +176,30 @@ class SiakadSync
         // Prodi ditarik dulu agar HomeBase dosen (kode/nama prodi SIAKAD) dikenali.
         $prodi = $this->syncProdi();
 
-        $result = app(DosenExcelController::class)->importData($table, null, true);
+        $result = app(DosenExcelController::class)->importData($table, $defaultProdi, true);
         $result['total'] = count($rows);
         $result['prodi'] = $prodi;
 
         // Pesan import Excel diganti dengan petunjuk yang sesuai untuk SIAKAD.
+        // Dosen baru tanpa HomeBase diringkas jadi satu baris (bisa ratusan).
+        $tanpaHomebase = [];
+        $result['errors'] = array_values(array_filter($result['errors'], function ($e) use (&$tanpaHomebase) {
+            if (preg_match('/^Baris \d+ \((.*)\): Homebase kosong \(pilih "Homebase default" saat import\)$/', $e, $m)) {
+                $tanpaHomebase[] = $m[1];
+
+                return false;
+            }
+
+            return true;
+        }));
+        if ($tanpaHomebase) {
+            array_unshift($result['errors'], count($tanpaHomebase).' dosen baru dilewati karena HomeBase-nya kosong di SIAKAD dan belum ada di SPMI: '
+                .implode(', ', array_slice($tanpaHomebase, 0, 30)).(count($tanpaHomebase) > 30 ? ', dan '.(count($tanpaHomebase) - 30).' lainnya' : '')
+                .'. Pilih "Prodi untuk dosen baru" lalu tarik ulang, atau tambahkan/import per prodi.');
+        }
+
         $prodiDilewati = implode('; ', $prodi['skipped']);
         $result['errors'] = array_map(function ($e) use ($prodiDilewati) {
-            $e = str_replace('Homebase kosong (pilih "Homebase default" saat import)', 'HomeBase kosong di SIAKAD. Lengkapi di SIAKAD lalu tarik ulang, atau tambahkan dosen ini secara manual', $e);
-
             return preg_replace_callback('/Homebase "([^"]*)" tidak dikenal atau bukan prodi Anda/', function ($m) use ($prodiDilewati) {
                 $alasan = $prodiDilewati !== '' && stripos($prodiDilewati, $m[1]) !== false
                     ? ' (prodi ini dilewati saat sinkron, lihat alasannya di atas)'
@@ -217,6 +251,12 @@ class SiakadSync
         }
 
         return collect($jenis)->map(fn ($n, $l) => "{$n} {$l}")->join(', ');
+    }
+
+    /** NIDN/kode dari SIAKAD kadang diawali tanda kutip (format teks Excel). */
+    private function cleanId(?string $s): string
+    {
+        return trim(ltrim(trim((string) $s), "'"));
     }
 
     private function norm(string $s): string
