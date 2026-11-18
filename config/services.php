@@ -30,7 +30,7 @@ return [
 
     // API SIAKAD (wslive/apidata). Kredensial hanya di .env server, jangan di-commit.
     'siakad' => [
-        'url' => env('SIAKAD_API_URL', 'https://siakad.simpati.cloud/wslive/apidata'),
+        'url' => env('SIAKAD_API_URL', 'https://siakad.unukase.ac.id/wslive/apidata'),
         'username' => env('SIAKAD_API_USERNAME'),
         'password' => env('SIAKAD_API_PASSWORD'),
         'timeout' => (int) env('SIAKAD_API_TIMEOUT', 60),
