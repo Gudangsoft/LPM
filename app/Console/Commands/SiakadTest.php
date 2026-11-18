@@ -16,7 +16,16 @@ class SiakadTest extends Command
         {act=get_token : get_token | get_fakultas | get_prodi | get_dosen | get_mahasiswa}
         {--filter= : Filter SIAKAD, mis. "KodeFakultas=\'FEB\'"}
         {--limit=3 : Jumlah contoh baris}
-        {--raw : Tampilkan isi asli (JANGAN dibagikan, berisi data pribadi)}';
+        {--raw : Tampilkan isi asli (JANGAN dibagikan, berisi data pribadi)}
+        {--probe : Pindai nama layanan lain (RPS, mata kuliah, jadwal, ...) yang mungkin tersedia}';
+
+    /** Nama layanan yang dicoba oleh --probe (tidak terdokumentasi; ditebak dari pola get_*). */
+    private const PROBE_ACTS = [
+        'get_rps', 'get_rps_matakuliah', 'get_rencana_pembelajaran', 'get_matakuliah', 'get_mata_kuliah', 'get_mk',
+        'get_kurikulum', 'get_matakuliah_kurikulum', 'get_jadwal', 'get_jadwal_kuliah', 'get_kelas', 'get_kelas_kuliah',
+        'get_pengampu', 'get_dosen_pengampu', 'get_ajar', 'get_mengajar', 'get_tahun_akademik', 'get_semester',
+        'get_periode', 'get_krs', 'get_nilai', 'get_cpl', 'get_cpmk', 'get_lulusan', 'get_wisuda', 'get_kaprodi',
+    ];
 
     protected $description = 'Tes koneksi API SIAKAD dan tampilkan nama kolom + contoh data (disamarkan)';
 
@@ -29,6 +38,9 @@ class SiakadTest extends Command
         try {
             $token = $client->token();
             $this->info('Token OK ('.strlen($token).' karakter).');
+            if ($this->option('probe')) {
+                return $this->probe($client, $token);
+            }
             if ($act === 'get_token') {
                 return self::SUCCESS;
             }
@@ -65,6 +77,37 @@ class SiakadTest extends Command
         if (! $this->option('raw')) {
             $this->comment('Isi data disamarkan. Hasil ini aman dikirim ke pengembang.');
         }
+
+        return self::SUCCESS;
+    }
+
+    private function probe(SiakadClient $client, string $token): int
+    {
+        $this->line('Memindai '.count(self::PROBE_ACTS).' nama layanan...');
+        $found = [];
+        foreach (self::PROBE_ACTS as $act) {
+            $status = null;
+            foreach ([['Filter' => '-', 'Limit' => '0-2'], ['Filter' => '', 'Limit' => '1-2'], ['Filter' => '-']] as $params) {
+                try {
+                    $rows = $client->call($act, ['Token' => $token] + $params);
+                    $status = $rows ? 'ADA  kolom: '.implode(', ', array_keys($rows[0])) : 'ADA  (data kosong)';
+                    $found[] = $act;
+                    break;
+                } catch (SiakadException $e) {
+                    $status = 'tidak: '.preg_replace('/^SIAKAD menolak permintaan "[^"]*": /', '', $e->getMessage());
+                    if ($e->siakadCode !== '05') {
+                        break;
+                    }
+                }
+            }
+            str_starts_with($status, 'ADA') ? $this->info(str_pad($act, 26).$status) : $this->line(str_pad($act, 26).$status);
+        }
+
+        $this->newLine();
+        $found
+            ? $this->info('Layanan yang tersedia: '.implode(', ', $found).'. Lihat isinya: php artisan siakad:test '.$found[0])
+            : $this->warn('Tidak ada layanan tambahan yang ditemukan. Tanyakan nama layanan (Act) RPS/mata kuliah ke pengelola SIAKAD.');
+        $this->comment('Hasil ini tidak berisi data pribadi dan aman dikirim ke pengembang.');
 
         return self::SUCCESS;
     }
