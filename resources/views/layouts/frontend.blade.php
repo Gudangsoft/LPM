@@ -382,7 +382,7 @@
         /* Floating Stats */
         .hero-stats {
             position: absolute;
-            right: 5%;
+            right: max(5%, 120px); /* sisakan ruang untuk tombol panah kanan (30px + 60px + jarak) */
             top: 50%;
             transform: translateY(-50%);
             z-index: 3;
