@@ -21,7 +21,9 @@ class SiakadController extends Controller
         $redirect = back()->with('success', "Sinkron SIAKAD selesai: {$r['total']} prodi di SIAKAD, {$r['created']} ditambahkan, {$r['updated']} diperbarui."
             .($r['skipped'] ? ' '.count($r['skipped']).' dilewati (lihat daftar).' : ''));
 
-        return $r['skipped'] ? $redirect->with('import_errors', $r['skipped']) : $redirect;
+        return $r['skipped']
+            ? $redirect->with('import_errors', $r['skipped'])->with('import_errors_title', 'Data dari SIAKAD yang dilewati:')
+            : $redirect;
     }
 
     public function syncDosen(SiakadSync $sync)
@@ -39,13 +41,22 @@ class SiakadController extends Controller
             return $r['errors'] ? $redirect->with('import_errors', array_slice($r['errors'], 0, 100)) : $redirect;
         }
 
+        $p = $r['prodi'] ?? null;
         $msg = "Sinkron SIAKAD selesai: {$r['total']} dosen di SIAKAD, {$r['created']} ditambahkan, {$r['updated']} diperbarui.";
         if ($r['skipped']) {
-            $msg .= " {$r['skipped']} dilewati karena datanya tidak lengkap (lihat daftar).";
+            $msg .= " {$r['skipped']} dilewati (lihat daftar).";
+        }
+        if ($p && $p['created']) {
+            $msg .= " Program Studi baru dari SIAKAD: {$p['created']}.";
         }
         $redirect = back()->with('success', $msg);
-        if ($r['errors']) {
-            $redirect->with('import_errors', array_slice($r['errors'], 0, 100));
+        $errors = array_merge(
+            array_map(fn ($s) => "Prodi dilewati: {$s}", $p['skipped'] ?? []),
+            $r['errors']
+        );
+        if ($errors) {
+            $redirect->with('import_errors', array_slice($errors, 0, 100))
+                ->with('import_errors_title', 'Data dari SIAKAD yang dilewati:');
         }
 
         return $r['warnings'] ? $redirect->with('import_warnings', array_slice($r['warnings'], 0, 100)) : $redirect;

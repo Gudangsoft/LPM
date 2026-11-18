@@ -116,8 +116,26 @@ class SiakadSync
             $table[] = array_map(fn ($h) => is_scalar($r[$h] ?? null) ? (string) $r[$h] : '', $headers);
         }
 
+        // Prodi ditarik dulu agar HomeBase dosen (kode/nama prodi SIAKAD) dikenali.
+        $prodi = $this->syncProdi();
+
         $result = app(DosenExcelController::class)->importData($table, null, true);
         $result['total'] = count($rows);
+        $result['prodi'] = $prodi;
+
+        // Pesan import Excel diganti dengan petunjuk yang sesuai untuk SIAKAD.
+        $prodiDilewati = implode('; ', $prodi['skipped']);
+        $result['errors'] = array_map(function ($e) use ($prodiDilewati) {
+            $e = str_replace('Homebase kosong (pilih "Homebase default" saat import)', 'HomeBase kosong di SIAKAD. Lengkapi di SIAKAD lalu tarik ulang, atau tambahkan dosen ini secara manual', $e);
+
+            return preg_replace_callback('/Homebase "([^"]*)" tidak dikenal atau bukan prodi Anda/', function ($m) use ($prodiDilewati) {
+                $alasan = $prodiDilewati !== '' && stripos($prodiDilewati, $m[1]) !== false
+                    ? ' (prodi ini dilewati saat sinkron: jenjang tidak dikenali)'
+                    : '';
+
+                return "Prodi \"{$m[1]}\" belum ada di menu Program Studi SPMI{$alasan}. Tambahkan prodinya lalu tarik ulang";
+            }, $e);
+        }, $result['errors']);
 
         if ($result['status'] === 'ok') {
             Cache::forever('siakad:last_sync:dosen', now()->toDateTimeString());
@@ -169,6 +187,11 @@ class SiakadSync
         if (preg_match('/^\s*(D[\-\s]?3|D[\-\s]?4|S[\-\s]?1|S[\-\s]?2|S[\-\s]?3)\b[\s\-.:]*(.+)$/i', $namaBersih, $m)) {
             $jenjang ??= strtoupper(str_replace(['-', ' '], '', $m[1]));
             $namaBersih = trim($m[2]);
+        }
+
+        // Kolom jenjang tidak dikirim/kosong: anggap Sarjana (S1), jenjang terbanyak.
+        if (! $jenjang && trim($raw) === '') {
+            $jenjang = 'S1';
         }
 
         return [$jenjang, $namaBersih];

@@ -39,7 +39,7 @@
 
     @if(session('import_errors'))
     <div class="alert alert-danger">
-        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i>Kesalahan pada file import:</div>
+        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle me-1"></i>{{ session('import_errors_title', 'Kesalahan pada file import:') }}</div>
         <ul class="mb-0 small">
             @foreach(session('import_errors') as $err)
             <li>{{ $err }}</li>
