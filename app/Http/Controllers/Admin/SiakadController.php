@@ -5,17 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Siakad\SiakadException;
 use App\Services\Siakad\SiakadSync;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 
 /** Tombol "Tarik dari SIAKAD" di halaman Program Studi & Data Dosen (khusus admin). */
 class SiakadController extends Controller
 {
     public function syncProdi(SiakadSync $sync)
     {
-        @set_time_limit(300);
+        @set_time_limit(600);
         try {
             $r = $sync->syncProdi();
-        } catch (SiakadException $e) {
-            return back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            return back()->with('error', $this->pesanGagal($e));
         }
 
         $redirect = back()->with('success', "Sinkron SIAKAD selesai: {$r['total']} prodi di SIAKAD, {$r['created']} ditambahkan, {$r['updated']} diperbarui."
@@ -28,11 +30,11 @@ class SiakadController extends Controller
 
     public function syncDosen(SiakadSync $sync)
     {
-        @set_time_limit(300);
+        @set_time_limit(600);
         try {
             $r = $sync->syncDosen();
-        } catch (SiakadException $e) {
-            return back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            return back()->with('error', $this->pesanGagal($e));
         }
 
         if ($r['status'] !== 'ok') {
@@ -60,5 +62,26 @@ class SiakadController extends Controller
         }
 
         return $r['warnings'] ? $redirect->with('import_warnings', array_slice($r['warnings'], 0, 100)) : $redirect;
+    }
+
+    /** Pesan untuk admin; galat tak terduga tetap dicatat ke log, tanpa memunculkan halaman 500. */
+    private function pesanGagal(\Throwable $e): string
+    {
+        if ($e instanceof SiakadException) {
+            return $e->getMessage();
+        }
+
+        try {
+            report($e);
+        } catch (\Throwable) {
+            // log tidak bisa ditulis (mis. izin folder storage) – abaikan
+        }
+
+        $detail = $e instanceof QueryException
+            ? ($e->errorInfo[2] ?? $e->getMessage())
+            : $e->getMessage();
+
+        return 'Sinkron SIAKAD gagal karena kesalahan sistem: '.Str::limit($detail, 300)
+            .' ['.class_basename($e).' di '.basename($e->getFile()).':'.$e->getLine().']';
     }
 }
