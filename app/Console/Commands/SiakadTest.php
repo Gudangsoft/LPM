@@ -26,6 +26,8 @@ class SiakadTest extends Command
         'get_kurikulum', 'get_matakuliah_kurikulum', 'get_jadwal', 'get_jadwal_kuliah', 'get_kelas', 'get_kelas_kuliah',
         'get_pengampu', 'get_dosen_pengampu', 'get_ajar', 'get_mengajar', 'get_tahun_akademik', 'get_semester',
         'get_periode', 'get_krs', 'get_nilai', 'get_cpl', 'get_cpmk', 'get_lulusan', 'get_wisuda', 'get_kaprodi',
+        // Tenaga kependidikan / pegawai
+        'get_tendik', 'get_tenaga_kependidikan', 'get_pegawai', 'get_karyawan', 'get_staff', 'get_staf', 'get_sdm', 'get_tenaga',
     ];
 
     protected $description = 'Tes koneksi API SIAKAD dan tampilkan nama kolom + contoh data (disamarkan)';
