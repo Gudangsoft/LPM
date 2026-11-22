@@ -98,11 +98,25 @@
         </div>
     </div>
 
+    <style>
+        .dkps-toc { display: flex; flex-direction: column; }
+        .dkps-toc-body { overflow-y: auto; overscroll-behavior: contain; }
+        @media (min-width: 992px) {
+            .dkps-toc { position: sticky; top: calc(var(--header-height, 70px) + 1rem); max-height: calc(100vh - var(--header-height, 70px) - 2rem); }
+        }
+        @media (max-width: 991.98px) {
+            .dkps-toc-body { max-height: 50vh; }
+        }
+        /* Judul tabel tujuan tidak tertutup header saat diklik dari daftar isi. */
+        .dkps-content [id] { scroll-margin-top: calc(var(--header-height, 70px) + 1rem); }
+    </style>
+
     <div class="row">
         <div class="col-lg-3 mb-4">
-            <div class="card" style="top: 1rem; position: sticky;">
+            {{-- Menempel di bawah header; tinggi dibatasi layar agar daftar isi bisa digulir sendiri. --}}
+            <div class="card dkps-toc">
                 <div class="card-header">Daftar Isi</div>
-                <div class="card-body p-0">
+                <div class="card-body p-0 dkps-toc-body">
                     <div class="list-group list-group-flush">
                         @foreach($toc as $kategori => $items)
                         <div class="list-group-item bg-light">
@@ -117,7 +131,7 @@
             </div>
         </div>
 
-        <div class="col-lg-9">
+        <div class="col-lg-9 dkps-content">
             @foreach($toc as $kategori => $items)
             <h5 class="text-uppercase text-muted mt-2 mb-3">{{ $kategori }}</h5>
             @foreach($items as $item)
