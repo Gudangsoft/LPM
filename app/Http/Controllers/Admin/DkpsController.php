@@ -46,14 +46,24 @@ class DkpsController extends Controller implements HasMiddleware
      * Prodi options for the create/edit dropdowns - a kaprodi may only ever
      * pick the prodi (or prodi) they head; everyone else sees every active prodi.
      */
+    /** Nama pengusul kosong: pakai nama Kaprodi prodi tersebut, atau nama pengguna yang mengisi. */
+    private function pengusulDefault(array $validated): ?string
+    {
+        if (filled($validated['nama_pengusul'] ?? null)) {
+            return $validated['nama_pengusul'];
+        }
+
+        return Prodi::with('kaprodi:id,name')->find($validated['prodi_id'])?->kaprodi?->name ?? auth()->user()->name;
+    }
+
     private function scopedProdiOptions()
     {
         $user = auth()->user();
         if (!$user->isAdmin() && $user->isKaprodi()) {
-            return $user->prodiDikepalai()->active()->orderBy('nama')->get();
+            return $user->prodiDikepalai()->active()->with('kaprodi:id,name')->orderBy('nama')->get();
         }
 
-        return Prodi::active()->orderBy('nama')->get();
+        return Prodi::active()->with('kaprodi:id,name')->orderBy('nama')->get();
     }
 
     public function create()
@@ -84,6 +94,7 @@ class DkpsController extends Controller implements HasMiddleware
             );
         }
 
+        $validated['nama_pengusul'] = $this->pengusulDefault($validated);
         $submission = DkpsSubmission::create($validated);
 
         $this->seedFixedRows($submission);
@@ -226,6 +237,7 @@ class DkpsController extends Controller implements HasMiddleware
             );
         }
 
+        $validated['nama_pengusul'] = $this->pengusulDefault($validated);
         $dkp->update($validated);
 
         return redirect()->route('admin.dkps.show', $dkp)

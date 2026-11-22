@@ -27,7 +27,7 @@
                             <select class="form-select @error('prodi_id') is-invalid @enderror" id="prodi_id" name="prodi_id" required>
                                 <option value="">-- Pilih Program Studi --</option>
                                 @foreach($prodis as $prodi)
-                                <option value="{{ $prodi->id }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->full_name }}</option>
+                                <option value="{{ $prodi->id }}" data-pengusul="{{ $prodi->kaprodi?->name ?? auth()->user()->name }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->full_name }}</option>
                                 @endforeach
                             </select>
                             @error('prodi_id')
@@ -94,4 +94,5 @@
             </div>
         </div>
     </div>
+    @include('admin.dkps._pengusul-otomatis')
 @endsection
