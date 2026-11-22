@@ -263,6 +263,14 @@ class SiakadSync
         }
         [$rows, $sumber] = [$ambil['rows'], $ambil['sumber']];
 
+        // DKPS memakai kurikulum yang berlaku: bila SIAKAD mengirim kolom Kurikulum, ambil yang terbaru saja.
+        $terbaru = collect($rows)->map(fn ($r) => $this->bacaMk($r)['kurikulum'])->filter()
+            ->sort(fn ($a, $b) => strnatcasecmp($b, $a))->first();
+        if ($terbaru !== null) {
+            $rows = array_values(array_filter($rows, fn ($r) => $this->bacaMk($r)['kurikulum'] === $terbaru));
+            $sumber .= ", kurikulum {$terbaru}";
+        }
+
         $existing = DkpsKurikulum::where('dkps_submission_id', $dkp->id)->get();
         $byKode = $existing->filter(fn ($k) => $k->kode_mk)->keyBy(fn ($k) => strtolower(trim($k->kode_mk)));
         $byNama = $existing->keyBy(fn ($k) => $this->norm($k->nama_mk));
@@ -278,15 +286,17 @@ class SiakadSync
                 $label = $nama !== '' ? $nama : ($kode !== '' ? $kode : '(tanpa nama)');
 
                 if ($nama === '') {
-                    $skipped[] = "{$label}: nama mata kuliah kosong (kolom dari SIAKAD: ".implode(', ', array_keys($r)).')';
-
-                    continue;
+                    continue; // baris bukan mata kuliah
                 }
-                $kunci = $kode !== '' ? 'k:'.strtolower($kode) : 'n:'.$this->norm($nama);
-                if (isset($seen[$kunci])) {
-                    continue; // MK yang sama muncul lebih dari sekali (mis. beberapa kelas)
+                $kunciKode = $kode !== '' ? 'k:'.strtolower($kode) : null;
+                $kunciNama = 'n:'.$this->norm($nama);
+                if (($kunciKode && isset($seen[$kunciKode])) || isset($seen[$kunciNama])) {
+                    continue; // MK yang sama muncul lebih dari sekali (mis. beberapa kelas/dosen)
                 }
-                $seen[$kunci] = true;
+                $seen[$kunciNama] = true;
+                if ($kunciKode) {
+                    $seen[$kunciKode] = true;
+                }
 
                 $semester = $this->romawi($semRaw);
                 $model = ($kode !== '' ? $byKode->get(strtolower($kode)) : null) ?? $byNama->get($this->norm($nama));
@@ -435,20 +445,26 @@ class SiakadSync
             $byKode = $existing->filter(fn ($m) => $m->kode_mk)->keyBy(fn ($m) => strtolower(trim($m->kode_mk)));
             $byNama = $existing->keyBy(fn ($m) => $this->norm($m->nama));
             $seen = [];
+            $tanpaNama = 0;
 
-            DB::transaction(function () use ($ambil, $p, $byKode, $byNama, &$seen, &$created, &$updated, &$skipped) {
+            DB::transaction(function () use ($ambil, $p, $byKode, $byNama, &$seen, &$created, &$updated, &$tanpaNama) {
                 foreach ($ambil['rows'] as $r) {
                     $mk = $this->bacaMk($r);
                     if ($mk['nama'] === '') {
-                        $skipped[] = "{$p->nama}: mata kuliah tanpa nama (kolom dari SIAKAD: ".implode(', ', array_keys($r)).')';
+                        $tanpaNama++;
 
                         continue;
                     }
-                    $kunci = $mk['kode'] !== '' ? 'k:'.strtolower($mk['kode']) : 'n:'.$this->norm($mk['nama']);
-                    if (isset($seen[$kunci])) {
+                    // Satu MK bisa muncul berkali-kali (beberapa kelas/dosen/kurikulum): ambil sekali per kode & nama.
+                    $kunciKode = $mk['kode'] !== '' ? 'k:'.strtolower($mk['kode']) : null;
+                    $kunciNama = 'n:'.$this->norm($mk['nama']);
+                    if (($kunciKode && isset($seen[$kunciKode])) || isset($seen[$kunciNama])) {
                         continue;
                     }
-                    $seen[$kunci] = true;
+                    $seen[$kunciNama] = true;
+                    if ($kunciKode) {
+                        $seen[$kunciKode] = true;
+                    }
 
                     $sem = $this->romawi($mk['semester']);
                     $attrs = array_filter([
@@ -468,6 +484,9 @@ class SiakadSync
                     }
                 }
             });
+            if ($tanpaNama) {
+                $skipped[] = "{$p->jenjang} {$p->nama}: {$tanpaNama} baris tanpa nama mata kuliah dilewati";
+            }
         }
 
         if ($total === 0) {
@@ -494,12 +513,14 @@ class SiakadSync
         }
 
         $filter = "KodeProgdi='".str_replace("'", "''", $kodeProdi)."'";
+        // get_matakuliah berisi daftar MK (KodeMatkul, NamaMatkul, ...). get_kurikulum di SIAKAD
+        // ternyata berisi daftar kurikulum (nama_kurikulum, semester_mulai_berlaku), bukan MK,
+        // jadi hanya dipakai bila barisnya memuat nama mata kuliah.
         $percobaan = [
-            ['get_kurikulum', '', ['KodeProgdi' => $kodeProdi]],
-            ['get_Kurikulum', '', ['KodeProgdi' => $kodeProdi]],
-            ['get_kurikulum', $filter, []],
             ['get_matakuliah', $filter, []],
             ['get_matakuliah', '', ['KodeProgdi' => $kodeProdi]],
+            ['get_kurikulum', '', ['KodeProgdi' => $kodeProdi]],
+            ['get_kurikulum', $filter, []],
         ];
         $pesanGagal = [];
         foreach ($percobaan as [$act, $f, $extra]) {
@@ -510,7 +531,15 @@ class SiakadSync
 
                 continue;
             }
+            if ($rows && ! collect($rows)->contains(fn ($r) => $this->bacaMk($r)['nama'] !== '')) {
+                $pesanGagal[] = "{$act} tidak berisi nama mata kuliah (kolom: ".implode(', ', array_keys($rows[0])).')';
+
+                continue;
+            }
             if ($rows) {
+                // Kurikulum terbaru lebih dulu, agar MK kembar (beberapa kurikulum/kelas) memakai data terbaru.
+                usort($rows, fn ($a, $b) => strnatcasecmp($this->bacaMk($b)['kurikulum'], $this->bacaMk($a)['kurikulum']));
+
                 return ['status' => 'ok', 'message' => '', 'rows' => $rows, 'sumber' => $act, 'skipped' => [], 'created' => 0, 'updated' => 0, 'total' => count($rows)];
             }
         }
@@ -522,8 +551,10 @@ class SiakadSync
     private function bacaMk(array $r): array
     {
         return [
-            'kode' => $this->pick($r, ['KodeMK', 'KodeMatakuliah', 'KodeMataKuliah', 'kode_mk', 'KodeMtk', 'Kode']),
-            'nama' => $this->pick($r, ['NamaMK', 'NamaMatakuliah', 'NamaMataKuliah', 'nama_mk', 'Matakuliah', 'MataKuliah', 'NamaMtk', 'Nama']),
+            // SIAKAD get_matakuliah: ID, KodeMatkul, NamaMatkul, SKS, Semester, Kurikulum, KodeDosen, NamaDosen, KodeProgdi, NamaProgdi, ...
+            'kode' => $this->pick($r, ['KodeMatkul', 'KodeMK', 'KodeMatakuliah', 'KodeMataKuliah', 'kode_mk', 'kode_matkul', 'KodeMtk']),
+            'nama' => $this->pick($r, ['NamaMatkul', 'NamaMK', 'NamaMatakuliah', 'NamaMataKuliah', 'nama_mk', 'nama_matkul', 'Matakuliah', 'MataKuliah', 'NamaMtk']),
+            'kurikulum' => $this->pick($r, ['Kurikulum', 'TahunKurikulum', 'KodeKurikulum', 'nama_kurikulum']),
             'semester' => $this->pick($r, ['Semester', 'SemesterKe', 'Smt', 'SemesterMK', 'semester', 'SemesterPaket']),
             'sks' => $this->angka($this->pick($r, ['SKS', 'JumlahSKS', 'TotalSKS', 'SKSMK', 'sks'])),
             'sks_praktikum' => $this->angka($this->pick($r, ['SKSPraktikum', 'SksPraktikum', 'SKS_Praktikum', 'SKSPrak', 'sks_praktikum'])),
@@ -532,7 +563,7 @@ class SiakadSync
         ];
     }
 
-    private const KOLOM_PRODI = ['KodeProgdi', 'KodeProdi', 'kode_prodi', 'HomeBase', 'NamaProgdi', 'NamaProdi', 'Progdi', 'Prodi', 'ProgramStudi'];
+    private const KOLOM_PRODI = ['KodeProgdi', 'KodeProdi', 'kode_prodi', 'HomeBase', 'NamaProgdi', 'NamaProdi', 'Progdi', 'Prodi', 'ProgramStudi', 'nama_program_studi'];
 
     /** Saring baris milik $prodi bila baris memuat kolom prodi; tanpa kolom prodi, dibiarkan. */
     private function hanyaProdi(array $rows, Prodi $prodi): array
