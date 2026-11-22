@@ -210,6 +210,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('dosen/buat-akun', [\App\Http\Controllers\Admin\DosenAkunController::class, 'store'])->name('dosen.buat-akun')->middleware('admin');
 
     // Tarik data dari API SIAKAD (khusus admin)
+    Route::get('siakad', [\App\Http\Controllers\Admin\SiakadController::class, 'index'])->name('siakad.index')->middleware('admin');
+    Route::post('siakad/sync/kurikulum', [\App\Http\Controllers\Admin\SiakadController::class, 'syncKurikulum'])->name('siakad.sync.kurikulum')->middleware('admin');
+    Route::post('siakad/sync/mahasiswa', [\App\Http\Controllers\Admin\SiakadController::class, 'syncMahasiswa'])->name('siakad.sync.mahasiswa')->middleware('admin');
     Route::post('siakad/sync/prodi', [\App\Http\Controllers\Admin\SiakadController::class, 'syncProdi'])->name('siakad.sync.prodi')->middleware('admin');
     Route::post('siakad/sync/dosen', [\App\Http\Controllers\Admin\SiakadController::class, 'syncDosen'])->name('siakad.sync.dosen')->middleware('admin');
     Route::resource('dosen', \App\Http\Controllers\Admin\DosenController::class)->except(['show'])->parameters(['dosen' => 'dosen']);

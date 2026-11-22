@@ -13,8 +13,9 @@ use Illuminate\Console\Command;
 class SiakadTest extends Command
 {
     protected $signature = 'siakad:test
-        {act=get_token : get_token | get_fakultas | get_prodi | get_dosen | get_mahasiswa}
+        {act=get_token : get_token | get_fakultas | get_prodi | get_dosen | get_mahasiswa | get_kurikulum | get_matakuliah}
         {--filter= : Filter SIAKAD, mis. "KodeFakultas=\'FEB\'"}
+        {--progdi= : Parameter KodeProgdi (wajib untuk get_kurikulum)}
         {--limit=3 : Jumlah contoh baris}
         {--raw : Tampilkan isi asli (JANGAN dibagikan, berisi data pribadi)}
         {--probe : Pindai nama layanan lain (RPS, mata kuliah, jadwal, ...) yang mungkin tersedia}';
@@ -45,7 +46,8 @@ class SiakadTest extends Command
                 return self::SUCCESS;
             }
 
-            $rows = $client->fetchAll($act, (string) $this->option('filter'), max(1, (int) $this->option('limit')));
+            $extra = $this->option('progdi') ? ['KodeProgdi' => (string) $this->option('progdi')] : [];
+            $rows = $client->fetchAll($act, (string) $this->option('filter'), max(1, (int) $this->option('limit')), $extra);
         } catch (SiakadException $e) {
             $this->error($e->getMessage());
             if ($e->siakadCode === '05') {

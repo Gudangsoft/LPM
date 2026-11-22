@@ -3,16 +3,90 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\DkpsSubmission;
+use App\Models\Dosen;
+use App\Models\Prodi;
+use App\Services\Siakad\SiakadClient;
 use App\Services\Siakad\SiakadException;
 use App\Services\Siakad\SiakadSync;
-use App\Models\Prodi;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-/** Tombol "Tarik dari SIAKAD" di halaman Program Studi & Data Dosen (khusus admin). */
+/** Menu "Tarik Data SIAKAD" + tombol di halaman Program Studi & Data Dosen (khusus admin). */
 class SiakadController extends Controller
 {
+    /** Layanan API yang boleh dicek kolomnya dari halaman (lihat dokumen API SIAKAD). */
+    public const CEK_ACTS = ['get_token', 'get_fakultas', 'get_prodi', 'get_dosen', 'get_mahasiswa', 'get_kurikulum', 'get_matakuliah'];
+
+    public function index(Request $request)
+    {
+        $cek = null;
+        if ($request->filled('cek')) {
+            $request->validate(['cek' => 'in:'.implode(',', self::CEK_ACTS), 'progdi' => 'nullable|string|max:30']);
+            @set_time_limit(300);
+            try {
+                $params = ['act' => $request->cek, '--limit' => 3];
+                if ($request->filled('progdi')) {
+                    $params['--progdi'] = $request->progdi;
+                }
+                Artisan::call('siakad:test', $params);
+                $cek = ['act' => $request->cek, 'output' => Artisan::output()];
+            } catch (\Throwable $e) {
+                $cek = ['act' => $request->cek, 'output' => $this->pesanGagal($e)];
+            }
+        }
+
+        $last = fn ($k) => Cache::get("siakad:last_sync:{$k}", 'belum pernah');
+
+        return view('admin.siakad.index', [
+            'configured' => app(SiakadClient::class)->isConfigured(),
+            'prodis' => Prodi::orderBy('jenjang')->orderBy('nama')->get(['id', 'nama', 'jenjang', 'kode', 'kode_siakad']),
+            'dkpsList' => DkpsSubmission::with('prodi:id,nama,jenjang')->orderByDesc('tahun_ts_akhir')->get(['id', 'prodi_id', 'tahun_ts_awal', 'tahun_ts_akhir']),
+            'last' => ['prodi' => $last('prodi'), 'dosen' => $last('dosen'), 'kurikulum' => $last('kurikulum'), 'mahasiswa' => $last('mahasiswa')],
+            'jumlah' => ['prodi' => Prodi::count(), 'prodi_siakad' => Prodi::whereNotNull('kode_siakad')->count(), 'dosen' => Dosen::count()],
+            'cek' => $cek,
+        ]);
+    }
+
+    public function syncKurikulum(Request $request, SiakadSync $sync)
+    {
+        return $this->syncDkps($request, fn (DkpsSubmission $dkp) => $sync->syncKurikulum($dkp), 'mata kuliah', 'Tabel Kurikulum');
+    }
+
+    public function syncMahasiswa(Request $request, SiakadSync $sync)
+    {
+        return $this->syncDkps($request, fn (DkpsSubmission $dkp) => $sync->syncMahasiswa($dkp), 'mahasiswa', 'Tabel Kualitas Input Mahasiswa');
+    }
+
+    private function syncDkps(Request $request, callable $run, string $apa, string $tabel)
+    {
+        @set_time_limit(600);
+        $request->validate(['dkps_id' => 'required|exists:dkps_submissions,id'], ['dkps_id.required' => 'Pilih DKPS tujuan.']);
+        $dkp = DkpsSubmission::with('prodi')->findOrFail($request->dkps_id);
+        try {
+            $r = $run($dkp);
+        } catch (\Throwable $e) {
+            return back()->with('error', $this->pesanGagal($e));
+        }
+
+        if ($r['status'] !== 'ok') {
+            $redirect = back()->with('error', "Tarik {$apa} gagal: {$r['message']}");
+
+            return $r['skipped'] ? $redirect->with('import_errors', array_slice($r['skipped'], 0, 100))->with('import_errors_title', 'Detail dari SIAKAD:') : $redirect;
+        }
+
+        $redirect = back()->with('success', "Tarik {$apa} selesai ({$dkp->prodi?->jenjang} {$dkp->prodi?->nama}, TS {$dkp->tahun_ts_awal}/{$dkp->tahun_ts_akhir}): "
+            ."{$r['total']} data dari SIAKAD, {$r['created']} ditambahkan, {$r['updated']} diperbarui di DKPS {$tabel}."
+            .($r['skipped'] ? ' '.count($r['skipped']).' dilewati (lihat daftar).' : ''));
+
+        return $r['skipped']
+            ? $redirect->with('import_errors', array_slice($r['skipped'], 0, 100))->with('import_errors_title', 'Data dari SIAKAD yang dilewati:')
+            : $redirect;
+    }
+
     public function syncProdi(SiakadSync $sync)
     {
         @set_time_limit(600);

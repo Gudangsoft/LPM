@@ -64,7 +64,8 @@ class SiakadClient
     public ?int $variantUsed = null;
 
     /**
-     * Ambil semua baris untuk $act (get_fakultas, get_prodi, get_dosen, get_mahasiswa).
+     * Ambil semua baris untuk $act (get_fakultas, get_prodi, get_dosen, get_mahasiswa,
+     * get_kurikulum + KodeProgdi, get_matakuliah). $extra = parameter POST tambahan.
      * $filter contoh: "KodeFakultas='FEB'".
      *
      * Arti "Limit" (mis. "10-1000") tidak dijelaskan dokumentasi; dikirim "awal-akhir" per
@@ -73,7 +74,7 @@ class SiakadClient
      *
      * @return array<int, array<string, mixed>>
      */
-    public function fetchAll(string $act, string $filter = '', ?int $maxRows = null): array
+    public function fetchAll(string $act, string $filter = '', ?int $maxRows = null, array $extra = []): array
     {
         $remembered = Cache::get('siakad:param_variant');
         $order = array_keys(self::VARIANTS);
@@ -84,7 +85,7 @@ class SiakadClient
         $lastError = null;
         foreach ($order as $i) {
             try {
-                $rows = $this->fetchWithVariant($act, $filter, $maxRows, self::VARIANTS[$i]);
+                $rows = $this->fetchWithVariant($act, $filter, $maxRows, self::VARIANTS[$i], $extra);
             } catch (SiakadException $e) {
                 if ($e->siakadCode !== '05') {
                     throw $e;
@@ -103,15 +104,18 @@ class SiakadClient
         throw $lastError;
     }
 
-    private function fetchWithVariant(string $act, string $filter, ?int $maxRows, array $variant): array
+    /** $extra: parameter tambahan, mis. ['KodeProgdi' => 'TI'] untuk get_kurikulum. */
+    private function fetchWithVariant(string $act, string $filter, ?int $maxRows, array $variant, array $extra = []): array
     {
         $pageSize = max(10, (int) config('services.siakad.page_size', 1000));
         $filter = trim($filter) === '' ? $variant['filter'] : $filter;
         $rows = [];
         $seen = [];
 
-        for ($page = 0, $offset = 0; $page < 50; $page++, $offset += $pageSize) {
-            $params = ['Token' => $this->token(), 'Filter' => $filter];
+        // Halaman berikutnya mulai setelah baris yang benar-benar diterima: SIAKAD bisa
+        // membatasi jumlah baris per permintaan (mis. 100) walau Limit yang diminta lebih besar.
+        for ($page = 0, $offset = 0; $page < 200; $page++) {
+            $params = $extra + ['Token' => $this->token(), 'Filter' => $filter];
             if ($variant['base'] !== null) {
                 $start = $offset + $variant['base'];
                 $params['Limit'] = $start.'-'.($start + $pageSize - $variant['base']);
@@ -132,9 +136,10 @@ class SiakadClient
                 }
             }
 
-            if ($new === 0 || count($batch) < $pageSize || ($maxRows && count($rows) >= $maxRows)) {
+            if ($new === 0 || ! $batch || ($maxRows && count($rows) >= $maxRows)) {
                 break;
             }
+            $offset += count($batch);
         }
 
         return $maxRows ? array_slice($rows, 0, $maxRows) : $rows;
