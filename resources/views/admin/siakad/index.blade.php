@@ -101,6 +101,32 @@
             </div>
         </div>
 
+        {{-- Mata kuliah (pilihan form AMI) --}}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-list-check me-1"></i>Daftar Mata Kuliah per Prodi</h5>
+                    <div class="small text-muted mb-2">SIAKAD: <code>get_kurikulum</code> (KodeProgdi), <code>get_matakuliah</code> &rarr; pilihan Mata Kuliah di Capaian Pembelajaran, Evaluasi Pembelajaran, Review RPS</div>
+                    <form action="{{ route('admin.siakad.sync.mata-kuliah') }}" method="POST" class="row g-2 align-items-end" onsubmit="{{ $spin }}">
+                        @csrf
+                        <div class="col-sm-6">
+                            <label for="mkProdi" class="form-label small fw-semibold mb-1">Program Studi</label>
+                            <select name="prodi_id" id="mkProdi" class="form-select form-select-sm">
+                                <option value="">Semua prodi yang terhubung SIAKAD</option>
+                                @foreach($prodis as $p)
+                                <option value="{{ $p->id }}">{{ $p->jenjang }} {{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <button type="submit" class="btn btn-dark"><i class="bi bi-cloud-download me-1"></i>Tarik Mata Kuliah</button>
+                            <span class="small text-muted ms-2">Tersimpan: {{ $jumlah['mk'] }} &middot; Terakhir: {{ $last['matakuliah'] }}</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{-- Kurikulum --}}
         <div class="col-lg-6">
             <div class="card h-100">

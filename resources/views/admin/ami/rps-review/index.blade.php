@@ -14,10 +14,15 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('admin.ami.rps-review.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i>Tambah RPS
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            @include('admin.siakad._mk-button', ['can' => auth()->user()->isAdmin() || auth()->user()->hasPermission('rps.manage')])
+            <a href="{{ route('admin.ami.rps-review.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Tambah RPS
+            </a>
+        </div>
     </div>
+
+    @include('admin.siakad._import-errors')
 
     <p class="text-muted mb-3">
         Rekam dan tinjau kesesuaian Rencana Pembelajaran Semester (RPS) tiap mata kuliah — kelengkapan CPMK,

@@ -14,10 +14,15 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('admin.ami.evaluasi-pembelajaran.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i>Tambah Mata Kuliah
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            @include('admin.siakad._mk-button', ['can' => auth()->user()->isAdmin() || auth()->user()->hasPermission('evaluasi-pembelajaran.manage')])
+            <a href="{{ route('admin.ami.evaluasi-pembelajaran.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Mata Kuliah
+            </a>
+        </div>
     </div>
+
+    @include('admin.siakad._import-errors')
 
     <p class="text-muted mb-3">
         Evaluasi pelaksanaan pembelajaran tiap mata kuliah — kesesuaian dengan RPS, kendala yang

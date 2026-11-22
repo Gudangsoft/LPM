@@ -7,6 +7,7 @@ use App\Models\DkpsKualitasInput;
 use App\Models\DkpsKurikulum;
 use App\Models\DkpsSubmission;
 use App\Models\Dosen;
+use App\Models\MataKuliah;
 use App\Models\Prodi;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -253,42 +254,14 @@ class SiakadSync
      */
     public function syncKurikulum(DkpsSubmission $dkp): array
     {
-        $prodi = $dkp->prodi;
-        $kodeProdi = $prodi?->kode_siakad ?: $prodi?->kode;
-        if (! $kodeProdi) {
-            return $this->gagal('Prodi DKPS ini belum punya kode SIAKAD. Tarik data Program Studi dulu.');
+        if (! $dkp->prodi) {
+            return $this->gagal('DKPS ini belum terhubung ke program studi.');
         }
-
-        // Dokumentasi: get_kurikulum memakai parameter KodeProgdi; get_matakuliah lewat Filter.
-        $filter = "KodeProgdi='".str_replace("'", "''", $kodeProdi)."'";
-        $percobaan = [
-            ['get_kurikulum', '', ['KodeProgdi' => $kodeProdi]],
-            ['get_Kurikulum', '', ['KodeProgdi' => $kodeProdi]],
-            ['get_kurikulum', $filter, []],
-            ['get_matakuliah', $filter, []],
-            ['get_matakuliah', '', ['KodeProgdi' => $kodeProdi]],
-        ];
-        $rows = [];
-        $sumber = null;
-        $pesanGagal = [];
-        foreach ($percobaan as [$act, $f, $extra]) {
-            try {
-                $rows = $this->client->fetchAll($act, $f, null, $extra);
-            } catch (SiakadException $e) {
-                $pesanGagal[] = $e->getMessage();
-
-                continue;
-            }
-            $rows = $this->hanyaProdi($rows, $prodi);
-            if ($rows) {
-                $sumber = $act;
-
-                break;
-            }
+        $ambil = $this->ambilMataKuliah($dkp->prodi);
+        if ($ambil['status'] !== 'ok') {
+            return $ambil;
         }
-        if (! $rows) {
-            return $this->gagal("SIAKAD tidak mengembalikan mata kuliah untuk prodi {$prodi->nama} (KodeProgdi {$kodeProdi}).", array_unique($pesanGagal));
-        }
+        [$rows, $sumber] = [$ambil['rows'], $ambil['sumber']];
 
         $existing = DkpsKurikulum::where('dkps_submission_id', $dkp->id)->get();
         $byKode = $existing->filter(fn ($k) => $k->kode_mk)->keyBy(fn ($k) => strtolower(trim($k->kode_mk)));
@@ -301,9 +274,7 @@ class SiakadSync
 
         DB::transaction(function () use ($rows, $dkp, $byKode, $byNama, &$urutan, &$created, &$updated, &$skipped, &$seen) {
             foreach ($rows as $r) {
-                $kode = $this->pick($r, ['KodeMK', 'KodeMatakuliah', 'KodeMataKuliah', 'kode_mk', 'KodeMtk', 'Kode']);
-                $nama = $this->pick($r, ['NamaMK', 'NamaMatakuliah', 'NamaMataKuliah', 'nama_mk', 'Matakuliah', 'MataKuliah', 'NamaMtk', 'Nama']);
-                $semRaw = $this->pick($r, ['Semester', 'SemesterKe', 'Smt', 'SemesterMK', 'semester', 'SemesterPaket']);
+                ['kode' => $kode, 'nama' => $nama, 'semester' => $semRaw] = $this->bacaMk($r);
                 $label = $nama !== '' ? $nama : ($kode !== '' ? $kode : '(tanpa nama)');
 
                 if ($nama === '') {
@@ -325,10 +296,7 @@ class SiakadSync
                     continue;
                 }
 
-                $sksTotal = $this->angka($this->pick($r, ['SKS', 'JumlahSKS', 'TotalSKS', 'SKSMK', 'sks']));
-                $sksPrak = $this->angka($this->pick($r, ['SKSPraktikum', 'SksPraktikum', 'SKS_Praktikum', 'SKSPrak', 'sks_praktikum']));
-                $sksLap = $this->angka($this->pick($r, ['SKSPraktikLapangan', 'SKSLapangan', 'SKSPL', 'SksLapangan', 'sks_lapangan']));
-                $sksTeori = $this->angka($this->pick($r, ['SKSTeori', 'SksTeori', 'SKS_Teori', 'SKSKuliah', 'SKSTatapMuka', 'sks_teori']));
+                ['sks' => $sksTotal, 'sks_praktikum' => $sksPrak, 'sks_lapangan' => $sksLap, 'sks_teori' => $sksTeori] = $this->bacaMk($r);
                 if ($sksTeori === null && $sksTotal !== null) {
                     $sksTeori = max(0, $sksTotal - (float) $sksPrak - (float) $sksLap);
                 }
@@ -435,7 +403,134 @@ class SiakadSync
         return ['status' => 'ok', 'message' => '', 'created' => $created, 'updated' => $updated, 'skipped' => $skipped, 'total' => count($rows)];
     }
 
+    /**
+     * Daftar mata kuliah per prodi -> tabel mata_kuliah (pilihan Mata Kuliah di Capaian
+     * Pembelajaran, Evaluasi Pembelajaran, Review RPS). Tanpa $prodi: semua prodi yang
+     * terhubung SIAKAD. Dicocokkan lewat kode MK lalu nama; MK yang hilang di SIAKAD tidak dihapus.
+     *
+     * @return array{status:string,message:string,created:int,updated:int,skipped:array,total:int}
+     */
+    public function syncMataKuliah(?Prodi $prodi = null): array
+    {
+        $prodis = $prodi ? collect([$prodi]) : Prodi::whereNotNull('kode_siakad')->where('kode_siakad', '!=', '')->get();
+        if ($prodis->isEmpty()) {
+            return $this->gagal('Belum ada prodi yang terhubung SIAKAD. Tarik data Program Studi dulu.');
+        }
+
+        $created = 0;
+        $updated = 0;
+        $total = 0;
+        $skipped = [];
+        foreach ($prodis as $p) {
+            $ambil = $this->ambilMataKuliah($p);
+            if ($ambil['status'] !== 'ok') {
+                $skipped[] = "{$p->jenjang} {$p->nama}: {$ambil['message']}";
+                array_push($skipped, ...array_slice($ambil['skipped'], 0, 3));
+
+                continue;
+            }
+            $total += count($ambil['rows']);
+
+            $existing = MataKuliah::where('prodi_id', $p->id)->get();
+            $byKode = $existing->filter(fn ($m) => $m->kode_mk)->keyBy(fn ($m) => strtolower(trim($m->kode_mk)));
+            $byNama = $existing->keyBy(fn ($m) => $this->norm($m->nama));
+            $seen = [];
+
+            DB::transaction(function () use ($ambil, $p, $byKode, $byNama, &$seen, &$created, &$updated, &$skipped) {
+                foreach ($ambil['rows'] as $r) {
+                    $mk = $this->bacaMk($r);
+                    if ($mk['nama'] === '') {
+                        $skipped[] = "{$p->nama}: mata kuliah tanpa nama (kolom dari SIAKAD: ".implode(', ', array_keys($r)).')';
+
+                        continue;
+                    }
+                    $kunci = $mk['kode'] !== '' ? 'k:'.strtolower($mk['kode']) : 'n:'.$this->norm($mk['nama']);
+                    if (isset($seen[$kunci])) {
+                        continue;
+                    }
+                    $seen[$kunci] = true;
+
+                    $sem = $this->romawi($mk['semester']);
+                    $attrs = array_filter([
+                        'kode_mk' => $mk['kode'] !== '' ? mb_substr($mk['kode'], 0, 50) : null,
+                        'nama' => mb_substr($mk['nama'], 0, 255),
+                        'semester' => $sem ? array_search($sem, ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'], true) : null,
+                        'sks' => $mk['sks'] ?? (($mk['sks_teori'] ?? 0) + ($mk['sks_praktikum'] ?? 0) + ($mk['sks_lapangan'] ?? 0) ?: null),
+                    ], fn ($v) => $v !== null);
+
+                    $model = ($mk['kode'] !== '' ? $byKode->get(strtolower($mk['kode'])) : null) ?? $byNama->get($this->norm($mk['nama']));
+                    if ($model) {
+                        $model->update($attrs);
+                        $updated++;
+                    } else {
+                        MataKuliah::create($attrs + ['prodi_id' => $p->id]);
+                        $created++;
+                    }
+                }
+            });
+        }
+
+        if ($total === 0) {
+            return $this->gagal('SIAKAD tidak mengembalikan mata kuliah.', $skipped);
+        }
+        Cache::forever('siakad:last_sync:matakuliah', now()->toDateTimeString());
+
+        return ['status' => 'ok', 'message' => '', 'created' => $created, 'updated' => $updated, 'skipped' => $skipped, 'total' => $total];
+    }
+
     // ---------------------------------------------------------------------
+
+    /**
+     * Ambil mata kuliah satu prodi dari SIAKAD. Dokumentasi: get_kurikulum memakai parameter
+     * KodeProgdi; get_matakuliah lewat Filter. Dicoba berurutan sampai ada data.
+     *
+     * @return array{status:string,message:string,rows:array,sumber:?string,skipped:array,created:int,updated:int,total:int}
+     */
+    private function ambilMataKuliah(Prodi $prodi): array
+    {
+        $kodeProdi = $prodi->kode_siakad ?: $prodi->kode;
+        if (! $kodeProdi) {
+            return $this->gagal("Prodi {$prodi->nama} belum punya kode SIAKAD. Tarik data Program Studi dulu.") + ['rows' => [], 'sumber' => null];
+        }
+
+        $filter = "KodeProgdi='".str_replace("'", "''", $kodeProdi)."'";
+        $percobaan = [
+            ['get_kurikulum', '', ['KodeProgdi' => $kodeProdi]],
+            ['get_Kurikulum', '', ['KodeProgdi' => $kodeProdi]],
+            ['get_kurikulum', $filter, []],
+            ['get_matakuliah', $filter, []],
+            ['get_matakuliah', '', ['KodeProgdi' => $kodeProdi]],
+        ];
+        $pesanGagal = [];
+        foreach ($percobaan as [$act, $f, $extra]) {
+            try {
+                $rows = $this->hanyaProdi($this->client->fetchAll($act, $f, null, $extra), $prodi);
+            } catch (SiakadException $e) {
+                $pesanGagal[] = $e->getMessage();
+
+                continue;
+            }
+            if ($rows) {
+                return ['status' => 'ok', 'message' => '', 'rows' => $rows, 'sumber' => $act, 'skipped' => [], 'created' => 0, 'updated' => 0, 'total' => count($rows)];
+            }
+        }
+
+        return $this->gagal("SIAKAD tidak mengembalikan mata kuliah untuk prodi {$prodi->nama} (KodeProgdi {$kodeProdi}).", array_unique($pesanGagal)) + ['rows' => [], 'sumber' => null];
+    }
+
+    /** Kolom mata kuliah dari SIAKAD (nama kolom belum terdokumentasi, dikenali lewat alternatif). */
+    private function bacaMk(array $r): array
+    {
+        return [
+            'kode' => $this->pick($r, ['KodeMK', 'KodeMatakuliah', 'KodeMataKuliah', 'kode_mk', 'KodeMtk', 'Kode']),
+            'nama' => $this->pick($r, ['NamaMK', 'NamaMatakuliah', 'NamaMataKuliah', 'nama_mk', 'Matakuliah', 'MataKuliah', 'NamaMtk', 'Nama']),
+            'semester' => $this->pick($r, ['Semester', 'SemesterKe', 'Smt', 'SemesterMK', 'semester', 'SemesterPaket']),
+            'sks' => $this->angka($this->pick($r, ['SKS', 'JumlahSKS', 'TotalSKS', 'SKSMK', 'sks'])),
+            'sks_praktikum' => $this->angka($this->pick($r, ['SKSPraktikum', 'SksPraktikum', 'SKS_Praktikum', 'SKSPrak', 'sks_praktikum'])),
+            'sks_lapangan' => $this->angka($this->pick($r, ['SKSPraktikLapangan', 'SKSLapangan', 'SKSPL', 'SksLapangan', 'sks_lapangan'])),
+            'sks_teori' => $this->angka($this->pick($r, ['SKSTeori', 'SksTeori', 'SKS_Teori', 'SKSKuliah', 'SKSTatapMuka', 'sks_teori'])),
+        ];
+    }
 
     private const KOLOM_PRODI = ['KodeProgdi', 'KodeProdi', 'kode_prodi', 'HomeBase', 'NamaProgdi', 'NamaProdi', 'Progdi', 'Prodi', 'ProgramStudi'];
 

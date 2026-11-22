@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DkpsSubmission;
 use App\Models\Dosen;
+use App\Models\MataKuliah;
 use App\Models\Prodi;
 use App\Services\Siakad\SiakadClient;
 use App\Services\Siakad\SiakadException;
@@ -13,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /** Menu "Tarik Data SIAKAD" + tombol di halaman Program Studi & Data Dosen (khusus admin). */
@@ -45,10 +47,45 @@ class SiakadController extends Controller
             'configured' => app(SiakadClient::class)->isConfigured(),
             'prodis' => Prodi::orderBy('jenjang')->orderBy('nama')->get(['id', 'nama', 'jenjang', 'kode', 'kode_siakad']),
             'dkpsList' => DkpsSubmission::with('prodi:id,nama,jenjang')->orderByDesc('tahun_ts_akhir')->get(['id', 'prodi_id', 'tahun_ts_awal', 'tahun_ts_akhir']),
-            'last' => ['prodi' => $last('prodi'), 'dosen' => $last('dosen'), 'kurikulum' => $last('kurikulum'), 'mahasiswa' => $last('mahasiswa')],
-            'jumlah' => ['prodi' => Prodi::count(), 'prodi_siakad' => Prodi::whereNotNull('kode_siakad')->count(), 'dosen' => Dosen::count()],
+            'last' => ['prodi' => $last('prodi'), 'dosen' => $last('dosen'), 'kurikulum' => $last('kurikulum'), 'mahasiswa' => $last('mahasiswa'), 'matakuliah' => $last('matakuliah')],
+            'jumlah' => ['prodi' => Prodi::count(), 'prodi_siakad' => Prodi::whereNotNull('kode_siakad')->count(), 'dosen' => Dosen::count(),
+                'mk' => Schema::hasTable('mata_kuliah') ? MataKuliah::count() : 0],
             'cek' => $cek,
         ]);
+    }
+
+    /**
+     * Daftar mata kuliah per prodi (tombol di Capaian Pembelajaran, Evaluasi Pembelajaran,
+     * Review RPS, dan halaman Tarik Data SIAKAD). Admin: prodi mana pun atau semua prodi;
+     * kaprodi: hanya prodinya sendiri.
+     */
+    public function syncMataKuliah(Request $request, SiakadSync $sync)
+    {
+        @set_time_limit(600);
+        $user = $request->user();
+        $request->validate(['prodi_id' => ($user->isAdmin() ? 'nullable' : 'required').'|exists:prodi,id'], ['prodi_id.required' => 'Pilih program studi.']);
+        $prodi = $request->filled('prodi_id') ? Prodi::find($request->prodi_id) : null;
+        abort_unless($user->isAdmin() || ($prodi && (int) $prodi->kaprodi_id === (int) $user->id), 403, 'Anda hanya dapat menarik mata kuliah program studi Anda sendiri.');
+
+        try {
+            $r = $sync->syncMataKuliah($prodi);
+        } catch (\Throwable $e) {
+            return back()->with('error', $this->pesanGagal($e));
+        }
+
+        if ($r['status'] !== 'ok') {
+            $redirect = back()->with('error', 'Tarik mata kuliah gagal: '.$r['message']);
+
+            return $r['skipped'] ? $redirect->with('import_errors', array_slice($r['skipped'], 0, 100))->with('import_errors_title', 'Detail dari SIAKAD:') : $redirect;
+        }
+
+        $redirect = back()->with('success', 'Tarik mata kuliah selesai'.($prodi ? " ({$prodi->jenjang} {$prodi->nama})" : '').": {$r['total']} data dari SIAKAD, "
+            ."{$r['created']} ditambahkan, {$r['updated']} diperbarui. Mata kuliah kini muncul sebagai pilihan saat mengisi form."
+            .($r['skipped'] ? ' '.count($r['skipped']).' catatan (lihat daftar).' : ''));
+
+        return $r['skipped']
+            ? $redirect->with('import_errors', array_slice($r['skipped'], 0, 100))->with('import_errors_title', 'Catatan dari SIAKAD:')
+            : $redirect;
     }
 
     public function syncKurikulum(Request $request, SiakadSync $sync)

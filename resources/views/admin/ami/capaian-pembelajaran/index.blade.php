@@ -14,10 +14,15 @@
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('admin.ami.capaian-pembelajaran.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i>Tambah CPMK
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            @include('admin.siakad._mk-button', ['can' => auth()->user()->isAdmin() || auth()->user()->hasPermission('capaian-pembelajaran.manage')])
+            <a href="{{ route('admin.ami.capaian-pembelajaran.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Tambah CPMK
+            </a>
+        </div>
     </div>
+
+    @include('admin.siakad._import-errors')
 
     <p class="text-muted mb-3">
         Target dan realisasi capaian pembelajaran mata kuliah (CPMK) per tahun akademik. Status

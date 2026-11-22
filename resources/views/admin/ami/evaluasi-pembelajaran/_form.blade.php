@@ -14,6 +14,7 @@
         <label class="form-label">Mata Kuliah <span class="text-danger">*</span></label>
         <input type="text" name="mata_kuliah" class="form-control @error('mata_kuliah') is-invalid @enderror" value="{{ old('mata_kuliah', $evaluasiPembelajaran->mata_kuliah ?? '') }}" required>
         @error('mata_kuliah')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        @include('admin.siakad._mk-datalist')
     </div>
 
     <div class="col-md-5">
